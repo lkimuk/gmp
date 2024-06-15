@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "system_error": "cpp",
+        "type_traits": "cpp",
+        "xlocnum": "cpp",
+        "xtr1common": "cpp",
+        "initializer_list": "cpp",
+        "xiosbase": "cpp",
+        "xstring": "cpp",
+        "xutility": "cpp",
+        "iterator": "cpp"
+    }
+}
