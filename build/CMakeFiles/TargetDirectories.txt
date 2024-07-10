@@ -1,0 +1,2 @@
+/home/lkimuk/lkimuk-github/gmp/build/CMakeFiles/edit_cache.dir
+/home/lkimuk/lkimuk-github/gmp/build/CMakeFiles/rebuild_cache.dir
