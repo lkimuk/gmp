@@ -2293,5 +2293,4 @@
 #define _GMP_LOOP_IMPL_END_0(call, count, ...) call(__VA_ARGS__) GMP_DEFER(_GMP_LOOP_INDIRECT)()(call, GMP_DEC(count), __VA_ARGS__)
 #define _GMP_LOOP_INDIRECT() _GMP_LOOP_IMPL
 
-
 #endif // GMP_MACRO_HPP_
