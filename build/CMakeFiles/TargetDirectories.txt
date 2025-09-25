@@ -1,5 +1,0 @@
-D:/libraries/gmp/build/CMakeFiles/INSTALL.dir
-D:/libraries/gmp/build/CMakeFiles/ALL_BUILD.dir
-D:/libraries/gmp/build/CMakeFiles/ZERO_CHECK.dir
-D:/libraries/gmp/build/tests/CMakeFiles/macro_test.dir
-D:/libraries/gmp/build/tests/CMakeFiles/INSTALL.dir
