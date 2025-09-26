@@ -55,7 +55,13 @@
  * 
  * These macros allow writing platform-specific code blocks that are
  * conditionally compiled based on the target platform.
- * Usage: GMP_WINDOWS_ONLY({ /* Windows code here */ });
+ * 
+ * Usage example:
+ * @code
+ *   GMP_WINDOWS_ONLY({
+ *       // Windows code here
+ *   });
+ * @endcode
  */
 #if GMP_PLATFORM_WINDOWS
     #define GMP_WINDOWS_ONLY(code) code
@@ -124,7 +130,13 @@
  * 
  * These macros allow writing compiler-specific code blocks that are
  * conditionally compiled based on the detected compiler.
- * Usage: GMP_MSVC_ONLY({ /* MSVC specific code */ });
+ *
+ * Usage example:
+ * @code
+ *   GMP_MSVC_ONLY({
+ *       // MSVC specific code
+ *   });
+ * @endcode
  */
 #if GMP_COMPILER_MSVC
     #define GMP_MSVC_ONLY(code) code
@@ -182,6 +194,18 @@
     #define GMP_ARCH_ARM64 0
     #define GMP_ARCH_X86 0
     #define GMP_ARCH_NAME "Unknown"
+#endif
+
+#if GMP_COMPILER_MSVC
+    #if !defined(_MSVC_TRADITIONAL) || _MSVC_TRADITIONAL
+        #define GMP_MAX_MACRO_ARGS 127
+        #define GMP_PREPROCESSOR_TYPE "Traditional (MSVC)"
+    #else
+        #define GMP_MAX_MACRO_ARGS 256
+        #define GMP_PREPROCESSOR_TYPE "Conformance (MSVC)"
+    #endif
+#elif GMP_COMPILER_CLANG || GMP_COMPILER_GCC
+#else
 #endif
 
 #endif // GMP_PLATFORM_HPP_
