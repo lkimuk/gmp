@@ -1,3 +1,14 @@
+//   ___ __  __ ___ 
+//  / __|  \/  | _ \ GMP(Generative Metaprogramming)
+// | (_ | |\/| |  _/ version 0.1.0
+//  \___|_|  |_|_|   https://github.com/lkimuk/gmp
+//
+// SPDX-FileCopyrightText: 2023-2026 Gaoxing Li <https://www.cppmore.com/>
+// SPDX-License-Identifier: MIT
+//
+// This file is part of the GMP (Generative Metaprogramming) library.
+// Full project source: https://github.com/lkimuk/gmp
+
 #ifndef GMP_PLATFORM_HPP_
 #define GMP_PLATFORM_HPP_
 
@@ -196,16 +207,14 @@
     #define GMP_ARCH_NAME "Unknown"
 #endif
 
-#if GMP_COMPILER_MSVC
-    #if !defined(_MSVC_TRADITIONAL) || _MSVC_TRADITIONAL
-        #define GMP_MAX_MACRO_ARGS 127
-        #define GMP_PREPROCESSOR_TYPE "Traditional (MSVC)"
-    #else
-        #define GMP_MAX_MACRO_ARGS 256
-        #define GMP_PREPROCESSOR_TYPE "Conformance (MSVC)"
-    #endif
-#elif GMP_COMPILER_CLANG || GMP_COMPILER_GCC
+#if defined(_MSC_VER) && (!defined(_MSVC_TRADITIONAL) || _MSVC_TRADITIONAL)
+    #define GMP_MAX_MACRO_ARGS 127
+    #define GMP_PREPROCESSOR_TYPE "MSVC Traditional"
+    #define GMP_STANDARD_PREPROCESSOR 0
 #else
+    #define GMP_MAX_MACRO_ARGS 256  
+    #define GMP_PREPROCESSOR_TYPE "C++ Standard Compliant"
+    #define GMP_STANDARD_PREPROCESSOR 1
 #endif
 
 #endif // GMP_PLATFORM_HPP_

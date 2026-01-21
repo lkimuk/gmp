@@ -1,4 +1,13 @@
-# Copyright(c) 2024 Lkimuk Distributed under the MIT License
+#   ___ __  __ ___ 
+#  / __|  \/  | _ \ GMP(Generative Metaprogramming)
+# | (_ | |\/| |  _/ version 0.1.0
+#  \___|_|  |_|_|   https://github.com/lkimuk/gmp
+#
+# SPDX-FileCopyrightText: 2023-2026 Gaoxing Li <https://www.cppmore.com/>
+# SPDX-License-Identifier: MIT
+#
+# This file is part of the GMP (Generative Metaprogramming) library.
+# Full project source: https://github.com/lkimuk/gmp
 
 cmake_minimum_required(VERSION 3.12)
 
