@@ -21,9 +21,11 @@ GMP is a comprehensive, header-only C++11 library designed for advanced compile-
 
 ## Install
 **Header-only version**
+
 Copy the include folder to your build tree and use a C++11 compiler.
 
 **CMake integration**
+
 Install system-wide and use CMake's `find_package`:
 ```bash
 $ git clone https://github.com/lkimuk/gmp.git
@@ -89,37 +91,37 @@ static_assert(GMP_MAX(3, 7) == 7, "Maximum value");
 static_assert(GMP_MIN(10, 2) == 2, "Minimum value");
 
 // Conditional operations
-GMP_IF(1, expr) // expr
-GMP_IF(0, expr) //
-GMP_IF_THEN_ELSE(1, expr1, expr2) // expr1
-GMP_IF_THEN_ELSE(0, expr1, expr2) // expr2
+GMP_IF(1, expr)                                     // expands to: expr
+GMP_IF(0, expr)                                     // expands to:
+GMP_IF_THEN_ELSE(1, expr1, expr2)                   // expands to: expr1
+GMP_IF_THEN_ELSE(0, expr1, expr2)                   // expands to: expr2
 
 // Variadic operations
-GMP_SIZE_OF_VAARGS()                         // 0
-GMP_SIZE_OF_VAARGS(1)                        // 1
-GMP_SIZE_OF_VAARGS('a', 'b')                 // 2
-GMP_SIZE_OF_VAARGS('a', 'b', 'c')            // 3
-GMP_SIZE_OF_VAARGS('a', 'b', 1, 2)           // 4
-GMP_SIZE_OF_VAARGS('a', 'b', 1, 2, 3)        // 5
-GMP_SIZE_OF_VAARGS('a', 'b', 1, 2, 3, 4)     // 6
-GMP_SIZE_OF_VAARGS('a', 'b', 1, 2, 3, 4, 5)  // 7
+GMP_SIZE_OF_VAARGS()                                // expands to: 0
+GMP_SIZE_OF_VAARGS(1)                               // expands to: 1
+GMP_SIZE_OF_VAARGS('a', 'b')                        // expands to: 2
+GMP_SIZE_OF_VAARGS('a', 'b', 'c')                   // expands to: 3
+GMP_SIZE_OF_VAARGS('a', 'b', 1, 2)                  // expands to: 4
+GMP_SIZE_OF_VAARGS('a', 'b', 1, 2, 3)               // expands to: 5
+GMP_SIZE_OF_VAARGS('a', 'b', 1, 2, 3, 4)            // expands to: 6
+GMP_SIZE_OF_VAARGS('a', 'b', 1, 2, 3, 4, 5)         // expands to: 7
 
-GMP_IS_EMPTY()                               // 1
-GMP_IS_EMPTY(1)                              // 0
-GMP_IS_EMPTY(1, 2)                           // 0
+GMP_IS_EMPTY()                                      // expands to: 1
+GMP_IS_EMPTY(1)                                     // expands to: 0
+GMP_IS_EMPTY(1, 2)                                  // expands to: 0
 
-GMP_GET_N(0, a, b, c)                        // expands to: a
-GMP_GET_N(1, a, b, c)                        // expands to: b  
-GMP_GET_N(2, a, b, c)                        // expands to: c
+GMP_GET_N(0, a, b, c)                               // expands to: a
+GMP_GET_N(1, a, b, c)                               // expands to: b  
+GMP_GET_N(2, a, b, c)                               // expands to: c
 
 // Algorithms
-GMP_MINMAX(7, 3)                             // expands to: (3, 7)
-GMP_MINMAX(2, 10)                            // expands to: (2, 10)
-GMP_MINMAX(5, 5)                             // expands to: (5, 5)
-GMP_MAXMIN(7, 3)                             // expands to: (7, 3)
-GMP_MAXMIN(2, 10)                            // expands to: (10, 2)
-GMP_MAXMIN(5, 5)                             // expands to: (5, 5)
-GMP_SWAP(x, y)                               // expands to: y, x
+GMP_MINMAX(7, 3)                                    // expands to: (3, 7)
+GMP_MINMAX(2, 10)                                   // expands to: (2, 10)
+GMP_MINMAX(5, 5)                                    // expands to: (5, 5)
+GMP_MAXMIN(7, 3)                                    // expands to: (7, 3)
+GMP_MAXMIN(2, 10)                                   // expands to: (10, 2)
+GMP_MAXMIN(5, 5)                                    // expands to: (5, 5)
+GMP_SWAP(x, y)                                      // expands to: y, x
 ```
 
 #### Tuple Operations
