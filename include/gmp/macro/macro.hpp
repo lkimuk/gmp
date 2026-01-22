@@ -664,7 +664,8 @@
  * @see GMP_TUPLE_PREPEND for adding a single element to the beginning
  * @see GMP_TUPLE_SLICE for extracting a subsequence from a tuple
  */
-#define GMP_TUPLE_CONCAT(tup_a, tup_b) GMP_OVERLOAD_INVOKE(_GMP_TUPLE_CONCAT, GMP_BOOL(GMP_TUPLE_SIZE(tup_a)), GMP_BOOL(GMP_TUPLE_SIZE(tup_b)))(tup_a, tup_b)
+#define GMP_TUPLE_CONCAT(tup_a, tup_b) _GMP_TUPLE_CONCAT_COMPAT_MSVC(tup_a, tup_b, GMP_BOOL(GMP_TUPLE_SIZE(tup_a)), GMP_BOOL(GMP_TUPLE_SIZE(tup_b)))
+#define _GMP_TUPLE_CONCAT_COMPAT_MSVC(tup_a, tup_b, _0, _1) GMP_OVERLOAD_INVOKE(_GMP_TUPLE_CONCAT, _0, _1)(tup_a, tup_b)
 #define _GMP_TUPLE_CONCAT_0_1(tup_a, tup_b) tup_b
 #define _GMP_TUPLE_CONCAT_1_1(tup_a, tup_b) (GMP_REMOVE_PARENS(tup_a), GMP_REMOVE_PARENS(tup_b))
 #define _GMP_TUPLE_CONCAT_1_0(tup_a, tup_b) tup_a
@@ -737,7 +738,8 @@
 #define _GMP_TUPLE_SKIP_ERROR(count, tup) ()
 #define _GMP_TUPLE_SKIP_IMPL(count, tup) GMP_GET_TUPLE(2, GMP_WHILE(_GMP_TUPLE_SKIP_COND, _GMP_TUPLE_SKIP_OP, (count, tup, ())))
 #define _GMP_TUPLE_SKIP_COND(args) GMP_NOT(GMP_EQUAL_INT_INDEPENDENT(GMP_GET_TUPLE(0, args), GMP_TUPLE_SIZE(GMP_GET_TUPLE(1, args))))
-#define _GMP_TUPLE_SKIP_OP(args) (GMP_INC(GMP_GET_TUPLE(0, args)), GMP_GET_TUPLE(1, args), GMP_TUPLE_APPEND(GMP_GET_TUPLE(2, args), GMP_GET_TUPLE(GMP_GET_TUPLE(0, args), GMP_GET_TUPLE(1, args))))
+#define _GMP_TUPLE_SKIP_OP(args) _GMP_TUPLE_SKIP_OP_COMPAT_MSVC(args, GMP_TUPLE_APPEND(GMP_GET_TUPLE(2, args), GMP_GET_TUPLE(GMP_GET_TUPLE(0, args), GMP_GET_TUPLE(1, args))))
+#define _GMP_TUPLE_SKIP_OP_COMPAT_MSVC(args, res) (GMP_INC(GMP_GET_TUPLE(0, args)), GMP_GET_TUPLE(1, args), res)
 
 /**
  * @def GMP_TUPLE_TAKE(count, tup)
@@ -790,9 +792,10 @@
  */
 #define GMP_TUPLE_TAKE(count, tup) GMP_IF_THEN_ELSE(GMP_GREATER_INT(count, GMP_TUPLE_SIZE(tup)), _GMP_TUPLE_TAKE_ERROR, _GMP_TUPLE_TAKE_IMPL)(count, tup)
 #define _GMP_TUPLE_TAKE_ERROR(count, tup) tup
-#define _GMP_TUPLE_TAKE_IMPL(count, tup) GMP_WHILE(_GMP_TUPLE_TAKE_COND, _GMP_TUPLE_TAKE_OP, (count, tup, ()))//GMP_GET_TUPLE(2, GMP_WHILE(_GMP_TUPLE_TAKE_COND, _GMP_TUPLE_TAKE_OP, (count, tup, ())))
+#define _GMP_TUPLE_TAKE_IMPL(count, tup) GMP_GET_TUPLE(2, GMP_WHILE(_GMP_TUPLE_TAKE_COND, _GMP_TUPLE_TAKE_OP, (count, tup, ())))
 #define _GMP_TUPLE_TAKE_COND(args) GMP_NOT(GMP_EQUAL_INT_INDEPENDENT(GMP_GET_TUPLE(0, args), 0))
-#define _GMP_TUPLE_TAKE_OP(args) (GMP_DEC(GMP_GET_TUPLE(0, args)), GMP_GET_TUPLE(1, args), GMP_TUPLE_PREPEND(GMP_GET_TUPLE(2, args), GMP_GET_TUPLE(GMP_DEC(GMP_GET_TUPLE(0, args)), GMP_GET_TUPLE(1, args))))
+#define _GMP_TUPLE_TAKE_OP(args) _GMP_TUPLE_TAKE_OP_COMPAT_MSVC(args, GMP_TUPLE_PREPEND(GMP_GET_TUPLE(2, args), GMP_GET_TUPLE(GMP_DEC(GMP_GET_TUPLE(0, args)), GMP_GET_TUPLE(1, args))))
+#define _GMP_TUPLE_TAKE_OP_COMPAT_MSVC(args, res) (GMP_DEC(GMP_GET_TUPLE(0, args)), GMP_GET_TUPLE(1, args), res)
 
 /**
  * \def GMP_FOR_EACH(call, ...)
@@ -2282,6 +2285,160 @@
 #define _GMP_BOOL_256 1
 
 /**
+ * @def GMP_MAX(a, b)
+ * @brief Returns the maximum of two integer values.
+ * 
+ * This macro compares two integers \a a and \a b and returns the larger value.
+ * 
+ * @param a First integer value
+ * @param b Second integer value
+ * @return The maximum of \a a and \a b
+ * 
+ * @note Both values should be within the valid range of GMP integer operations.
+ * 
+ * @par Example
+ * @code
+ * GMP_MAX(3, 7)   // expands to 7
+ * GMP_MAX(10, 2)  // expands to 10
+ * GMP_MAX(5, 5)   // expands to 5
+ * @endcode
+ */
+#define GMP_MAX(a, b) GMP_IF_THEN_ELSE(GMP_GREATER_INT(a, b), a, b)
+
+/**
+ * @def GMP_MIN(a, b)
+ * @brief Returns the minimum of two integer values.
+ * 
+ * This macro compares two integers \a a and \a b and returns the smaller value.
+ * 
+ * @param a First integer value
+ * @param b Second integer value
+ * @return The minimum of \a a and \a b
+ * 
+ * @par Example
+ * @code
+ * GMP_MIN(3, 7)   // expands to 3
+ * GMP_MIN(10, 2)  // expands to 2
+ * GMP_MIN(5, 5)   // expands to 5
+ * @endcode
+ */
+
+#define GMP_MIN(a, b) GMP_IF_THEN_ELSE(GMP_LESS_INT(a, b), a, b)
+
+/**
+ * @def GMP_MINMAX(a, b)
+ * @brief Returns a tuple containing the minimum and maximum of two values in order.
+ * 
+ * This macro returns a tuple (min, max) where the first element is the smaller
+ * value and the second element is the larger value.
+ * 
+ * @param a First integer value
+ * @param b Second integer value
+ * @return Tuple (min, max) in ascending order
+ * 
+ * @par Example
+ * @code
+ * GMP_MINMAX(7, 3)   // expands to (3, 7)
+ * GMP_MINMAX(2, 10)  // expands to (2, 10)
+ * GMP_MINMAX(5, 5)   // expands to (5, 5)
+ * @endcode
+ */
+#define GMP_MINMAX(a, b) GMP_IF_THEN_ELSE(GMP_LESS_INT(a, b), (a, b), (b, a))
+
+/**
+ * @def GMP_MAXMIN(a, b)
+ * @brief Returns a tuple containing the maximum and minimum of two values in order.
+ * 
+ * This macro returns a tuple (max, min) where the first element is the larger
+ * value and the second element is the smaller value.
+ * 
+ * @param a First integer value
+ * @param b Second integer value
+ * @return Tuple (max, min) in descending order
+ * 
+ * @par Example
+ * @code
+ * GMP_MAXMIN(7, 3)   // expands to (7, 3)
+ * GMP_MAXMIN(2, 10)  // expands to (10, 2)
+ * GMP_MAXMIN(5, 5)   // expands to (5, 5)
+ * @endcode
+ */
+#define GMP_MAXMIN(a, b) GMP_IF_THEN_ELSE(GMP_LESS_INT(a, b), (b, a), (a, b))
+
+/**
+ * @def GMP_SWAP(a, b)
+ * @brief Swaps the positions of two values.
+ * 
+ * This macro simply returns its arguments in reversed order.
+ * It can be used as a building block for more complex operations.
+ * 
+ * @param a First value
+ * @param b Second value
+ * @return Tuple (b, a) with arguments swapped
+ * 
+ * @par Example
+ * @code
+ * GMP_SWAP(x, y)   // expands to y, x
+ * @endcode
+ */
+#define GMP_SWAP(a, b) b, a
+
+/**
+ * @def GMP_ADD(a, b)
+ * @brief Computes the sum of two integer values using iterative addition.
+ * 
+ * This macro implements addition by repeatedly incrementing the smaller value
+ * while decrementing the larger value.
+ * 
+ * @param a First integer value
+ * @param b Second integer value
+ * @return The sum of \a a and \a b
+ * 
+ * @note The implementation ensures that the iteration count equals min(a,b),
+ *       making it efficient for the typical case where one value is small.
+ * 
+ * @par Example
+ * @code
+ * GMP_ADD(2, 3)   // expands to 5
+ * GMP_ADD(0, 5)   // expands to 5
+ * GMP_ADD(7, 0)   // expands to 7
+ * @endcode
+ */
+#define GMP_ADD(a, b) _GMP_ADD_IMPL(GMP_MINMAX(a, b))
+#define _GMP_ADD_IMPL(pair) GMP_GET_TUPLE(1, GMP_WHILE(_GMP_ADD_IMPL_COND, _GMP_ADD_IMPL_OP, pair))
+#define _GMP_ADD_IMPL_COND(args) GMP_BOOL(GMP_GET_TUPLE(0, args))
+#define _GMP_ADD_IMPL_OP(args) (GMP_DEC(GMP_GET_TUPLE(0, args)), GMP_INC(GMP_GET_TUPLE(1, args)))
+
+/**
+ * @def GMP_SUB(a, b)
+ * @brief Computes the difference between two integer values (a - b).
+ * 
+ * This macro implements subtraction with support for negative results.
+ * If a >= b, returns a - b. If a < b, returns -(b - a).
+ * 
+ * @param a First integer value (minuend)
+ * @param b Second integer value (subtrahend)
+ * @return The difference a - b (may be negative)
+ * 
+ * @par Example
+ * @code
+ * GMP_SUB(5, 3)   // expands to 2
+ * GMP_SUB(3, 5)   // expands to -2
+ * GMP_SUB(7, 7)   // expands to 0
+ * GMP_SUB(0, 0)   // expands to 0
+ * @endcode
+ * 
+ * @note The negative result is represented with a minus sign prefix.
+ */
+#define GMP_SUB(a, b) _GMP_SUB(GMP_LESS_INT(a, b), a, b)
+#define _GMP_SUB(sym, a, b) GMP_CONCAT(_GMP_SUB_RESULT_, sym) (_GMP_SUB_IMPL(GMP_MINMAX(a, b)))
+#define _GMP_SUB_IMPL(pair) GMP_GET_TUPLE(1, GMP_WHILE(_GMP_SUB_IMPL_COND, _GMP_SUB_IMPL_OP, pair))
+#define _GMP_SUB_IMPL_COND(args) GMP_BOOL(GMP_GET_TUPLE(0, args))
+#define _GMP_SUB_IMPL_OP(args) (GMP_DEC(GMP_GET_TUPLE(0, args)), GMP_DEC(GMP_GET_TUPLE(1, args)))
+#define _GMP_SUB_RESULT_0(res) res
+#define _GMP_SUB_RESULT_1(res) -res
+
+/**
  * @brief Conditional selection macro that evaluates to one of two expressions based on a condition
  * 
  * This macro provides a functional-style if-then-else construct that can be used in 
@@ -2311,13 +2468,51 @@
 #define _GMP_IF_THEN_ELSE_0(_, else_expr) else_expr
 
 /**
+ * @def GMP_IF(cond, expr)
+ * @brief Conditional macro expansion based on boolean condition.
+ * 
+ * This macro expands to \a expr if \a cond evaluates to true (non-zero),
+ * otherwise expands to nothing (empty expansion).
+ * 
+ * @param cond Boolean condition (0 = false, non-zero = true)
+ * @param expr Expression to expand if condition is true
+ * @return \a expr if \a cond is true, otherwise nothing
+ * 
+ * @note Unlike GMP_IF_THEN_ELSE, this macro only has a "then" branch.
+ * @note The condition is evaluated as boolean (0 = false, other = true).
+ * 
+ * @par Example
+ * @code
+ * // Expand based on condition
+ * #define DEBUG_MODE 1
+ * GMP_IF(DEBUG_MODE, std::cout << "Debug message\n";)
+ * // Expands to: std::cout << "Debug message\n";
+ * 
+ * #define RELEASE_MODE 0
+ * GMP_IF(RELEASE_MODE, std::cout << "Release message\n";)
+ * // Expands to: (nothing)
+ * 
+ * // Use with other macros
+ * #define LOG_IF(cond, msg) GMP_IF(cond, LOG(msg))
+ * LOG_IF(1, "This will be logged")
+ * LOG_IF(0, "This will not be logged")
+ * @endcode
+ * 
+ * @see GMP_IF_THEN_ELSE for if-then-else with both branches
+ * @see GMP_BOOL for explicit boolean conversion
+ */
+#define GMP_IF(cond, expr) GMP_OVERLOAD_INVOKE(_GMP_IF, cond)(expr) 
+#define _GMP_IF_1(expr) expr
+#define _GMP_IF_0(expr)
+
+/**
  * @brief Maximum depth allowed for macro nesting.
  * 
  * This macro defines the maximum depth allowed for macro nesting.
  * Exceeding this depth may lead to compiler errors or warnings related to
  * macro recursion depth.
  */
-#define GMP_MAX_INDEX 254
+#define GMP_MAX_INDEX GMP_IF_THEN_ELSE(GMP_STANDARD_PREPROCESSOR, 254, 126)
 
 /**
  * \brief Macro to check if an index is within a specified range.
@@ -3242,7 +3437,9 @@
  *
  * \note The \a end value should not be greater than \ref GMP_MAX_INT.
  */
-#define GMP_RANGE(begin, end) GMP_OVERLOAD_INVOKE(_GMP_RANGE_PRECHECK, GMP_CHECK_INDEX_BOOL(end))(begin, end)
+#define GMP_RANGE(begin, end) GMP_IF_THEN_ELSE(GMP_EQUAL_INT_INDEPENDENT(begin, end), _GMP_RANGE_NULL, _GMP_RANGE_NOT_NULL)(begin, end)
+#define _GMP_RANGE_NULL(...)
+#define _GMP_RANGE_NOT_NULL(begin, end) GMP_OVERLOAD_INVOKE(_GMP_RANGE_PRECHECK, GMP_CHECK_INDEX_BOOL(end))(begin, end)
 #define _GMP_RANGE_PRECHECK_1(begin, end) GMP_EVAL( _GMP_RANGE_IMPL(begin, end) )
 #define _GMP_RANGE_PRECHECK_0(begin, end) GMP_CHECK_INDEX(end)
 #define _GMP_RANGE_IMPL(begin, end) begin GMP_OVERLOAD_INVOKE(_GMP_RANGE_GEN_WHEN, GMP_EQUAL_INT_INDEPENDENT(begin, GMP_DEC(end))) (GMP_INC(begin), end)
@@ -3283,9 +3480,9 @@
 #define GMP_REPEAT(call, count, ...) GMP_OVERLOAD_INVOKE(_GMP_REPEAT_PRECHECK, GMP_CHECK_INDEX_BOOL(count))(call, count, __VA_ARGS__)
 #define _GMP_REPEAT_PRECHECK_1(call, count, ...) GMP_EVAL( _GMP_REPEAT_IMPL(call, count, __VA_ARGS__) )
 #define _GMP_REPEAT_PRECHECK_0(call, count, ...) GMP_CHECK_INDEX(count)
-#define _GMP_REPEAT_IMPL(call, count, ...) GMP_OVERLOAD_INVOKE(_GMP_REPEAT_IMPL_END, GMP_EQUAL_INT(0, count))(call, count, __VA_ARGS__)
+#define _GMP_REPEAT_IMPL(call, count, ...) GMP_OVERLOAD_INVOKE(_GMP_REPEAT_IMPL_END, GMP_EQUAL_INT_INDEPENDENT(0, count))(call, count, __VA_ARGS__)
 #define _GMP_REPEAT_IMPL_END_1(call, count, ...)
-#define _GMP_REPEAT_IMPL_END_0(call, count, ...) call(__VA_ARGS__) GMP_DEFER(_GMP_REPEAT_INDIRECT)()(call, GMP_DEC(count), __VA_ARGS__)
+#define _GMP_REPEAT_IMPL_END_0(call, count, ...) GMP_EXPAND( call(__VA_ARGS__) ) GMP_DEFER(_GMP_REPEAT_INDIRECT)()(call, GMP_DEC(count), __VA_ARGS__)
 #define _GMP_REPEAT_INDIRECT() _GMP_REPEAT_IMPL
 
 #define _GMP_START_NAMESPACES(ns) namespace ns {

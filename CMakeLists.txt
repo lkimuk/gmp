@@ -14,9 +14,11 @@ cmake_minimum_required(VERSION 3.12)
 # ---------------------------------------------------------------------------------------
 # Start gmp project
 # ---------------------------------------------------------------------------------------
+file(READ "${CMAKE_SOURCE_DIR}/VERSION" PROJECT_VERSION_CONTENT)
+string(STRIP "${PROJECT_VERSION_CONTENT}" PROJECT_VERSION)
 project(
     gmp
-    VERSION 0.1.0
+    VERSION ${PROJECT_VERSION}
     DESCRIPTION "A generative metaprogramming library"
     LANGUAGES CXX
 )
@@ -52,7 +54,7 @@ target_include_directories(gmp INTERFACE
 )
 
 target_compile_options(gmp INTERFACE -Wall)
-target_compile_features(gmp INTERFACE cxx_std_20)
+target_compile_features(gmp INTERFACE cxx_std_11)
 
 # ---------------------------------------------------------------------------------------
 # Installation configuration

@@ -1,64 +1,113 @@
-#include <gmp/gmp.hpp>
+// #include <gmp/gmp.hpp>
 
-void bar(int arg1, const char* arg2) {
-    printf("bar %d, %s\n", arg1, arg2);
-}
+// void bar(int arg1, const char* arg2) {
+//     printf("bar %d, %s\n", arg1, arg2);
+// }
 
-#define Bar(arg1, arg2) bar(arg1, arg2); 
-GMP_REPEAT(Bar, 254, 1, "arg2") // Execute bar function 3 times
-// Expands to: bar(1, "arg2"); bar(1, "arg2"); bar(1, "arg2");
+// #define Bar(arg1, arg2) bar(arg1, arg2); 
+// GMP_REPEAT(Bar, 100, 1, "arg2") // Execute bar function 3 times
+// // Expands to: bar(1, "arg2"); bar(1, "arg2"); bar(1, "arg2");
 
-// 宏定义
-#define X (a, b, c)
-#define Y (1)
+// #define PRINT(x) std::cout << x << " ";
+// // Expands to: std::cout << 1 << " "; std::cout << 2 << " "; std::cout << 3 << " ";
+// GMP_FOR_EACH(PRINT, 1, 2, 3)
 
-// 宏展开时
-(X, Y)  // MSVC 有时会错误地展开为: (a, b, c Y) 而不是 (a, b, c), Y
+// #define COND(args) GMP_BOOL(GMP_GET_TUPLE(0, args))
+// #define OP(args) (GMP_DEC(GMP_GET_TUPLE(0, args)), GMP_CONCAT(GMP_GET_TUPLE(0, args), GMP_GET_TUPLE(1, args)))
+// // #define OP(args) OP_COMPAT_MSVC(args, GMP_ADD(GMP_GET_TUPLE(0, args), GMP_GET_TUPLE(1, args))) // (GMP_DEC(GMP_GET_TUPLE(0, tup)), GMP_ADD(GMP_GET_TUPLE(0, tup), GMP_GET_TUPLE(1, tup)))
+// // #define OP_COMPAT_MSVC(args, res) (GMP_DEC(GMP_GET_TUPLE(0, args)), res)
 
-int main() {
-    // std::cout << GMP_MAX_MACRO_ARGS << "\n";
-    // std::cout << GMP_PREPROCESSOR_TYPE << "\n";
+// GMP_WHILE(COND, OP, (2, 0))
 
-    GMP_EQUAL_INT(0, 0)
+// #define OVERLOAD_FUNCTION_0 "OVERLOAD_FUNCTION_0"
+// #define OVERLOAD_FUNCTION_1 "OVERLOAD_FUNCTION_1"
+// #define OVERLOAD_FUNCTION_X_Y "OVERLOAD_FUNCTION_X_Y"
+// GMP_OVERLOAD_INVOKE(OVERLOAD_FUNCTION, 0)     // expands to: "OVERLOAD_FUNCTION_0"
+// GMP_OVERLOAD_INVOKE(OVERLOAD_FUNCTION, 1)     // expands to: "OVERLOAD_FUNCTION_1"
+// GMP_OVERLOAD_INVOKE(OVERLOAD_FUNCTION, X, Y)  // expands to: "OVERLOAD_FUNCTION_X_Y"
 
-    GMP_RANGE(0, 10)
+// int main() {
+//     // std::cout << GMP_MAX_MACRO_ARGS << "\n";
+//     // std::cout << GMP_PREPROCESSOR_TYPE << "\n";
 
-    GMP_TUPLE_SIZE((a, b, c, d, e))
+//     GMP_EQUAL_INT(0, 0)
 
-    GMP_TUPLE_TAKE(1, (a, b, c, d, e))
-    // GMP_TUPLE_TAKE(0, (a, b, c, d, e))
-    // GMP_TUPLE_TAKE(5, (a, b, c, d, e))
-    // GMP_TUPLE_TAKE(10, (a, b, c, d, e))
+//     GMP_RANGE(0, 10)
+
+//     GMP_TUPLE_SIZE((a, b, c, d, e))
+
+//     GMP_TUPLE_TAKE(2, (a, b, c, d, e))
+//     GMP_TUPLE_TAKE(0, (a, b, c, d, e))
+//     GMP_TUPLE_TAKE(5, (a, b, c, d, e))
+//     GMP_TUPLE_TAKE(10, (a, b, c, d, e))
     
-    // GMP_TUPLE_SKIP(2, (a, b, c, d, e))
-    // GMP_TUPLE_SKIP(0, (a, b, c, d, e))
-    // GMP_TUPLE_SKIP(5, (a, b, c, d, e))
-    // GMP_TUPLE_SKIP(10, (a, b, c, d, e))
+//     GMP_TUPLE_SKIP(2, (a, b, c, d, e))
+//     GMP_TUPLE_SKIP(0, (a, b, c, d, e))
+//     GMP_TUPLE_SKIP(5, (a, b, c, d, e))
+//     GMP_TUPLE_SKIP(10, (a, b, c, d, e))
 
-    // GMP_TUPLE_APPEND((a, b, c, d, e), f)
-    // GMP_TUPLE_APPEND((), f)
+//     GMP_TUPLE_APPEND((a, b, c, d, e), f)
+//     GMP_TUPLE_APPEND((), f)
 
-    // GMP_TUPLE_CONCAT((), (a, b, c))
-    // GMP_TUPLE_CONCAT((a, b, c), (a, b, c))
-    // GMP_TUPLE_CONCAT((a, b, c), ())
-    // GMP_TUPLE_CONCAT((), ())
+//     GMP_TUPLE_CONCAT((), (a, b, c))
+//     GMP_TUPLE_CONCAT((a, b, c), (a, b, c))
+//     GMP_TUPLE_CONCAT((a, b, c), ())
+//     GMP_TUPLE_CONCAT((), ())
 
-    // GMP_CONCATS(abc, def)
-    // GMP_CONCATS(abc, def, ghi, xyz)
+//     GMP_CONCATS(abc, def)
+//     GMP_CONCATS(abc, def, ghi, xyz)
 
-    // #define NUM_1 1
-    // #define NUM_2 2
-    // GMP_STRINGIFY(GMP_CONCATS(NUM_, 1, NUM_, 2))
+//     #define NUM_1 1
+//     #define NUM_2 2
+//     GMP_STRINGIFY(GMP_CONCATS(NUM_, 1, NUM_, 2))
 
-    // #define ORIGINAL_TUPLE (1, 2, 3, 4, 5)
-    // #define TEST GMP_TUPLE_SIZE(GMP_TUPLE_CONCAT(GMP_TUPLE_TAKE(2, ORIGINAL_TUPLE), GMP_TUPLE_SKIP(2, ORIGINAL_TUPLE)))
+//     #define ORIGINAL_TUPLE (1, 2, 3, 4, 5)
+//     #define TEST GMP_TUPLE_SIZE(GMP_TUPLE_CONCAT(GMP_TUPLE_TAKE(2, ORIGINAL_TUPLE), GMP_TUPLE_SKIP(2, ORIGINAL_TUPLE)))
 
-    // GMP_MAKE_INDEX_SEQUENCE(0)
+//     GMP_MAKE_INDEX_SEQUENCE(0)
 
-    // #define CONCAT_EMPTY_SECOND GMP_TUPLE_CONCAT((1, 2), ())
-    // static_assert(GMP_TUPLE_SIZE(CONCAT_EMPTY_SECOND) == 2,
-    //               "GMP_TUPLE_CONCAT((1, 2), ()) should return the first tuple");
-}
+//     #define CONCAT_EMPTY_SECOND GMP_TUPLE_CONCAT((1, 2), ())
+//     static_assert(GMP_TUPLE_SIZE(CONCAT_EMPTY_SECOND) == 2,
+//                   "GMP_TUPLE_CONCAT((1, 2), ()) should return the first tuple");
+
+
+//     GMP_ADD(2, 1)
+
+//     GMP_SUB(1, 2)
+//     GMP_SUB(3, 1)
+//     GMP_SUB(2, 2)
+//     GMP_SUB(0, 0)
+
+//     GMP_SWAP(1, 2)
+
+//     GMP_SIZE_OF_VAARGS()                         // 0
+//     GMP_SIZE_OF_VAARGS(1)                        // 1
+//     GMP_SIZE_OF_VAARGS('a', 'b')                 // 2
+//     GMP_SIZE_OF_VAARGS('a', 'b', 'c')            // 3
+//     GMP_SIZE_OF_VAARGS('a', 'b', 1, 2)           // 4
+//     GMP_SIZE_OF_VAARGS('a', 'b', 1, 2, 3)        // 5
+//     GMP_SIZE_OF_VAARGS('a', 'b', 1, 2, 3, 4)     // 6
+//     GMP_SIZE_OF_VAARGS('a', 'b', 1, 2, 3, 4, 5)  // 7
+
+//     GMP_TUPLE_PREPEND(GMP_TUPLE_PREPEND((c, d), b), a)
+
+//     GMP_MAKE_INDEX_SEQUENCE(0)
+//     GMP_MAKE_INDEX_SEQUENCE(5)
+//     GMP_MAKE_INDEX_SEQUENCE(42)
+
+//     GMP_RANGE(0, 0) // expands to: 
+//     GMP_RANGE(0, 5) // expands to: 0 , 1 , 2 , 3 , 4
+//     GMP_RANGE(5, 10) // expands to: 5 , 6 , 7 , 8 , 9
+
+//     #define MYLIB_NAMESPACE_BEGIN GMP_GENERATE_NAMESPACES_BEGIN(mylib, parser)
+//     #define MYLIB_NAMESPACE_END GMP_GENERATE_NAMESPACES_END(mylib, parser)
+
+//     /// expands to:
+//     /// namespace mylib { namespace parser {
+//     /// } }
+//     MYLIB_NAMESPACE_BEGIN
+//     MYLIB_NAMESPACE_END
+// }
 
 //   ___ __  __ ___ 
 //  / __|  \/  | _ \ GMP(Generative Metaprogramming)
@@ -71,7 +120,6 @@ int main() {
 // Compile-time tests for GMP library using static_assert
 // If this file compiles, all tests pass!
 
-/*
 #include <utility>
 
 #include <gmp/gmp.hpp>
@@ -542,7 +590,80 @@ namespace test_loop {
         std::index_sequence<GMP_MAKE_INDEX_SEQUENCE(16)>
     >, "GMP_MAKE_INDEX_SEQUENCE(16) should produce correct 16-element sequence");
 
+    // Test 7: GMP_RANGE should produce same as std::make_index_sequence
+    static_assert(std::is_same_v<
+        std::make_index_sequence<5>,
+        std::index_sequence<GMP_RANGE(0, 5)>
+    >, "GMP_RANGE(0, 5) should equal std::make_index_sequence<5>");
+    
+    // Test 8: GMP_RANGE with non-zero start
+    static_assert(std::is_same_v<
+        std::index_sequence<42, 43, 44, 45, 46>,
+        std::index_sequence<GMP_RANGE(42, 47)>
+    >, "GMP_RANGE(42, 47) should produce sequence 42..46");
+    
+    // Test 9: Empty range
+    static_assert(std::is_same_v<
+        std::make_index_sequence<0>,
+        std::index_sequence<GMP_RANGE(0, 0)>
+    >, "GMP_RANGE(0, 0) should produce empty sequence");
+    
+    static_assert(std::is_same_v<
+        std::index_sequence<>,
+        std::index_sequence<GMP_RANGE(5, 5)>
+    >, "GMP_RANGE(5, 5) should produce empty sequence");
+    
+    // Test 10: Single element range
+    static_assert(std::is_same_v<
+        std::index_sequence<7>,
+        std::index_sequence<GMP_RANGE(7, 8)>
+    >, "GMP_RANGE(7, 8) should produce single element sequence");
+    
+    // Test 11: Various ranges
+    static_assert(std::is_same_v<
+        std::index_sequence<10, 11, 12, 13, 14>,
+        std::index_sequence<GMP_RANGE(10, 15)>
+    >, "GMP_RANGE(10, 15) should produce sequence 10..14");
+    
+    static_assert(std::is_same_v<
+        std::index_sequence<100, 101, 102>,
+        std::index_sequence<GMP_RANGE(100, 103)>
+    >, "GMP_RANGE(100, 103) should produce sequence 100..102");
+    
+    // Test 12: Large range (boundary test)
+#if GMP_STANDARD_PREPROCESSOR
+    static_assert(std::is_same_v<
+        std::index_sequence<250, 251, 252, 253>,
+        std::index_sequence<GMP_RANGE(250, 254)>
+    >, "GMP_RANGE should work with maximum values");
+#else
+    static_assert(std::is_same_v<
+        std::index_sequence<124, 125, 126, 127, 128>,
+        std::index_sequence<GMP_RANGE(124, 129)>
+    >, "GMP_RANGE should work with maximum values");
+#endif // GMP_STANDARD_PREPROCESSOR
+}
 
+// ============================================================================
+// Conditional Macro Tests
+// ============================================================================
+namespace test_condition {
+// Test 1: GMP_IF with true condition expands the expression
+#undef TEST_IF_TRUE
+#define TEST_IF_TRUE GMP_IF(1, expanded_value)
+static_assert(gmp::is_equal(GMP_STRINGIFY(TEST_IF_TRUE), "expanded_value"),
+              "GMP_IF(1, expr) should expand to expr");
+
+// Test 2: GMP_IF with false condition expands to nothing
+// #undef TEST_IF_FALSE
+// #define TEST_IF_FALSE GMP_IF(0, not_expanded)
+// static_assert(gmp::is_equal(GMP_STRINGIFY(TEST_IF_FALSE), ""),
+//               "GMP_IF(0, expr) should expand to empty string");
+
+// Test 3: Non-zero values are treated as true
+#define TEST_IF_NONZERO GMP_IF(GMP_BOOL(42), non_zero_expanded)
+static_assert(gmp::is_equal(GMP_STRINGIFY(TEST_IF_NONZERO), "non_zero_expanded"),
+              "GMP_IF(non-zero, expr) should expand to expr");
 }
 
 // ============================================================================
@@ -617,7 +738,7 @@ namespace test_edge {
                   "GMP_EQUAL_INT should work at maximum value");
 #else
     static_assert(GMP_EQUAL_INT(127, 127) == 1,
-                  "GMP_EQUAL_INT should work at maximum value")
+                  "GMP_EQUAL_INT should work at maximum value");
 #endif // GMP_STANDARD_PREPROCESSOR
     static_assert(GMP_GREATER_INT(255, 0) == 1,
                   "Maximum value should be greater than 0");
@@ -651,5 +772,3 @@ static_assert(all_tests_passed, "All compile-time tests must pass for successful
 int main() {
     return 0;
 }
-
-*/
