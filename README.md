@@ -20,6 +20,8 @@ GMP is a comprehensive, header-only C++11 library designed for advanced compile-
 - **Comprehensive utilities**: From basic boolean logic to advanced tuple manipulation
 
 ## Install
+**Try online quickly:** [https://godbolt.org/z/3Ee1x8hdY](https://godbolt.org/z/3Ee1x8hdY)
+
 **Header-only version**
 
 Copy the include folder to your build tree and use a C++11 compiler.
