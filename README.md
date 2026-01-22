@@ -8,7 +8,7 @@
 ![Last commit](https://img.shields.io/github/last-commit/lkimuk/gmp.svg)
 
 ## Overview
-**GMP (Generative Metaprogramming)** is a comprehensive, header-only C++11 library designed for advanced compile-time programming and code generation. It provides a rich set of macros and utilities that enable expressive metaprogramming patterns, making complex template code more manageable and readable.
+GMP is a comprehensive, header-only C++11 library designed for advanced compile-time programming and code generation. It provides a rich set of macros and utilities that enable expressive metaprogramming patterns, making complex template code more manageable and readable.
 
 **Key Features**
 
@@ -18,6 +18,25 @@
 - **Zero dependencies**: Pure C++ standard library, no external dependencies
 - **Compile-time focused**: All operations evaluated at compile time, zero runtime overhead
 - **Comprehensive utilities**: From basic boolean logic to advanced tuple manipulation
+
+## Install
+**Header-only version**
+Copy the include folder to your build tree and use a C++11 compiler.
+
+**CMake integration**
+Install system-wide and use CMake's `find_package`:
+```bash
+$ git clone https://github.com/lkimuk/gmp.git
+$ cd gmp
+$ cmake -B ./build
+$ cmake --build ./build
+$ cmake --install ./build # sudo on Linux/macOS
+```
+
+```cpp
+find_package(gmp 0.1.0 REQUIRED)
+target_link_libraries(your_target PRIVATE gmp::gmp)
+```
 
 ## Macro Metaprogramming
 ### Features
@@ -33,7 +52,7 @@
 #### Tuple Operations
 - **Size & Access**: `GMP_TUPLE_SIZE`, `GMP_GET_TUPLE`
 - **Modification**: `GMP_TUPLE_APPEND`, `GMP_TUPLE_PREPEND`, `GMP_TUPLE_CONCAT`
-- **Slicing**: `GMP_TUPLE_SKIP`, `GMP_TUPLE_TAKE`, `GMP_TUPLE_SLICE`
+- **Slicing**: `GMP_TUPLE_SKIP`, `GMP_TUPLE_TAKE`
 
 #### Advanced Feature
 - **Loop macros**: `GMP_REPEAT`, `GMP_WHILE`, `GMP_FOR_EACH`
@@ -105,21 +124,21 @@ GMP_SWAP(x, y)                               // expands to: y, x
 
 #### Tuple Operations
 ```cpp
-GMP_TUPLE_SIZE(());                         // expands to: 0 (empty tuple)
-GMP_TUPLE_SIZE((a, b, c, d, e))             // expands to: 5
+GMP_TUPLE_SIZE(());                                 // expands to: 0 (empty tuple)
+GMP_TUPLE_SIZE((a, b, c, d, e))                     // expands to: 5
 
-GMP_TUPLE_TAKE(2, (a, b, c, d, e))          // expands to: (a, b)
-GMP_TUPLE_TAKE(0, (a, b, c, d, e))          // expands to: ()
-GMP_TUPLE_TAKE(5, (a, b, c, d, e))          // expands to: (a, b, c, d, e)
-GMP_TUPLE_TAKE(10, (a, b, c, d, e))         // expands to: (a, b, c, d, e)
+GMP_TUPLE_TAKE(2, (a, b, c, d, e))                  // expands to: (a, b)
+GMP_TUPLE_TAKE(0, (a, b, c, d, e))                  // expands to: ()
+GMP_TUPLE_TAKE(5, (a, b, c, d, e))                  // expands to: (a, b, c, d, e)
+GMP_TUPLE_TAKE(10, (a, b, c, d, e))                 // expands to: (a, b, c, d, e)
 
-GMP_TUPLE_SKIP(2, (a, b, c, d, e))          // expands to: (c, d, e)
-GMP_TUPLE_SKIP(0, (a, b, c, d, e))          // expands to: (a, b, c, d, e)
-GMP_TUPLE_SKIP(5, (a, b, c, d, e))          // expands to: ()
-GMP_TUPLE_SKIP(10, (a, b, c, d, e))         // expands to: ()
+GMP_TUPLE_SKIP(2, (a, b, c, d, e))                  // expands to: (c, d, e)
+GMP_TUPLE_SKIP(0, (a, b, c, d, e))                  // expands to: (a, b, c, d, e)
+GMP_TUPLE_SKIP(5, (a, b, c, d, e))                  // expands to: ()
+GMP_TUPLE_SKIP(10, (a, b, c, d, e))                 // expands to: ()
 
-GMP_TUPLE_APPEND((a, b, c, d, e), f)        // expands to: (a, b, c, d, e, f)
-GMP_TUPLE_APPEND((), f)                     // expands to: (f)
+GMP_TUPLE_APPEND((a, b, c, d, e), f)                // expands to: (a, b, c, d, e, f)
+GMP_TUPLE_APPEND((), f)                             // expands to: (f)
 
 GMP_TUPLE_PREPEND((b, c, d), a)                     // expands to: (a, b, c, d)
 GMP_TUPLE_PREPEND((), x)                            // expands to (x)
@@ -140,20 +159,24 @@ GMP_GET_TUPLE(1, (42, "hello", 3.14))               // expands to: "hello"
 // Expands to: bar(1, "arg2"); bar(1, "arg2"); bar(1, "arg2"); ... (100 times)
 GMP_REPEAT(Bar, 100, 1, "arg2")
 
+#define PRINT(x) std::cout << x << " ";
+// Expands to: std::cout << 1 << " "; std::cout << 2 << " "; std::cout << 3 << " ";
+GMP_FOR_EACH(PRINT, 1, 2, 3)
+
 #define OVERLOAD_FUNCTION_0 "OVERLOAD_FUNCTION_0"
 #define OVERLOAD_FUNCTION_1 "OVERLOAD_FUNCTION_1"
 #define OVERLOAD_FUNCTION_X_Y "OVERLOAD_FUNCTION_X_Y"
-GMP_OVERLOAD_INVOKE(OVERLOAD_FUNCTION, 0)     // expands to: "OVERLOAD_FUNCTION_0"
-GMP_OVERLOAD_INVOKE(OVERLOAD_FUNCTION, 1)     // expands to: "OVERLOAD_FUNCTION_1"
-GMP_OVERLOAD_INVOKE(OVERLOAD_FUNCTION, X, Y)  // expands to: "OVERLOAD_FUNCTION_X_Y"
+GMP_OVERLOAD_INVOKE(OVERLOAD_FUNCTION, 0)           // expands to: "OVERLOAD_FUNCTION_0"
+GMP_OVERLOAD_INVOKE(OVERLOAD_FUNCTION, 1)           // expands to: "OVERLOAD_FUNCTION_1"
+GMP_OVERLOAD_INVOKE(OVERLOAD_FUNCTION, X, Y)        // expands to: "OVERLOAD_FUNCTION_X_Y"
 
-GMP_MAKE_INDEX_SEQUENCE(0)                    // expands to: 
-GMP_MAKE_INDEX_SEQUENCE(5)                    // expands to: 0, 1, 2, 3, 4
-GMP_MAKE_INDEX_SEQUENCE(42)                   // expands to: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41
+GMP_MAKE_INDEX_SEQUENCE(0)                          // expands to: 
+GMP_MAKE_INDEX_SEQUENCE(5)                          // expands to: 0, 1, 2, 3, 4
+GMP_MAKE_INDEX_SEQUENCE(42)                         // expands to: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41
 
-GMP_RANGE(0, 0)                              // expands to: 
-GMP_RANGE(0, 5)                              // expands to: 0 , 1 , 2 , 3 , 4
-GMP_RANGE(5, 10)                             // expands to: 5 , 6 , 7 , 8 , 9
+GMP_RANGE(0, 0)                                     // expands to: 
+GMP_RANGE(0, 5)                                     // expands to: 0 , 1 , 2 , 3 , 4
+GMP_RANGE(5, 10)                                    // expands to: 5 , 6 , 7 , 8 , 9
 
 #define MYLIB_NAMESPACE_BEGIN GMP_GENERATE_NAMESPACES_BEGIN(mylib, parser)
 #define MYLIB_NAMESPACE_END GMP_GENERATE_NAMESPACES_END(mylib, parser)
