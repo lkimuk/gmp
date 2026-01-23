@@ -801,7 +801,7 @@
 #define GMP_TUPLE_TAKE(count, tup) GMP_EVAL( GMP_IF_THEN_ELSE(GMP_GREATER_INT(count, GMP_TUPLE_SIZE(tup)), _GMP_TUPLE_TAKE_ERROR, _GMP_TUPLE_TAKE_IMPL)(count, tup, ()) )
 #define _GMP_TUPLE_TAKE_ERROR(count, tup, res) tup
 #define _GMP_TUPLE_TAKE_IMPL(count, tup, res) GMP_OVERLOAD_INVOKE(_GMP_TUPLE_TAKE_WHEN, GMP_BOOL(count))(count, tup, res)
-#define _GMP_TUPLE_TAKE_WHEN_0(count, tup, res) tup
+#define _GMP_TUPLE_TAKE_WHEN_0(count, tup, res) res
 #define _GMP_TUPLE_TAKE_WHEN_1(count, tup, res) _GMP_TUPLE_TAKE_WHEN_1_COMPAT_MSVC(count, tup, GMP_TUPLE_PREPEND(res, GMP_GET_TUPLE(GMP_DEC(count), tup)))
 #define _GMP_TUPLE_TAKE_WHEN_1_COMPAT_MSVC(count, tup, res) GMP_DEFER(_GMP_TUPLE_TAKE_INDIRECT)()(GMP_DEC(count), tup, res)
 #define _GMP_TUPLE_TAKE_INDIRECT() _GMP_TUPLE_TAKE_IMPL
