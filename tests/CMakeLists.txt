@@ -11,6 +11,9 @@ target_link_libraries(gmp_tests PRIVATE gmp)
 
 if(MSVC)
     # target_compile_options(gmp_tests PRIVATE /Zc:preprocessor)
+    set(OUTPUT_OPTION "/Fe${CMAKE_CURRENT_BINARY_DIR}/macro_test.i")
+else()
+    set(OUTPUT_OPTION "-o ${CMAKE_CURRENT_BINARY_DIR}/macro_test.i")
 endif()
 
 add_custom_target(preprocess
@@ -19,7 +22,8 @@ add_custom_target(preprocess
         ${CMAKE_CXX_FLAGS}
         -I${CMAKE_SOURCE_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}/macro_test.cpp
-        -o ${CMAKE_CURRENT_BINARY_DIR}/macro_test.i
+        # -o ${CMAKE_CURRENT_BINARY_DIR}/macro_test.i
+        ${OUTPUT_OPTION}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Generating preprocessed file: macro_test.i"
 )

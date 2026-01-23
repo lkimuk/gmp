@@ -1,4 +1,4 @@
-// #include <gmp/gmp.hpp>
+﻿// #include <gmp/gmp.hpp>
 
 // void bar(int arg1, const char* arg2) {
 //     printf("bar %d, %s\n", arg1, arg2);
@@ -121,8 +121,25 @@
 // If this file compiles, all tests pass!
 
 #include <utility>
+#include <iostream>
 
 #include <gmp/gmp.hpp>
+
+asdfas
+// // GMP_TUPLE_TAKE(0, ())
+// #define TUPLE_SKIP_TEST GMP_TUPLE_SKIP(2, (a, b, c, d, e))
+// TUPLE_SKIP_TEST
+// GMP_TUPLE_SIZE(TUPLE_SKIP_TEST)
+// GMP_TUPLE_SKIP(2, (a, b, c, d, e))
+// GMP_TUPLE_SKIP(4, (a, b, c, d, e))
+// GMP_TUPLE_SKIP(5, (a, b, c, d, e))
+// GMP_TUPLE_SKIP(10, (a, b, c, d, e))
+// GMP_TUPLE_SKIP(0, (a, b, c, d, e))
+// GMP_LESS_INT(1, 2)
+// GMP_LESS_INT(1, 1)
+// GMP_LESS_EQUAL_INT(1, 2)
+// GMP_LESS_EQUAL_INT(1, 1)
+// GMP_LESS_EQUAL_INT(2, 1)
 
 // ============================================================================
 // Basic Macro Tests
@@ -764,11 +781,178 @@ namespace test_edge {
                   "GMP_SIZE_OF_VAARGS() should return 0 for empty argument list");
 }
 
+namespace test_gmp_comparisons {
+    // ============================================================================
+    // GMP_LESS_EQUAL_INT Tests
+    // ============================================================================
+    
+    // Test 1: Less than case
+    static_assert(GMP_LESS_EQUAL_INT(3, 5) == 1, "3 ≤ 5 should be true");
+    static_assert(GMP_LESS_EQUAL_INT(0, 1) == 1, "0 ≤ 1 should be true");
+    static_assert(GMP_LESS_EQUAL_INT(100, 200) == 1, "100 ≤ 200 should be true");
+    
+    // Test 2: Equal case
+    static_assert(GMP_LESS_EQUAL_INT(5, 5) == 1, "5 ≤ 5 should be true");
+    static_assert(GMP_LESS_EQUAL_INT(0, 0) == 1, "0 ≤ 0 should be true");
+#if GMP_STANDARD_PREPROCESSOR
+    static_assert(GMP_LESS_EQUAL_INT(255, 255) == 1, "255 ≤ 255 should be true");
+#else
+    static_assert(GMP_LESS_EQUAL_INT(127, 127) == 1, "127 ≤ 127 should be true");
+#endif
+    
+    // Test 3: Greater than case
+    static_assert(GMP_LESS_EQUAL_INT(5, 3) == 0, "5 ≤ 3 should be false");
+    static_assert(GMP_LESS_EQUAL_INT(10, 5) == 0, "10 ≤ 5 should be false");
+    static_assert(GMP_LESS_EQUAL_INT(255, 0) == 0, "255 ≤ 0 should be false");
+    
+    // Test 4: Edge values
+    static_assert(GMP_LESS_EQUAL_INT(0, 255) == 1, "0 ≤ 255 should be true");
+#if GMP_STANDARD_PREPROCESSOR
+    static_assert(GMP_LESS_EQUAL_INT(254, 255) == 1, "254 ≤ 255 should be true");
+    static_assert(GMP_LESS_EQUAL_INT(255, 254) == 0, "255 ≤ 254 should be false");
+#else
+    static_assert(GMP_LESS_EQUAL_INT(126, 127) == 1, "126 ≤ 127 should be true");
+    static_assert(GMP_LESS_EQUAL_INT(127, 126) == 0, "127 ≤ 126 should be false");
+#endif
+    
+    // ============================================================================
+    // GMP_GREATER_EQUAL_INT Tests
+    // ============================================================================
+    
+    // Test 5: Greater than case
+    static_assert(GMP_GREATER_EQUAL_INT(5, 3) == 1, "5 ≥ 3 should be true");
+    static_assert(GMP_GREATER_EQUAL_INT(10, 5) == 1, "10 ≥ 5 should be true");
+    static_assert(GMP_GREATER_EQUAL_INT(200, 100) == 1, "200 ≥ 100 should be true");
+    
+    // Test 6: Equal case
+    static_assert(GMP_GREATER_EQUAL_INT(5, 5) == 1, "5 ≥ 5 should be true");
+    static_assert(GMP_GREATER_EQUAL_INT(0, 0) == 1, "0 ≥ 0 should be true");
+#if GMP_STANDARD_PREPROCESSOR
+    static_assert(GMP_GREATER_EQUAL_INT(255, 255) == 1, "255 ≥ 255 should be true");
+#else
+    static_assert(GMP_GREATER_EQUAL_INT(127, 127) == 1, "127 ≥ 127 should be true");
+#endif
+    
+    // Test 7: Less than case
+    static_assert(GMP_GREATER_EQUAL_INT(3, 5) == 0, "3 ≥ 5 should be false");
+    static_assert(GMP_GREATER_EQUAL_INT(1, 10) == 0, "1 ≥ 10 should be false");
+    static_assert(GMP_GREATER_EQUAL_INT(0, 255) == 0, "0 ≥ 255 should be false");
+    
+    // Test 8: Edge values
+    static_assert(GMP_GREATER_EQUAL_INT(255, 0) == 1, "255 ≥ 0 should be true");
+#if GMP_STANDARD_PREPROCESSOR
+    static_assert(GMP_GREATER_EQUAL_INT(255, 254) == 1, "255 ≥ 254 should be true");
+    static_assert(GMP_GREATER_EQUAL_INT(254, 255) == 0, "254 ≥ 255 should be false");
+#else
+    static_assert(GMP_GREATER_EQUAL_INT(127, 126) == 1, "127 ≥ 126 should be true");
+    static_assert(GMP_GREATER_EQUAL_INT(126, 127) == 0, "126 ≥ 127 should be false");
+#endif
+    
+    // ============================================================================
+    // Relationship Tests
+    // ============================================================================
+    
+    // Test 9: i ≤ j ≡ NOT(i > j)
+    static_assert(GMP_LESS_EQUAL_INT(3, 5) == GMP_NOT(GMP_GREATER_INT(3, 5)),
+                  "i ≤ j should equal NOT(i > j)");
+    
+    // Test 10: i ≥ j ≡ NOT(i < j)
+    static_assert(GMP_GREATER_EQUAL_INT(5, 3) == GMP_NOT(GMP_LESS_INT(5, 3)),
+                  "i ≥ j should equal NOT(i < j)");
+    
+    // Test 11: i ≤ j ≡ j ≥ i (duality)
+    static_assert(GMP_LESS_EQUAL_INT(3, 5) == GMP_GREATER_EQUAL_INT(5, 3),
+                  "i ≤ j should equal j ≥ i");
+    
+    // Test 12: i ≥ j ≡ j ≤ i (duality)
+    static_assert(GMP_GREATER_EQUAL_INT(5, 3) == GMP_LESS_EQUAL_INT(3, 5),
+                  "i ≥ j should equal j ≤ i");
+    
+    // Test 13: Completeness: for any i, j, exactly one of <, =, > is true
+    #define TEST_COMPLETENESS(i, j) \
+        (GMP_LESS_INT(i, j) + GMP_EQUAL_INT(i, j) + GMP_GREATER_INT(i, j) == 1)
+    
+    static_assert(TEST_COMPLETENESS(3, 5), "Exactly one of <, =, > should be true");
+    static_assert(TEST_COMPLETENESS(5, 3), "Exactly one of <, =, > should be true");
+    static_assert(TEST_COMPLETENESS(4, 4), "Exactly one of <, =, > should be true");
+    
+    // Test 14: i ≤ j ≡ (i < j) OR (i == j)
+    static_assert(GMP_LESS_EQUAL_INT(3, 5) == GMP_OR(GMP_LESS_INT(3, 5), GMP_EQUAL_INT(3, 5)),
+                  "i ≤ j should equal (i < j) OR (i == j)");
+    
+    // Test 15: i ≥ j ≡ (i > j) OR (i == j)
+    static_assert(GMP_GREATER_EQUAL_INT(5, 3) == GMP_OR(GMP_GREATER_INT(5, 3), GMP_EQUAL_INT(5, 3)),
+                  "i ≥ j should equal (i > j) OR (i == j)");
+    
+    // Test 16: Transitivity: if a ≤ b and b ≤ c then a ≤ c
+    #define TEST_TRANSITIVITY(a, b, c) \
+        GMP_IMPLIES( \
+            GMP_AND(GMP_LESS_EQUAL_INT(a, b), GMP_LESS_EQUAL_INT(b, c)), \
+            GMP_LESS_EQUAL_INT(a, c) \
+        )
+    
+    static_assert(TEST_TRANSITIVITY(1, 2, 3), "Transitivity should hold");
+    static_assert(TEST_TRANSITIVITY(1, 1, 2), "Transitivity with equality");
+    static_assert(TEST_TRANSITIVITY(1, 2, 2), "Transitivity with equality");
+    
+    // Test 17: Reflexivity: a ≤ a is always true
+    static_assert(GMP_LESS_EQUAL_INT(0, 0), "0 ≤ 0 (reflexive)");
+    static_assert(GMP_LESS_EQUAL_INT(5, 5), "5 ≤ 5 (reflexive)");
+#if GMP_STANDARD_PREPROCESSOR
+    static_assert(GMP_LESS_EQUAL_INT(255, 255), "255 ≤ 255 (reflexive)");
+#else
+    static_assert(GMP_LESS_EQUAL_INT(127, 127), "127 ≤ 127 (reflexive)");
+#endif
+    
+    // Test 18: Antisymmetry: if a ≤ b and b ≤ a then a == b
+    #define TEST_ANTISYMMETRY(a, b) \
+        GMP_IMPLIES( \
+            GMP_AND(GMP_LESS_EQUAL_INT(a, b), GMP_LESS_EQUAL_INT(b, a)), \
+            GMP_EQUAL_INT(a, b) \
+        )
+    
+    static_assert(TEST_ANTISYMMETRY(3, 3), "Antisymmetry with equality");
+    static_assert(TEST_ANTISYMMETRY(5, 5), "Antisymmetry with equality");
+    
+    // Test 19: Total order: for any a, b, either a ≤ b or b ≤ a
+    #define TEST_TOTAL_ORDER(a, b) \
+        (GMP_LESS_EQUAL_INT(a, b) || GMP_LESS_EQUAL_INT(b, a))
+    
+    static_assert(TEST_TOTAL_ORDER(3, 5), "Total order property");
+    static_assert(TEST_TOTAL_ORDER(5, 3), "Total order property");
+    static_assert(TEST_TOTAL_ORDER(4, 4), "Total order property");
+    
+    // ============================================================================
+    // Final Verification
+    // ============================================================================
+    
+    constexpr bool all_comparison_tests_pass =
+        // Basic functionality
+        GMP_LESS_EQUAL_INT(3, 5) == 1 &&
+        GMP_LESS_EQUAL_INT(5, 3) == 0 &&
+        GMP_LESS_EQUAL_INT(4, 4) == 1 &&
+        
+        GMP_GREATER_EQUAL_INT(5, 3) == 1 &&
+        GMP_GREATER_EQUAL_INT(3, 5) == 0 &&
+        GMP_GREATER_EQUAL_INT(4, 4) == 1 &&
+        
+        // Logical relationships
+        GMP_LESS_EQUAL_INT(3, 5) == GMP_NOT(GMP_GREATER_INT(3, 5)) &&
+        GMP_GREATER_EQUAL_INT(5, 3) == GMP_NOT(GMP_LESS_INT(5, 3)) &&
+        
+        // Duality
+        GMP_LESS_EQUAL_INT(3, 5) == GMP_GREATER_EQUAL_INT(5, 3) &&
+        GMP_GREATER_EQUAL_INT(5, 3) == GMP_LESS_EQUAL_INT(3, 5);
+    
+    static_assert(all_comparison_tests_pass,
+                  "All comparison operator tests must pass");
+}
+
 // If compilation reaches this point, all static_assert tests have passed
 // This serves as a final verification that the entire test suite compiles successfully
 constexpr bool all_tests_passed = true;
 static_assert(all_tests_passed, "All compile-time tests must pass for successful build");
 
 int main() {
-    return 0;
+    std::cout << GMP_PREPROCESSOR_TYPE << "\n";
 }

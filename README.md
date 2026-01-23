@@ -47,9 +47,9 @@ target_link_libraries(your_target PRIVATE gmp::gmp)
 ## Macro Metaprogramming
 ### Features
 #### Macro Utilities
-- **Boolean operations**: `GMP_BOOL`, `GMP_NOT`, `GMP_AND`, `GMP_OR`, `GMP_XOR`
+- **Boolean operations**: `GMP_BOOL`, `GMP_NOT`, `GMP_AND`, `GMP_OR`, `GMP_XOR`, `GMP_IMPLIES`
 - **Arithmetic macros**: `GMP_INC`, `GMP_DEC`, `GMP_ADD`, `GMP_SUB`
-- **Comparison macros**: `GMP_EQUAL_INT`, `GMP_GREATER_INT`, `GMP_LESS_INT`
+- **Comparison macros**: `GMP_EQUAL_INT`, `GMP_GREATER_INT`, `GMP_GREATER_EQUAL_INT`,`GMP_LESS_INT`, `GMP_LESS_EQUAL_INT`
 - **Conditional macros**: `GMP_IF`, `GMP_IF_THEN_ELSE`
 - **Stringification**: `GMP_STRINGIFY`, `GMP_CONCAT`, `GMP_CONCATS`
 - **Variadic handling**: `GMP_SIZE_OF_VAARGS`, `GMP_GET_N`, `GMP_IS_EMPTY`

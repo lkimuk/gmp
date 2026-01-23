@@ -734,12 +734,20 @@
  * @see GMP_TUPLE_TAKE for taking the first N elements
  * @see GMP_TUPLE_SLICE for selecting a range of elements
  */
-#define GMP_TUPLE_SKIP(count, tup) GMP_IF_THEN_ELSE(GMP_GREATER_INT(count, GMP_TUPLE_SIZE(tup)), _GMP_TUPLE_SKIP_ERROR, _GMP_TUPLE_SKIP_IMPL)(count, tup)
-#define _GMP_TUPLE_SKIP_ERROR(count, tup) ()
-#define _GMP_TUPLE_SKIP_IMPL(count, tup) GMP_GET_TUPLE(2, GMP_WHILE(_GMP_TUPLE_SKIP_COND, _GMP_TUPLE_SKIP_OP, (count, tup, ())))
-#define _GMP_TUPLE_SKIP_COND(args) GMP_NOT(GMP_EQUAL_INT_INDEPENDENT(GMP_GET_TUPLE(0, args), GMP_TUPLE_SIZE(GMP_GET_TUPLE(1, args))))
-#define _GMP_TUPLE_SKIP_OP(args) _GMP_TUPLE_SKIP_OP_COMPAT_MSVC(args, GMP_TUPLE_APPEND(GMP_GET_TUPLE(2, args), GMP_GET_TUPLE(GMP_GET_TUPLE(0, args), GMP_GET_TUPLE(1, args))))
-#define _GMP_TUPLE_SKIP_OP_COMPAT_MSVC(args, res) (GMP_INC(GMP_GET_TUPLE(0, args)), GMP_GET_TUPLE(1, args), res)
+#define GMP_TUPLE_SKIP(count, tup) GMP_EVAL( GMP_IF_THEN_ELSE(GMP_GREATER_EQUAL_INT(count, GMP_TUPLE_SIZE(tup)), _GMP_TUPLE_SKIP_ERROR, _GMP_TUPLE_SKIP_IMPL)(count, tup, ()) )
+#define _GMP_TUPLE_SKIP_ERROR(count, tup, res) res
+#define _GMP_TUPLE_SKIP_IMPL(count, tup, res) GMP_OVERLOAD_INVOKE(_GMP_TUPLE_SKIP_WHEN, GMP_NOT(GMP_EQUAL_INT_INDEPENDENT(count, GMP_TUPLE_SIZE(tup))))(count, tup, res)
+#define _GMP_TUPLE_SKIP_WHEN_0(count, tup, res) res
+#define _GMP_TUPLE_SKIP_WHEN_1(count, tup, res) _GMP_TUPLE_SKIP_WHEN_1_COMPAT_MSVC(count, tup, GMP_TUPLE_APPEND(res, GMP_GET_TUPLE(count, tup)))
+#define _GMP_TUPLE_SKIP_WHEN_1_COMPAT_MSVC(count, tup, res) GMP_DEFER(_GMP_TUPLE_SKIP_INDIRECT)()(GMP_INC(count), tup, res)
+#define _GMP_TUPLE_SKIP_INDIRECT() _GMP_TUPLE_SKIP_IMPL
+
+// #define GMP_TUPLE_SKIP(count, tup) GMP_IF_THEN_ELSE(GMP_GREATER_INT(count, GMP_TUPLE_SIZE(tup)), _GMP_TUPLE_SKIP_ERROR, _GMP_TUPLE_SKIP_IMPL)(count, tup)
+// #define _GMP_TUPLE_SKIP_ERROR(count, tup) ()
+// #define _GMP_TUPLE_SKIP_IMPL(count, tup) GMP_GET_TUPLE(2, GMP_WHILE(_GMP_TUPLE_SKIP_COND, _GMP_TUPLE_SKIP_OP, (count, tup, ())))
+// #define _GMP_TUPLE_SKIP_COND(args) GMP_NOT(GMP_EQUAL_INT_INDEPENDENT(GMP_GET_TUPLE(0, args), GMP_TUPLE_SIZE(GMP_GET_TUPLE(1, args))))
+// #define _GMP_TUPLE_SKIP_OP(args) _GMP_TUPLE_SKIP_OP_COMPAT_MSVC(args, GMP_TUPLE_APPEND(GMP_GET_TUPLE(2, args), GMP_GET_TUPLE(GMP_GET_TUPLE(0, args), GMP_GET_TUPLE(1, args))))
+// #define _GMP_TUPLE_SKIP_OP_COMPAT_MSVC(args, res) (GMP_INC(GMP_GET_TUPLE(0, args)), GMP_GET_TUPLE(1, args), res)
 
 /**
  * @def GMP_TUPLE_TAKE(count, tup)
@@ -790,12 +798,19 @@
  * @see GMP_TUPLE_APPEND for adding elements to the end
  * @see GMP_TUPLE_PREPEND for adding elements to the beginning
  */
-#define GMP_TUPLE_TAKE(count, tup) GMP_IF_THEN_ELSE(GMP_GREATER_INT(count, GMP_TUPLE_SIZE(tup)), _GMP_TUPLE_TAKE_ERROR, _GMP_TUPLE_TAKE_IMPL)(count, tup)
-#define _GMP_TUPLE_TAKE_ERROR(count, tup) tup
-#define _GMP_TUPLE_TAKE_IMPL(count, tup) GMP_GET_TUPLE(2, GMP_WHILE(_GMP_TUPLE_TAKE_COND, _GMP_TUPLE_TAKE_OP, (count, tup, ())))
-#define _GMP_TUPLE_TAKE_COND(args) GMP_NOT(GMP_EQUAL_INT_INDEPENDENT(GMP_GET_TUPLE(0, args), 0))
-#define _GMP_TUPLE_TAKE_OP(args) _GMP_TUPLE_TAKE_OP_COMPAT_MSVC(args, GMP_TUPLE_PREPEND(GMP_GET_TUPLE(2, args), GMP_GET_TUPLE(GMP_DEC(GMP_GET_TUPLE(0, args)), GMP_GET_TUPLE(1, args))))
-#define _GMP_TUPLE_TAKE_OP_COMPAT_MSVC(args, res) (GMP_DEC(GMP_GET_TUPLE(0, args)), GMP_GET_TUPLE(1, args), res)
+#define GMP_TUPLE_TAKE(count, tup) GMP_EVAL( GMP_IF_THEN_ELSE(GMP_GREATER_INT(count, GMP_TUPLE_SIZE(tup)), _GMP_TUPLE_TAKE_ERROR, _GMP_TUPLE_TAKE_IMPL)(count, tup, ()) )
+#define _GMP_TUPLE_TAKE_ERROR(count, tup, res) tup
+#define _GMP_TUPLE_TAKE_IMPL(count, tup, res) GMP_OVERLOAD_INVOKE(_GMP_TUPLE_TAKE_WHEN, GMP_BOOL(count))(count, tup, res)
+#define _GMP_TUPLE_TAKE_WHEN_0(count, tup, res) tup
+#define _GMP_TUPLE_TAKE_WHEN_1(count, tup, res) _GMP_TUPLE_TAKE_WHEN_1_COMPAT_MSVC(count, tup, GMP_TUPLE_PREPEND(res, GMP_GET_TUPLE(GMP_DEC(count), tup)))
+#define _GMP_TUPLE_TAKE_WHEN_1_COMPAT_MSVC(count, tup, res) GMP_DEFER(_GMP_TUPLE_TAKE_INDIRECT)()(GMP_DEC(count), tup, res)
+#define _GMP_TUPLE_TAKE_INDIRECT() _GMP_TUPLE_TAKE_IMPL
+// #define GMP_TUPLE_TAKE(count, tup) GMP_IF_THEN_ELSE(GMP_GREATER_INT(count, GMP_TUPLE_SIZE(tup)), _GMP_TUPLE_TAKE_ERROR, _GMP_TUPLE_TAKE_IMPL)(count, tup)
+// #define _GMP_TUPLE_TAKE_ERROR(count, tup) tup
+// #define _GMP_TUPLE_TAKE_IMPL(count, tup) GMP_GET_TUPLE(2, GMP_WHILE(_GMP_TUPLE_TAKE_COND, _GMP_TUPLE_TAKE_OP, (count, tup, ())))
+// #define _GMP_TUPLE_TAKE_COND(args) GMP_NOT(GMP_EQUAL_INT_INDEPENDENT(GMP_GET_TUPLE(0, args), 0))
+// #define _GMP_TUPLE_TAKE_OP(args) _GMP_TUPLE_TAKE_OP_COMPAT_MSVC(args, GMP_TUPLE_PREPEND(GMP_GET_TUPLE(2, args), GMP_GET_TUPLE(GMP_DEC(GMP_GET_TUPLE(0, args)), GMP_GET_TUPLE(1, args))))
+// #define _GMP_TUPLE_TAKE_OP_COMPAT_MSVC(args, res) (GMP_DEC(GMP_GET_TUPLE(0, args)), GMP_GET_TUPLE(1, args), res)
 
 /**
  * \def GMP_FOR_EACH(call, ...)
@@ -2015,6 +2030,12 @@
 #define _GMP_XOR_0_1 1
 #define _GMP_XOR_1_0 1
 #define _GMP_XOR_1_1 0
+
+/**
+ * @def GMP_IMPLIES(p, q)
+ * @brief Logical implication: p ⇒ q ≡ ¬p ∨ q
+ */
+#define GMP_IMPLIES(p, q) GMP_OR(GMP_NOT(p), q)
 
 /**
  * \brief Macro to convert a value to a boolean representation.
@@ -3356,6 +3377,33 @@
 #define _GMP_LESS_INT_IMPL(i, j) GMP_AND(GMP_NOT(GMP_BOOL(i)), GMP_BOOL(j))
 
 /**
+ * @def GMP_LESS_EQUAL_INT(i, j)
+ * @brief Test if i ≤ j (i is less than or equal to j).
+ * 
+ * Returns 1 if i is less than or equal to j, 0 otherwise.
+ * Implements: i ≤ j ≡ (i < j) ∨ (i == j)
+ * 
+ * @param i First integer
+ * @param j Second integer
+ * @return 1 if i ≤ j, 0 otherwise
+ * 
+ * @note This is logically equivalent to NOT(i > j)
+ * 
+ * @par Example
+ * @code
+ * GMP_LESS_EQUAL_INT(3, 5)   // expands to 1 (true)
+ * GMP_LESS_EQUAL_INT(5, 3)   // expands to 0 (false)
+ * GMP_LESS_EQUAL_INT(4, 4)   // expands to 1 (true)
+ * GMP_LESS_EQUAL_INT(0, 0)   // expands to 1 (true)
+ * @endcode
+ * 
+ * @see GMP_LESS_INT for strict less than (<)
+ * @see GMP_EQUAL_INT for equality (==)
+ * @see GMP_GREATER_EQUAL_INT for greater than or equal (≥)
+ */
+#define GMP_LESS_EQUAL_INT(i, j) GMP_IF_THEN_ELSE(GMP_EQUAL_INT_INDEPENDENT(i, j), 1, GMP_LESS_INT(i, j))
+
+/**
  * @brief Check if i > j by analyzing comparison result state
  * 
  * This macro checks if the first number is greater than the second by analyzing
@@ -3370,6 +3418,33 @@
  */
 #define GMP_GREATER_INT(i, j) GMP_IDENTITY(_GMP_GREATER_INT_IMPL GMP_CMP(i, j))
 #define _GMP_GREATER_INT_IMPL(i, j) GMP_AND(GMP_BOOL(i), GMP_NOT(GMP_BOOL(j)))
+
+/**
+ * @def GMP_GREATER_EQUAL_INT(i, j)
+ * @brief Test if i ≥ j (i is greater than or equal to j).
+ * 
+ * Returns 1 if i is greater than or equal to j, 0 otherwise.
+ * Implements: i ≥ j ≡ (i > j) ∨ (i == j)
+ * 
+ * @param i First integer
+ * @param j Second integer
+ * @return 1 if i ≥ j, 0 otherwise
+ * 
+ * @note This is logically equivalent to NOT(i < j)
+ * 
+ * @par Example
+ * @code
+ * GMP_GREATER_EQUAL_INT(5, 3)   // expands to 1 (true)
+ * GMP_GREATER_EQUAL_INT(3, 5)   // expands to 0 (false)
+ * GMP_GREATER_EQUAL_INT(4, 4)   // expands to 1 (true)
+ * GMP_GREATER_EQUAL_INT(0, 0)   // expands to 1 (true)
+ * @endcode
+ * 
+ * @see GMP_GREATER_INT for strict greater than (>)
+ * @see GMP_EQUAL_INT for equality (==)
+ * @see GMP_LESS_EQUAL_INT for less than or equal (≤)
+ */
+#define GMP_GREATER_EQUAL_INT(i, j) GMP_IF_THEN_ELSE(GMP_EQUAL_INT_INDEPENDENT(i, j), 1, GMP_GREATER_INT(i, j))
 
 /**
  * @brief Integer subtraction (i - j)
