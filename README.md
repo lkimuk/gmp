@@ -7,6 +7,14 @@
 ![Language](https://img.shields.io/github/languages/top/lkimuk/gmp.svg)
 ![Last commit](https://img.shields.io/github/last-commit/lkimuk/gmp.svg)
 
+- [Overview](#overview)
+- [Install](#install)
+- [Macro metaprogramming](#macro-metaprogramming)
+  - [Features](#features)
+  - [Examples](#examples)
+- [Compile-time Tests](#compile-time-tests)
+- [Acknowledgments](#acknowledgments)
+
 ## Overview
 GMP is a comprehensive, header-only C++11 library designed for advanced compile-time programming and code generation. It provides a rich set of macros and utilities that enable expressive metaprogramming patterns, making complex template code more manageable and readable.
 
