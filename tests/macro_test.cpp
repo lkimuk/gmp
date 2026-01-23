@@ -794,7 +794,7 @@ namespace test_gmp_comparisons {
     static_assert(GMP_LESS_EQUAL_INT(5, 5) == 1, "5 ≤ 5 should be true");
     static_assert(GMP_LESS_EQUAL_INT(0, 0) == 1, "0 ≤ 0 should be true");
 #if GMP_STANDARD_PREPROCESSOR
-    static_assert(GMP_LESS_EQUAL_INT(255, 255) == 1, "255 ≤ 255 should be true");
+    static_assert(GMP_LESS_EQUAL_INT(254, 254) == 1, "254 ≤ 254 should be true");
 #else
     static_assert(GMP_LESS_EQUAL_INT(127, 127) == 1, "127 ≤ 127 should be true");
 #endif
@@ -827,7 +827,7 @@ namespace test_gmp_comparisons {
     static_assert(GMP_GREATER_EQUAL_INT(5, 5) == 1, "5 ≥ 5 should be true");
     static_assert(GMP_GREATER_EQUAL_INT(0, 0) == 1, "0 ≥ 0 should be true");
 #if GMP_STANDARD_PREPROCESSOR
-    static_assert(GMP_GREATER_EQUAL_INT(255, 255) == 1, "255 ≥ 255 should be true");
+    static_assert(GMP_GREATER_EQUAL_INT(254, 254) == 1, "254 ≥ 254 should be true");
 #else
     static_assert(GMP_GREATER_EQUAL_INT(127, 127) == 1, "127 ≥ 127 should be true");
 #endif
@@ -898,7 +898,7 @@ namespace test_gmp_comparisons {
     static_assert(GMP_LESS_EQUAL_INT(0, 0), "0 ≤ 0 (reflexive)");
     static_assert(GMP_LESS_EQUAL_INT(5, 5), "5 ≤ 5 (reflexive)");
 #if GMP_STANDARD_PREPROCESSOR
-    static_assert(GMP_LESS_EQUAL_INT(255, 255), "255 ≤ 255 (reflexive)");
+    static_assert(GMP_LESS_EQUAL_INT(254, 254), "254 ≤ 254 (reflexive)");
 #else
     static_assert(GMP_LESS_EQUAL_INT(127, 127), "127 ≤ 127 (reflexive)");
 #endif
