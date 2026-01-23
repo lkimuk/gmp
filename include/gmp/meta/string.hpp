@@ -9,10 +9,15 @@
 // This file is part of the GMP (Generative Metaprogramming) library.
 // Full project source: https://github.com/lkimuk/gmp
 
-#ifndef GMP_HPP_
-#define GMP_HPP_
+#ifndef GMP_STRING_HPP_
+#define GMP_STRING_HPP_
 
-#include <gmp/macro/macro.hpp>
-#include <gmp/meta/string.hpp>
+namespace gmp {
 
-#endif // GMP_HPP_
+constexpr bool is_equal(const char* lhs, const char* rhs) noexcept {
+    return *lhs == *rhs && (!*lhs || is_equal(lhs + 1, rhs + 1));
+}
+
+} // namespace gmp
+
+#endif // GMP_STRING_HPP_

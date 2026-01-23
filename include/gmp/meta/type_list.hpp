@@ -1,7 +1,14 @@
-/**
- * \file type_list.h
- * \brief Definition of the type_list template structure.
- */
+//   ___ __  __ ___ 
+//  / __|  \/  | _ \ GMP(Generative Metaprogramming)
+// | (_ | |\/| |  _/ version 0.1.0
+//  \___|_|  |_|_|   https://github.com/lkimuk/gmp
+//
+// SPDX-FileCopyrightText: 2023-2026 Gaoxing Li <https://www.cppmore.com/>
+// SPDX-License-Identifier: MIT
+//
+// This file is part of the GMP (Generative Metaprogramming) library.
+// Full project source: https://github.com/lkimuk/gmp
+
 #ifndef GMP_TYPE_LIST_HPP_
 #define GMP_TYPE_LIST_HPP_
 
@@ -372,7 +379,6 @@ struct type_list_filter<type_list<>, Pred>
 
 template<type_list_like T, template<typename> class Pred>
 using type_list_filter_t = type_list_filter<T, Pred>::type;
-
 
 } // namespace gmp
 
