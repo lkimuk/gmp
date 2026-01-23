@@ -26,7 +26,7 @@ Compiler Explorer: [https://godbolt.org/z/W156818n5](https://godbolt.org/z/W1568
 
 **Header-only version**
 
-Copy the include folder to your build tree and use a C++11 compiler.
+Copy the [include](https://github.com/lkimuk/gmp/releases/download/v0.1.0/include.zip) folder to your build tree and use a C++11 compiler.
 
 **CMake integration**
 
