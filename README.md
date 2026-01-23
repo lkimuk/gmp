@@ -22,7 +22,7 @@ GMP is a comprehensive, header-only C++11 library designed for advanced compile-
 ## Install
 **Try online quickly:**
 
-Compiler Explorer: [https://godbolt.org/z/3Ee1x8hdY](https://godbolt.org/z/3Ee1x8hdY)
+Compiler Explorer: [https://godbolt.org/z/W156818n5](https://godbolt.org/z/W156818n5)
 
 **Header-only version**
 
@@ -64,8 +64,7 @@ target_link_libraries(your_target PRIVATE gmp::gmp)
 - **Loop macros**: `GMP_REPEAT`, `GMP_WHILE`, `GMP_FOR_EACH`
 - **Overload functions matching**: `GMP_OVERLOAD_INVOKE`
 - **Expand control**: `GMP_EXPAND`, `GMP_EVAL`, `GMP_DEFER`
-- **Ranges**: `GMP_RANGE`
-- **Index sequences**: `GMP_MAKE_INDEX_SEQUENCE`
+- **Index sequences**: `GMP_MAKE_INDEX_SEQUENCE`, `GMP_RANGE`
 - **Namespace generation**: `GMP_GENERATE_NAMESPACES_BEGIN`, `GMP_GENERATE_NAMESPACES_END`
 
 ### Examples
@@ -130,7 +129,7 @@ GMP_SWAP(x, y)                                      // expands to: y, x
 
 #### Tuple Operations
 ```cpp
-GMP_TUPLE_SIZE(());                                 // expands to: 0 (empty tuple)
+GMP_TUPLE_SIZE(());                                 // expands to: 0
 GMP_TUPLE_SIZE((a, b, c, d, e))                     // expands to: 5
 
 GMP_TUPLE_TAKE(2, (a, b, c, d, e))                  // expands to: (a, b)
@@ -147,8 +146,8 @@ GMP_TUPLE_APPEND((a, b, c, d, e), f)                // expands to: (a, b, c, d, 
 GMP_TUPLE_APPEND((), f)                             // expands to: (f)
 
 GMP_TUPLE_PREPEND((b, c, d), a)                     // expands to: (a, b, c, d)
-GMP_TUPLE_PREPEND((), x)                            // expands to (x)
-GMP_TUPLE_PREPEND(GMP_TUPLE_PREPEND((c, d), b), a)  // expands to (a, b, c, d)
+GMP_TUPLE_PREPEND((), x)                            // expands to: (x)
+GMP_TUPLE_PREPEND(GMP_TUPLE_PREPEND((c, d), b), a)  // expands to: (a, b, c, d)
 
 GMP_TUPLE_CONCAT((), (a, b, c))                     // expands to: (a, b, c)
 GMP_TUPLE_CONCAT((a, b, c), (a, b, c))              // expands to: (a, b, c, a, b, c)
@@ -183,6 +182,8 @@ GMP_MAKE_INDEX_SEQUENCE(42)                         // expands to: 0, 1, 2, 3, 4
 GMP_RANGE(0, 0)                                     // expands to: 
 GMP_RANGE(0, 5)                                     // expands to: 0 , 1 , 2 , 3 , 4
 GMP_RANGE(5, 10)                                    // expands to: 5 , 6 , 7 , 8 , 9
+
+GMP_STRINGIFY(GMP_CONCATS(abc, 123, def, 456))     // expands to: "abc123def456"
 
 #define MYLIB_NAMESPACE_BEGIN GMP_GENERATE_NAMESPACES_BEGIN(mylib, parser)
 #define MYLIB_NAMESPACE_END GMP_GENERATE_NAMESPACES_END(mylib, parser)
