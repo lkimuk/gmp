@@ -214,3 +214,6 @@ cmake --build ./build
 
 ## Acknowledgments
 Inspired by Boost.Preprocessor and other metaprogramming libraries.
+
+## License
+GMP is licensed under the MIT license, see [LICENSE](https://github.com/lkimuk/gmp/blob/main/LICENSE) for more information.
