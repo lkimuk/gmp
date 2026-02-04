@@ -1088,6 +1088,25 @@
 #define _GMP_FOR_EACH_254(call, x, ...) call(x) GMP_EXPAND( _GMP_FOR_EACH_253(call, __VA_ARGS__) )
 #define _GMP_FOR_EACH_255(call, x, ...) call(x) GMP_EXPAND( _GMP_FOR_EACH_254(call, __VA_ARGS__) )
 
+/**
+ * @brief Executes a macro call on each argument independently, supporting nested iteration
+ * 
+ * This macro applies a given macro to each argument in the variadic list, similar to 
+ * GMP_FOR_EACH but designed specifically to support nested macro iteration scenarios.
+ * 
+ * Unlike GMP_FOR_EACH, this macro can be nested with GMP_FOR_EACH to enable multi-level
+ * iteration, as regular GMP_FOR_EACH cannot be recursively called due to macro expansion
+ * limitations.
+ * 
+ * @param call The macro to apply to each element (must be a macro that takes one argument)
+ * @param ... Variable number of arguments to process
+ * 
+ * @note The primary purpose of this macro is to work alongside GMP_FOR_EACH for nested
+ *       iterations. Using GMP_FOR_EACH alone for nested scenarios is not possible due
+ *       to macro recursion restrictions.
+ * 
+ * @see GMP_FOR_EACH for the standard non-nestable version
+ */
 #define GMP_FOR_EACH_INDEPENDENT(call, ...) GMP_EVAL( _GMP_FOR_EACH_INDEPENDENT_IMPL(call, __VA_ARGS__) )
 #define _GMP_FOR_EACH_INDEPENDENT_IMPL(call, ...) GMP_EXPAND( GMP_OVERLOAD_INVOKE(_GMP_FOR_EACH_INDEPENDENT_IMPL_WHEN, GMP_BOOL(GMP_SIZE_OF_VAARGS(__VA_ARGS__)))(call, __VA_ARGS__) )
 #define _GMP_FOR_EACH_INDEPENDENT_IMPL_WHEN_0(call, x, ...)
@@ -4417,6 +4436,30 @@
 #define _GMP_CONCATS_GEN_WHEN_0(z, ...) z
 #define _GMP_CONCATS_GEN_WHEN_1(z, x, ...) GMP_DEFER(_GMP_CONCATS_INDIRECT)()(z, x, __VA_ARGS__)
 #define _GMP_CONCATS_INDIRECT() _GMP_CONCATS_IMPL
+
+/**
+ * @brief Removes trailing comma from variadic macro arguments
+ * 
+ * This macro eliminates the trailing comma that may appear in variadic arguments,
+ * particularly useful when dealing with empty argument lists or conditional macro expansions.
+ * 
+ * @note This is a helper macro that works in conjunction with other GMP tuple utilities.
+ * 
+ * Example usage:
+ * @code
+ * GMP_REMOVE_TRAILING_COMMA(a, b, c,)  // Expands to: a, b, c 
+ * GMP_REMOVE_TRAILING_COMMA()          // Expands to: 
+ * GMP_REMOVE_TRAILING_COMMA(,)         // Expands to: 
+ * GMP_REMOVE_TRAILING_COMMA(_0,)       // Expands to: _0
+ * @endcode
+ * 
+ * @param ... Variadic arguments (may include a trailing comma)
+ * @return Arguments without trailing comma, wrapped in parentheses
+ */
+#define GMP_REMOVE_TRAILING_COMMA(...) GMP_OVERLOAD_INVOKE(_GMP_REMOVE_TRAILING_COMMA_WHEN, GMP_BOOL(GMP_SIZE_OF_VAARGS(__VA_ARGS__)))(__VA_ARGS__)
+#define _GMP_REMOVE_TRAILING_COMMA_WHEN_0(...)
+#define _GMP_REMOVE_TRAILING_COMMA_WHEN_1(...) _GMP_REMOVE_TRAILING_COMMA_IMPL((__VA_ARGS__))
+#define _GMP_REMOVE_TRAILING_COMMA_IMPL(args) GMP_REMOVE_PARENS(GMP_TUPLE_TAKE(GMP_DEC(GMP_TUPLE_SIZE(args)), args))
 
 /**
  * @brief C++ standard version detection
