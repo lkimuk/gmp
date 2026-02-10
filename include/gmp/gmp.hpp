@@ -14,5 +14,6 @@
 
 #include <gmp/macro/macro.hpp>
 #include <gmp/meta/string.hpp>
+#include <gmp/meta/meta.hpp>
 
 #endif // GMP_HPP_

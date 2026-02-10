@@ -54,7 +54,7 @@ target_include_directories(gmp INTERFACE
 )
 
 target_compile_options(gmp INTERFACE -Wall)
-target_compile_features(gmp INTERFACE cxx_std_11)
+target_compile_features(gmp INTERFACE cxx_std_20)
 
 # ---------------------------------------------------------------------------------------
 # Installation configuration
