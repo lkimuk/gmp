@@ -1,6 +1,6 @@
 //   ___ __  __ ___ 
 //  / __|  \/  | _ \ GMP(Generative Metaprogramming)
-// | (_ | |\/| |  _/ version 0.1.0
+// | (_ | |\/| |  _/ version 0.2.0
 //  \___|_|  |_|_|   https://github.com/lkimuk/gmp
 //
 // SPDX-FileCopyrightText: 2023-2026 Gaoxing Li <https://www.cppmore.com/>

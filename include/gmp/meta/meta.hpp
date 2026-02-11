@@ -1,6 +1,6 @@
 //   ___ __  __ ___ 
 //  / __|  \/  | _ \ GMP(Generative Metaprogramming)
-// | (_ | |\/| |  _/ version 0.1.0
+// | (_ | |\/| |  _/ version 0.2.0
 //  \___|_|  |_|_|   https://github.com/lkimuk/gmp
 //
 // SPDX-FileCopyrightText: 2023-2026 Gaoxing Li <https://www.cppmore.com/>
@@ -15,8 +15,8 @@
 #include <array>
 #include <source_location>
 
-#include "meta/fixed_string.hpp"
-#include "meta/detail/name.hpp"
+#include <gmp/meta/fixed_string.hpp>
+#include <gmp/meta/detail/name.hpp>
 
 namespace gmp {
 
@@ -71,7 +71,7 @@ consteval auto enum_name() {
     constexpr auto name = detail::value_name_of<E>();
     constexpr auto start = name.find(P.data());
     if constexpr (start != std::string_view::npos) {
-#if GMP_COMPILER_CLANG or GMP_COMPILER_GCC
+#if GMP_COMPILER_CLANG || GMP_COMPILER_GCC
         constexpr auto end = name.find_last_of("]");
 #else
         constexpr auto end = name.find_last_of(">");

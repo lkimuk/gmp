@@ -1,6 +1,6 @@
 //   ___ __  __ ___ 
 //  / __|  \/  | _ \ GMP(Generative Metaprogramming)
-// | (_ | |\/| |  _/ version 0.1.0
+// | (_ | |\/| |  _/ version 0.2.0
 //  \___|_|  |_|_|   https://github.com/lkimuk/gmp
 //
 // SPDX-FileCopyrightText: 2023-2026 Gaoxing Li <https://www.cppmore.com/>
@@ -18,7 +18,7 @@
 
 struct S {
     double b;
-    // std::string c;
+    std::string cstr;
 };
 
 enum class Color : int { red, green, blue };
@@ -26,7 +26,7 @@ enum class Color : int { red, green, blue };
 int main() {
     std::cout << "All compile-time tests passed successfully!" << std::endl;
     
-    constexpr auto type = gmp::type_name<int>();
+    [[maybe_unused]] constexpr auto type = gmp::type_name<int>();
     // auto sv = gmp::type_name<int>();
     std::cout << "int: " << gmp::type_name<int>() << "\n";
     std::cout << "int: " << gmp::type_name<int>().to_string_view() << "\n";
@@ -34,7 +34,7 @@ int main() {
 
     std::cout << gmp::member_count<S>() << "\n";
     std::cout << gmp::member_name<0, S>() << "\n";
-    // std::cout << gmp::member_name<1, S>() << "\n";
+    std::cout << gmp::member_name<1, S>() << "\n";
 
     std::cout << "------------------------\n";
 

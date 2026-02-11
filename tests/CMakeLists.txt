@@ -14,18 +14,22 @@ foreach(source_file ${SOURCE_FILES})
 endforeach()
 
 if(MSVC)
-    target_compile_options(macro_test PRIVATE /Zc:preprocessor)
-    set(OUTPUT_OPTION "/Fe${CMAKE_CURRENT_BINARY_DIR}/macro_test.i")
+    # set(PREPROCESS_FLAGS "/Zc:preprocessor")
+    set(PREPROCESS_FLAGS "")
+    # target_compile_options(macro_test PRIVATE /Zc:preprocessor)
+    # set(OUTPUT_OPTION "/Fe${CMAKE_CURRENT_BINARY_DIR}/macro_test.i")
 else()
-    set(OUTPUT_OPTION "-o ${CMAKE_CURRENT_BINARY_DIR}/macro_test.i")
+    set(PREPROCESS_FLAGS "")
+    # set(OUTPUT_OPTION "-o ${CMAKE_CURRENT_BINARY_DIR}/macro_test.i")
 endif()
 
 add_custom_target(preprocess
     ${CMAKE_CXX_COMPILER} 
         -E -P 
         ${CMAKE_CXX_FLAGS}
+        ${PREPROCESS_FLAGS}
         -I${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/macro_test.cpp
+        ${SOURCE_FILES}
         ${OUTPUT_OPTION}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Generating preprocessed file: macro_test.i"
