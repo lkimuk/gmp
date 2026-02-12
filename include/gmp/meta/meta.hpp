@@ -56,6 +56,35 @@ consteval auto type_name() {
 #endif
 }
 
+/**
+ * @brief Count the number of enumerators in an enumeration type at compile-time.
+ * 
+ * @tparam E The enumeration type to count enumerators for.
+ * @tparam P The prefix string used to identify enumerator names (defaults to type name + "::").
+ * @tparam R The current recursion index.
+ * @return The number of valid enumerators in the enumeration.
+ * 
+ * @note This function is consteval and evaluated entirely at compile-time.
+ * 
+ * @example
+ * @code
+ * enum class Color { Red, Green, Blue, Yellow };
+ * enum class Empty {};
+ * 
+ * // Count enumerators
+ * constexpr auto count = enum_count<Color>();
+ * static_assert(count == 4);
+ * static_assert(enum_count<Empty>() == 0);
+ * 
+ * // Can be used in template metaprogramming
+ * template<typename E, size_t N = enum_count<E>()>
+ * struct EnumTraits {
+ *     static constexpr size_t size = N;
+ * };
+ * 
+ * static_assert(EnumTraits<Color>::size == 4);
+ * @endcode
+ */
 template<typename E, fixed_string P = type_name<E>() + fixed_string("::"), std::size_t R = 0>
 consteval auto enum_count() {
     constexpr auto name =  detail::value_name_of<E(R)>();
@@ -66,10 +95,37 @@ consteval auto enum_count() {
     }
 }
 
-template<auto E, fixed_string P = type_name<decltype(E)>() + fixed_string("::")>
+/**
+ * @brief Get the name of an enumerator at compile-time.
+ * 
+ * @tparam E The enumerator value to get the name for.
+ * @tparam P The prefix string to remove from the full name (defaults to type name + "::").
+ * @return A fixed_string containing the enumerator name, or "<unnamed>" if not found.
+ * 
+ * @example
+ * @code
+ * enum class Status { Ok = 200, NotFound = 404, Error = 500 };
+ * enum { A, B, C };  // Unscoped enumeration
+ * 
+ * // Get individual enumerator names
+ * constexpr auto ok_name = enum_name<Status::Ok>();
+ * static_assert(ok_name == "Ok");
+ * 
+ * constexpr auto not_found_name = enum_name<Status::NotFound>();
+ * static_assert(not_found_name == "NotFound");
+ * 
+ * // Works with unscoped enums
+ * constexpr auto a_name = enum_name<A>();
+ * static_assert(a_name == "A");
+ * 
+ * // Compile-time string comparison
+ * static_assert(enum_name<Status::Error>() == "Error");
+ * @endcode
+ */
+template<auto E, fixed_string P = fixed_string("::")>
 consteval auto enum_name() {
     constexpr auto name = detail::value_name_of<E>();
-    constexpr auto start = name.find(P.data());
+    constexpr auto start = name.rfind(P.data());
     if constexpr (start != std::string_view::npos) {
 #if GMP_COMPILER_CLANG || GMP_COMPILER_GCC
         constexpr auto end = name.find_last_of("]");
@@ -82,6 +138,46 @@ consteval auto enum_name() {
     }
 }
 
+/**
+ * @brief Get all enumerator names of an enumeration type at compile-time.
+ * 
+ * This function returns an array containing the names of all enumerators
+ * in the enumeration type E.
+ * 
+ * @tparam E The enumeration type to get enumerator names for.
+ * @return A std::array of std::string_view containing all enumerator names.
+ *         Returns an empty array if the enumeration has no enumerators.
+ * 
+ * @example
+ * @code
+ * enum class Permission { Read, Write, Execute };
+ * 
+ * // Get all enumerator names
+ * constexpr auto names = enum_names<Permission>();
+ * static_assert(names.size() == 3);
+ * static_assert(names[0] == "Read");
+ * static_assert(names[1] == "Write");
+ * static_assert(names[2] == "Execute");
+ * 
+ * // Iterate over enumerator names at compile-time
+ * template<typename E>
+ * constexpr bool has_enumerator(std::string_view name) {
+ *     constexpr auto names = enum_names<E>();
+ *     for (size_t i = 0; i < names.size(); ++i) {
+ *         if (names[i] == name) return true;
+ *     }
+ *     return false;
+ * }
+ * 
+ * static_assert(has_enumerator<Permission>("Write"));
+ * static_assert(!has_enumerator<Permission>("Delete"));
+ * 
+ * // Empty enum
+ * enum class Empty {};
+ * constexpr auto empty_names = enum_names<Empty>();
+ * static_assert(empty_names.empty());
+ * @endcode
+ */
 template<typename E>
 consteval auto enum_names() {
     constexpr auto size = enum_count<E>();
@@ -96,6 +192,35 @@ consteval auto enum_names() {
     }
 }
 
+/**
+ * @brief Count the number of members in an aggregate type at compile-time.
+ * 
+ * @tparam T The aggregate type to count members for.
+ * @tparam Args The accumulated parameter types for construction testing.
+ * @return The number of members in the aggregate type.
+ * 
+ * @note This function is consteval and only works with aggregate types.
+ * @note Requires std::is_aggregate_v<T> to be true.
+ * 
+ * @example
+ * @code
+ * struct Point { int x; int y; };
+ * struct Empty {};
+ * struct Mixed { int i; double d; char c; };
+ * 
+ * // Count members of aggregate types
+ * static_assert(member_count<Point>() == 2);
+ * static_assert(member_count<Empty>() == 0);
+ * static_assert(member_count<Mixed>() == 3);
+ * 
+ * // Can be used in template constraints
+ * template<typename T>
+ * concept HasTwoMembers = std::is_aggregate_v<T> && member_count<T>() == 2;
+ * 
+ * static_assert(HasTwoMembers<Point>);
+ * static_assert(!HasTwoMembers<Mixed>);
+ * @endcode
+ */
 template<typename T, typename... Args>
   requires std::is_aggregate_v<T>
 consteval int member_count() {
@@ -106,6 +231,58 @@ consteval int member_count() {
     }
 }
 
+/**
+ * @brief Get the name of a specific member of an aggregate type at compile-time.
+ * 
+ * @tparam I The zero-based index of the member to get the name for.
+ * @tparam T The aggregate type containing the member.
+ * @return A fixed_string containing the member name.
+ * 
+ * @note This function is consteval and requires:
+ *       - T to be an aggregate type
+ *       - I to be within the valid range [0, member_count<T>())
+ *       - member_count<T>() to not exceed GMP_MAX_SUPPORTED_FIELDS
+ * 
+ * @throws Compile-time error if any of the above requirements are not met.
+ * 
+ * @example
+ * @code
+ * struct Person {
+ *     std::string name;
+ *     int age;
+ *     double height;
+ * };
+ * 
+ * struct Empty {};
+ * 
+ * // Get individual member names
+ * constexpr auto first_member = member_name<0, Person>();
+ * static_assert(first_member == "name");
+ * 
+ * constexpr auto second_member = member_name<1, Person>();
+ * static_assert(second_member == "age");
+ * 
+ * constexpr auto third_member = member_name<2, Person>();
+ * static_assert(third_member == "height");
+ * 
+ * // Use in static assertions
+ * static_assert(member_name<0, Person>().size() == 4);
+ * 
+ * // Template metaprogramming
+ * template<typename T, size_t I>
+ * struct MemberTraits {
+ *     static constexpr auto name = member_name<I, T>();
+ *     static constexpr size_t index = I;
+ * };
+ * 
+ * static_assert(MemberTraits<Person, 1>::name == "age");
+ * 
+ * // These would cause compile-time errors:
+ * // member_name<0, Empty>();     // Error: I < member_count<T>() fails
+ * // member_name<3, Person>();    // Error: Index out of bounds
+ * // member_name<0, int>();       // Error: Not an aggregate
+ * @endcode
+ */
 template<std::size_t I, typename T>
     requires std::is_aggregate_v<T> &&
         (I < member_count<T>()) &&
@@ -122,6 +299,62 @@ consteval auto member_name() noexcept {
     static_assert(member_count<T>() <= GMP_MAX_SUPPORTED_FIELDS, "member_name() only supports up to " GMP_STRINGIFY(GMP_MAX_SUPPORTED_FIELDS) " fields.");
 }
 
+/**
+ * @brief Get all member names of an aggregate type at compile-time.
+ * 
+ * This function returns an array containing the names of all members
+ * of the aggregate type T.
+ * 
+ * @tparam T The aggregate type to get member names for.
+ * @return A std::array of std::string_view containing all member names.
+ *         Returns an empty array if the aggregate has no members.
+ * 
+ * @example
+ * @code
+ * struct Vector3 { float x; float y; float z; };
+ * struct Empty {};
+ * struct Config { int timeout; bool enabled; std::string host; };
+ * 
+ * // Get all member names
+ * constexpr auto vec_members = member_names<Vector3>();
+ * static_assert(vec_members.size() == 3);
+ * static_assert(vec_members[0] == "x");
+ * static_assert(vec_members[1] == "y");
+ * static_assert(vec_members[2] == "z");
+ * 
+ * // Empty aggregate
+ * constexpr auto empty_members = member_names<Empty>();
+ * static_assert(empty_members.empty());
+ * 
+ * // Compile-time iteration
+ * template<typename T>
+ * constexpr bool has_member(std::string_view name) {
+ *     constexpr auto names = member_names<T>();
+ *     for (size_t i = 0; i < names.size(); ++i) {
+ *         if (names[i] == name) return true;
+ *     }
+ *     return false;
+ * }
+ * 
+ * static_assert(has_member<Config>("timeout"));
+ * static_assert(has_member<Config>("host"));
+ * static_assert(!has_member<Config>("port"));
+ * 
+ * // Generate compile-time member name list
+ * template<typename T>
+ * struct MemberList {
+ *     static constexpr auto names = member_names<T>();
+ *     static constexpr size_t size = names.size();
+ *     
+ *     template<size_t I>
+ *     static constexpr auto get() { return names[I]; }
+ * };
+ * 
+ * using Vector3Members = MemberList<Vector3>;
+ * static_assert(Vector3Members::size == 3);
+ * static_assert(Vector3Members::get<1>() == "y");
+ * @endcode
+ */
 template<typename T>
 consteval auto member_names() {
     constexpr auto size = member_count<T>();
