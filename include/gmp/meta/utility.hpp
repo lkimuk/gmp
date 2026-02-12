@@ -24,19 +24,27 @@ inline constexpr constant_arg_t<V> constant_arg{};
 
 struct any { template<typename T> operator T() const; };
 
+namespace detail {
+
 template<typename T>
 struct wrapper {
-    const T value;
+    const T value{};
     static const wrapper<T> long_lifetime_obj;
 
+    wrapper() = default;
     wrapper(const wrapper&) = delete;
     wrapper& operator=(const wrapper&) = delete;
     wrapper& operator=(wrapper&&) = delete;
 };
 
 template<typename T>
+const wrapper<T> wrapper<T>::long_lifetime_obj{};
+
+} // namespace detail
+
+template<typename T>
 consteval const T& as_value() noexcept {
-    return wrapper<T>::long_lifetime_obj.value;
+    return detail::wrapper<T>::long_lifetime_obj.value;
 }
 
 } // namespace gmp

@@ -18,8 +18,6 @@
 #include <gmp/macro/macro.hpp>
 #include <gmp/meta/utility.hpp>
 
-#define GMP_MAX_SUPPORTED_FIELDS 100
-
 namespace gmp::detail {
 
 template<auto V>
@@ -55,10 +53,10 @@ consteval auto member_name_of() {
 
     using namespace std::string_view_literals;
 #if GMP_COMPILER_CLANG
-    constexpr auto prefix = "[T = "sv;
+    constexpr auto prefix = "long_lifetime_obj.value."sv;
     constexpr auto suffix = "]"sv;
-    const auto start = 0;
-    const auto end = name.find(suffix);
+    const auto start = name.find(prefix) + prefix.size();
+    const auto end = name.find_last_of(suffix);
 #elif GMP_COMPILER_GCC
     constexpr auto prefix = "::"sv;
     constexpr auto suffix = ")]"sv;
@@ -88,11 +86,13 @@ consteval auto member_name_of() {
     }
 
 #if GMP_STANDARD_PREPROCESSOR
-// Standard preprocessor supports 256 arguments
-GMP_FOR_EACH(FIELD_GETTER_DEFINE, GMP_RANGE(1, 256))
+    #define GMP_MAX_SUPPORTED_FIELDS 255
+    // Standard preprocessor supports 256 arguments
+    GMP_FOR_EACH(FIELD_GETTER_DEFINE, GMP_RANGE(1, 256))
 #else
-// MSVC traditional preprocessor: MAX 199 due to nesting depth limit (fatal error C1009)
-GMP_FOR_EACH(FIELD_GETTER_DEFINE, GMP_RANGE(1, 119))
+    #define GMP_MAX_SUPPORTED_FIELDS 118
+    // MSVC traditional preprocessor: MAX 199 due to nesting depth limit (fatal error C1009)
+    GMP_FOR_EACH(FIELD_GETTER_DEFINE, GMP_RANGE(1, 119))
 #endif
 
 } // namespace gmp::detail

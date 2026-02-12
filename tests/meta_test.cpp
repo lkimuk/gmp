@@ -47,4 +47,10 @@ int main() {
     for (const auto& e : gmp::enum_names<Color>()) {
         std::cout << e << ", ";
     }
+
+    std::cout << "------------------------\n";
+
+    for (const auto& e : gmp::member_names<S>()) {
+        std::cout << e << ", ";
+    }
 }

@@ -122,6 +122,20 @@ consteval auto member_name() noexcept {
     static_assert(member_count<T>() <= GMP_MAX_SUPPORTED_FIELDS, "member_name() only supports up to " GMP_STRINGIFY(GMP_MAX_SUPPORTED_FIELDS) " fields.");
 }
 
+template<typename T>
+consteval auto member_names() {
+    constexpr auto size = member_count<T>();
+    if constexpr (size == 0) {
+        return std::array<std::string_view, 0>{};
+    } else {
+        return []<std::size_t... Is>(std::index_sequence<Is...>) {
+            return (std::array<std::string_view, size> {
+                member_name<Is, T>()...
+            });
+        }(std::make_index_sequence<size>{});
+    }
+}
+
 } // namespace gmp
 
 #endif // GMP_META_HPP_
