@@ -8,24 +8,51 @@
 ![Last commit](https://img.shields.io/github/last-commit/lkimuk/gmp.svg)
 
 - [Overview](#overview)
+- [Compiler Support](#compiler-support)
 - [Install](#install)
 - [Macro metaprogramming](#macro-metaprogramming)
-  - [Features](#features)
-  - [Examples](#examples)
-- [Compile-time Tests](#compile-time-tests)
+  - [Macro features](#macro-features)
+  - [Macro examples](#macro-examples)
+- [Reflection metaprogramming](#reflection-metaprogramming)
+  - [Meta features](#meta-features)
+  - [Meta examples](#meta-examples)
+- [Compile-time tests](#compile-time-tests)
 - [Acknowledgments](#acknowledgments)
 
 ## Overview
-GMP is a comprehensive, header-only C++11 library designed for advanced compile-time programming and code generation. It provides a rich set of macros and utilities that enable expressive metaprogramming patterns, making complex template code more manageable and readable.
+GMP is a header-only C++ metaprogramming library for compile-time programming and code generation. It provides two complementary parts:
+
+- **Macro metaprogramming**: A rich set of preprocessor utilities for boolean logic, arithmetic, tuple operations, loops, and code generation. This part is available in **C++11**.
+- **Reflection metaprogramming**: A set of compile-time utilities for fixed strings, type names, enum names, and aggregate member names. This part was introduced in **v0.2.0** and requires **C++20**.
 
 **Key Features**
 
 - **Header-only design**: Zero compilation required, just include and use
-- **C++11 compatible**: Works with modern C++ compilers without C++14/17 requirements
-- **Cross-platform**: Fully compatible with GCC, Clang, and MSVC
-- **Zero dependencies**: Pure C++ standard library, no external dependencies
-- **Compile-time focused**: All operations evaluated at compile time, zero runtime overhead
-- **Comprehensive utilities**: From basic boolean logic to advanced tuple manipulation
+- **Two-tier language support**:
+  - Macro metaprogramming features require **C++11**
+  - Reflection metaprogramming features require **C++20**
+- **Cross-platform**: Compatible with GCC, Clang, and MSVC
+- **Zero dependencies**: Pure standard C++, with no external dependencies
+- **Compile-time focused**: Designed for compile-time evaluation and code generation
+- **Comprehensive utilities**: Covers both macro-based and modern compile-time metaprogramming workflows
+
+## Compiler Support
+
+GMP provides two feature sets with different compiler requirements:
+
+**Macro Metaprogramming**
+
+The macro metaprogramming utilities should also work correctly with **C++98** compilers, although they are primarily documented and tested in **C++11** and later.
+
+**Reflection Metaprogramming**
+
+The reflection metaprogramming utilities require **C++20** and the following compiler versions or newer:
+
+| Compiler | Minimum Version |
+|----------|-----------------|
+| MSVC     | 19.37+          |
+| GCC      | 11.1+           |
+| Clang    | 18.1.0+         |
 
 ## Install
 **Try online quickly:**
@@ -57,11 +84,13 @@ target_link_libraries(your_target PRIVATE gmp::gmp)
 #### Macro Utilities
 - **Boolean operations**: `GMP_BOOL`, `GMP_NOT`, `GMP_AND`, `GMP_OR`, `GMP_XOR`, `GMP_IMPLIES`
 - **Arithmetic macros**: `GMP_INC`, `GMP_DEC`, `GMP_ADD`, `GMP_SUB`
-- **Comparison macros**: `GMP_EQUAL_INT`, `GMP_GREATER_INT`, `GMP_GREATER_EQUAL_INT`,`GMP_LESS_INT`, `GMP_LESS_EQUAL_INT`
+- **Comparison macros**: `GMP_EQUAL_INT`, `GMP_GREATER_INT`, `GMP_GREATER_EQUAL_INT`,`GMP_LESS_INT`, `GMP_LESS_EQUAL_INT`, `GMP_EQUAL_INT_INDEPENDENT`
 - **Conditional macros**: `GMP_IF`, `GMP_IF_THEN_ELSE`
 - **Stringification**: `GMP_STRINGIFY`, `GMP_CONCAT`, `GMP_CONCATS`
 - **Variadic handling**: `GMP_SIZE_OF_VAARGS`, `GMP_GET_N`, `GMP_IS_EMPTY`
 - **Algorithms**: `GMP_MAX`, `GMP_MIN`, `GMP_MINMAX`, `GMP_MAXMIN`, `GMP_SWAP`
+- **Remove trailing comma**: `GMP_REMOVE_TRAILING_COMMA`
+- **Identifies**: `GMP_IDENTIFIERS`
 
 #### Tuple Operations
 - **Size & Access**: `GMP_TUPLE_SIZE`, `GMP_GET_TUPLE`
@@ -69,7 +98,7 @@ target_link_libraries(your_target PRIVATE gmp::gmp)
 - **Slicing**: `GMP_TUPLE_SKIP`, `GMP_TUPLE_TAKE`
 
 #### Advanced Feature
-- **Loop macros**: `GMP_REPEAT`, `GMP_WHILE`, `GMP_FOR_EACH`
+- **Loop macros**: `GMP_REPEAT`, `GMP_WHILE`, `GMP_FOR_EACH`, `GMP_FOR_EACH_INDEPENDENT`
 - **Overload functions matching**: `GMP_OVERLOAD_INVOKE`
 - **Expand control**: `GMP_EXPAND`, `GMP_EVAL`, `GMP_DEFER`
 - **Index sequences**: `GMP_MAKE_INDEX_SEQUENCE`, `GMP_RANGE`
@@ -201,6 +230,119 @@ GMP_STRINGIFY(GMP_CONCATS(abc, 123, def, 456))     // expands to: "abc123def456"
 /// } }
 MYLIB_NAMESPACE_BEGIN
 MYLIB_NAMESPACE_END
+```
+
+## Reflection Metaprogramming
+MSVC >= v19.37
+GCC >= 11.1
+Clang >= 18.1.0
+
+### Meta Features
+**Compile-time Fixed String**
+- `fixed_string`: A compile-time string type whose content can be manipulated
+- `operator+(fixed_string, fixed_string)`: Concatenates two `fixed_string` values
+- `remove_all<Values...>(constant_arg_t<fixed_string>)`: Removes all occurrences of `Values...` from a `fixed_string`
+
+**Utilities**
+- `constant_arg_t<V>`: Statically enforces the type of an NTTP compile-time argument
+- `constant_arg<V>`: Statically enforces that `V` is a compile-time value
+- `any`: A type implicitly convertible to any type
+- `as_value<T>()`: Defines a compile-time value of type `T`
+
+**Meta Functions**
+- `type_name<T>()`: Returns the string representation of `T` at compile time
+- `enum_count<E>()`: Returns the number of enumerators in an enumeration type at compile time
+- `enum_name<V>()`: Returns the name of an enumerator at compile time
+- `enum_names<E>()`: Returns all enumerator names of an enumeration type at compile time
+- `member_count<T>()`: Returns the number of members in an aggregate type at compile time
+- `member_name<I, T>()`: Returns the name of the `I`-th member of a type at compile time
+- `member_names<T>()`: Returns the names of all members of a type at compile time
+
+
+### Meta Examples
+**Reflection Metaprogramming**
+```cpp
+#include <gmp/gmp.hpp>
+
+struct S {
+    double b;
+    std::string str;
+};
+
+enum class Color { Red, Green, Blue, Yellow };
+enum class Empty {};
+
+int main() {
+    constexpr auto int_name = gmp::type_name<int>();
+    std::cout << "int: " << int_name << "\n";
+    std::cout << "float: " << gmp::type_name<float>().to_string_view() << "\n";
+    std::cout << "std::vector<std::string>: " << gmp::type_name<std::vector<std::string>>() << "\n";
+
+    std::cout << gmp::member_count<S>() << "\n";
+    std::cout << gmp::member_name<0, S>() << "\n";
+    std::cout << gmp::member_name<1, S>() << "\n";
+
+    std::cout << "------------------------\n";
+
+    for (const auto& e : gmp::enum_names<enum_test::Color>()) {
+        std::cout << e << ", ";
+    }
+
+    std::cout << "\n------------------------\n";
+
+    for (const auto& e : gmp::member_names<S>()) {
+        std::cout << e << ", ";
+    }
+
+    std::cout << "\n------------------------\n";
+}
+```
+
+**Outputs**:
+
+Clang
+```text
+int: int
+float: float
+std::vector<std::string>: std::vector<std::basic_string<char>>
+2
+b
+str
+------------------------
+Red, Green, Blue, Yellow, 
+------------------------
+b, str, 
+------------------------
+```
+
+GCC:
+```text
+int: int
+float: float
+std::vector<std::string>: std::vector<std::__cxx11::basic_string<char> >
+2
+b
+str
+------------------------
+Red, Green, Blue, Yellow, 
+------------------------
+b, str, 
+------------------------
+```
+
+MSVC:
+```text
+int: int
+float: float
+std::vector<std::string>: std::vector<std::basic_string<char,std::char_traits<char>,std::allocator<char> >,std::allocator<std::basic_string<char,std::char_traits<char>,std::allocator<char> > > >
+2
+b
+str
+------------------------
+Red, Green, Blue, Yellow, 
+------------------------
+b, str, 
+------------------------
 ```
 
 ## Compile-time Tests
