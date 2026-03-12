@@ -1,0 +1,128 @@
+//   ___ __  __ ___ 
+//  / __|  \/  | _ \ GMP(Generative Metaprogramming)
+// | (_ | |\/| |  _/ version 0.2.0
+//  \___|_|  |_|_|   https://github.com/lkimuk/gmp
+//
+// SPDX-FileCopyrightText: 2023-2026 Gaoxing Li <https://www.cppmore.com/>
+// SPDX-License-Identifier: MIT
+//
+// Compile-time tests for GMP library using static_assert
+// If this file compiles, all tests pass!
+
+#include <utility>
+#include <iostream>
+#include <string>
+#include <vector>
+
+#include <gmp/gmp.hpp>
+
+struct S {
+    double b;
+    std::string cstr;
+};
+
+namespace enum_test {
+
+enum class Color { Red, Green, Blue, Yellow };
+enum class Empty {};
+
+// Count enumerators
+constexpr auto count = gmp::enum_count<Color>();
+static_assert(count == 4);
+static_assert(gmp::enum_count<Empty>() == 0);
+
+// Can be used in template metaprogramming
+template<typename E, size_t N = gmp::enum_count<E>()>
+struct EnumTraits {
+    static constexpr size_t size = N;
+};
+
+static_assert(EnumTraits<Color>::size == 4);
+
+enum class Status { Ok = 200, NotFound = 404, Error = 500 };
+enum { A, B, C };  // Unscoped enumeration
+
+// Get individual enumerator names
+constexpr auto ok_name = gmp::enum_name<Status::Ok>();
+static_assert(ok_name == "Ok");
+
+constexpr auto not_found_name = gmp::enum_name<Status::NotFound>();
+static_assert(not_found_name == "NotFound");
+
+// Works with unscoped enums
+constexpr auto a_name = gmp::enum_name<A>();
+static_assert(a_name == "A");
+
+// Compile-time string comparison
+static_assert(gmp::enum_name<Status::Error>() == "Error");
+
+enum class Permission { Read, Write, Execute };
+
+// Get all enumerator names
+constexpr auto names = gmp::enum_names<Permission>();
+static_assert(names.size() == 3);
+static_assert(names[0] == "Read");
+static_assert(names[1] == "Write");
+static_assert(names[2] == "Execute");
+
+// Iterate over enumerator names at compile-time
+template<typename E>
+constexpr bool has_enumerator(std::string_view name) {
+    constexpr auto e_names = gmp::enum_names<E>();
+    for (size_t i = 0; i < e_names.size(); ++i) {
+        if (e_names[i] == name) return true;
+    }
+    return false;
+}
+
+static_assert(has_enumerator<Permission>("Write"));
+static_assert(!has_enumerator<Permission>("Delete"));
+
+// Empty enum
+constexpr auto empty_names = gmp::enum_names<Empty>();
+static_assert(empty_names.empty());
+
+} // namespace 
+
+namespace member_test {
+
+struct Point { int x; int y; };
+struct Empty {};
+
+// Count members of aggregate types
+static_assert(gmp::member_count<Point>() == 2);
+static_assert(gmp::member_count<Empty>() == 0);
+
+// Can be used in template constraints
+template<typename T>
+concept HasTwoMembers = std::is_aggregate_v<T> && gmp::member_count<T>() == 2;
+
+static_assert(HasTwoMembers<Point>);
+
+} // namespace member_test
+
+int main() {
+    std::cout << "All compile-time tests passed successfully!" << std::endl;
+    
+    [[maybe_unused]] constexpr auto type = gmp::type_name<int>();
+    // auto sv = gmp::type_name<int>();
+    std::cout << "int: " << gmp::type_name<int>() << "\n";
+    std::cout << "int: " << gmp::type_name<int>().to_string_view() << "\n";
+    std::cout << "int: " << gmp::type_name<std::vector<std::string>>() << "\n";
+
+    std::cout << gmp::member_count<S>() << "\n";
+    std::cout << gmp::member_name<0, S>() << "\n";
+    std::cout << gmp::member_name<1, S>() << "\n";
+
+    std::cout << "------------------------\n";
+
+    for (const auto& e : gmp::enum_names<enum_test::Color>()) {
+        std::cout << e << ", ";
+    }
+
+    std::cout << "------------------------\n";
+
+    for (const auto& e : gmp::member_names<S>()) {
+        std::cout << e << ", ";
+    }
+}
