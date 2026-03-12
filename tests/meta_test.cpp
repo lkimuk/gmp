@@ -18,7 +18,7 @@
 
 struct S {
     double b;
-    std::string cstr;
+    std::string str;
 };
 
 namespace enum_test {
@@ -99,6 +99,81 @@ concept HasTwoMembers = std::is_aggregate_v<T> && gmp::member_count<T>() == 2;
 
 static_assert(HasTwoMembers<Point>);
 
+struct Person {
+    std::string name;
+    int age;
+    double height;
+};
+
+// Get individual member names
+constexpr auto first_member = gmp::member_name<0, Person>();
+static_assert(first_member == "name");
+
+constexpr auto second_member = gmp::member_name<1, Person>();
+static_assert(second_member == "age");
+
+constexpr auto third_member = gmp::member_name<2, Person>();
+static_assert(third_member == "height");
+
+// Use in static assertions
+static_assert(gmp::member_name<0, Person>().size() == 4);
+
+// Template metaprogramming
+template<typename T, size_t I>
+struct MemberTraits {
+    static constexpr auto name = gmp::member_name<I, T>();
+    static constexpr size_t index = I;
+};
+
+static_assert(MemberTraits<Person, 1>::name == "age");
+
+// These would cause compile-time errors:
+// member_name<0, Empty>();     // Error: I < member_count<T>() fails
+// member_name<3, Person>();    // Error: Index out of bounds
+// member_name<0, int>();       // Error: Not an aggregate
+
+struct Vector3 { float x; float y; float z; };
+struct Config { int timeout; bool enabled; std::string host; };
+
+// Get all member names
+constexpr auto vec_members = gmp::member_names<Vector3>();
+static_assert(vec_members.size() == 3);
+static_assert(vec_members[0] == "x");
+static_assert(vec_members[1] == "y");
+static_assert(vec_members[2] == "z");
+
+// Empty aggregate
+constexpr auto empty_members = gmp::member_names<Empty>();
+static_assert(empty_members.empty());
+
+// Compile-time iteration
+template<typename T>
+constexpr bool has_member(std::string_view name) {
+    constexpr auto names = gmp::member_names<T>();
+    for (size_t i = 0; i < names.size(); ++i) {
+        if (names[i] == name) return true;
+    }
+    return false;
+}
+
+static_assert(has_member<Config>("timeout"));
+static_assert(has_member<Config>("host"));
+static_assert(!has_member<Config>("port"));
+
+// Generate compile-time member name list
+template<typename T>
+struct MemberList {
+    static constexpr auto names = gmp::member_names<T>();
+    static constexpr size_t size = names.size();
+    
+    template<size_t I>
+    static constexpr auto get() { return names[I]; }
+};
+
+using Vector3Members = MemberList<Vector3>;
+static_assert(Vector3Members::size == 3);
+static_assert(Vector3Members::get<1>() == "y");
+
 } // namespace member_test
 
 int main() {
@@ -120,7 +195,7 @@ int main() {
         std::cout << e << ", ";
     }
 
-    std::cout << "------------------------\n";
+    std::cout << "\n------------------------\n";
 
     for (const auto& e : gmp::member_names<S>()) {
         std::cout << e << ", ";
