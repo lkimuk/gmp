@@ -61,7 +61,7 @@ Compiler Explorer: [https://godbolt.org/z/W156818n5](https://godbolt.org/z/W1568
 
 **Header-only version**
 
-Copy the [include](https://github.com/lkimuk/gmp/releases/download/v0.1.0/include.zip) folder to your build tree and use a C++11 compiler.
+Copy the [include](https://github.com/lkimuk/gmp/releases/download/v0.2.0/include.zip) folder to your build tree and use a C++11 compiler.
 
 **CMake integration**
 
@@ -87,7 +87,7 @@ target_link_libraries(your_target PRIVATE gmp::gmp)
 - **Comparison macros**: `GMP_EQUAL_INT`, `GMP_GREATER_INT`, `GMP_GREATER_EQUAL_INT`,`GMP_LESS_INT`, `GMP_LESS_EQUAL_INT`, `GMP_EQUAL_INT_INDEPENDENT`
 - **Conditional macros**: `GMP_IF`, `GMP_IF_THEN_ELSE`
 - **Stringification**: `GMP_STRINGIFY`, `GMP_CONCAT`, `GMP_CONCATS`
-- **Variadic handling**: `GMP_SIZE_OF_VAARGS`, `GMP_GET_N`, `GMP_IS_EMPTY`
+- **Variadic handling**: `GMP_SIZE_OF_VAARGS`, `GMP_GET_N`, `GMP_IS_EMPTY`, `GMP_GET_FIRST_N`
 - **Algorithms**: `GMP_MAX`, `GMP_MIN`, `GMP_MINMAX`, `GMP_MAXMIN`, `GMP_SWAP`
 - **Remove trailing comma**: `GMP_REMOVE_TRAILING_COMMA`
 - **Identifies**: `GMP_IDENTIFIERS`
@@ -233,9 +233,6 @@ MYLIB_NAMESPACE_END
 ```
 
 ## Reflection Metaprogramming
-MSVC >= v19.37
-GCC >= 11.1
-Clang >= 18.1.0
 
 ### Meta Features
 **Compile-time Fixed String**
