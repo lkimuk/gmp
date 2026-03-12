@@ -258,7 +258,8 @@ Clang >= 18.1.0
 - `member_name<I, T>()`: Returns the name of the `I`-th member of a type at compile time
 - `member_names<T>()`: Returns the names of all members of a type at compile time
 
-### Meta examples
+
+### Meta Examples
 **Reflection Metaprogramming**
 ```cpp
 #include <gmp/gmp.hpp>
