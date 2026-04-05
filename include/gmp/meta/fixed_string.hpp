@@ -87,6 +87,11 @@ consteval fixed_string<N1 + N2> operator+(fixed_string<N1> const& s1, fixed_stri
     return fixed_string<N1 + N2>(result);
 }
 
+template<fixed_string s>
+consteval auto operator""_fs() {
+    return s;
+}
+
 namespace detail {
 
 template<fixed_string Value, auto String>
