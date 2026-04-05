@@ -952,6 +952,14 @@
 #define GMP_GET_TUPLE(idx, tup) GMP_GET_N(idx, GMP_REMOVE_PARENS(tup))
 
 /**
+ * @brief Tests whether a preprocessor argument is a non-empty tuple
+ * 
+ * Evaluates to 1 if @p symbol is a non-empty parenthesized list (e.g., (a, b, c)),
+ * and 0 if it is empty or not a tuple.
+ */
+#define GMP_IS_TUPLE(symbol) GMP_IS_EMPTY(GMP_EMPTY symbol)
+
+/**
  * @def GMP_TUPLE_APPEND(tup, x)
  * @brief Append an element to the end of a tuple.
  * 

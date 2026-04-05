@@ -93,7 +93,7 @@ target_link_libraries(your_target PRIVATE gmp::gmp)
 - **Identifies**: `GMP_IDENTIFIERS`
 
 #### Tuple Operations
-- **Size & Access**: `GMP_TUPLE_SIZE`, `GMP_GET_TUPLE`
+- **Size & Access**: `GMP_TUPLE_SIZE`, `GMP_GET_TUPLE`, `GMP_IS_TUPLE`
 - **Modification**: `GMP_TUPLE_APPEND`, `GMP_TUPLE_PREPEND`, `GMP_TUPLE_CONCAT`
 - **Slicing**: `GMP_TUPLE_SKIP`, `GMP_TUPLE_TAKE`
 

@@ -369,6 +369,76 @@ consteval auto member_names() {
     }
 }
 
+/**
+ * @brief Extract the type of the I-th member (field) from a struct/class T
+ * 
+ * @tparam I - Index of the member to extract (0-based)
+ * @tparam T - The struct/class type to introspect
+ * 
+ * @returns The type of the I-th member, stripped of const, volatile, and reference qualifiers
+ * 
+ * @note Requires that T is an aggregate type (struct/class with public members)
+ * @note The member count must be known at compile time
+ * 
+ * @example
+ * struct Point { int x; float y; };
+ * using XType = member_type_t<0, Point>;  // int
+ * using YType = member_type_t<1, Point>;  // float
+ */
+template<std::size_t I, typename T>
+using member_type_t = std::remove_cvref_t<
+    decltype(*detail::field_getter<I, T>(constant_arg<member_count<T>()>))>;
+
+namespace detail {
+
+template<typename T>
+struct member_type_names_holder {
+    static constexpr std::size_t N = member_count<T>();
+
+    static constexpr auto fixed_names = []<std::size_t... Is>(std::index_sequence<Is...>) {
+        return std::tuple{ type_name<member_type_t<Is, T>>()... };
+    }(std::make_index_sequence<N>{});
+
+    static constexpr auto views = []<std::size_t... Is>(std::index_sequence<Is...>) {
+        return std::array<std::string_view, N>{
+            std::get<Is>(fixed_names).to_string_view()...
+        };
+    }(std::make_index_sequence<N>{});
+};
+
+} // namespace detail
+
+/**
+ * @brief Returns an array of string_view containing the type names of all members of aggregate type T
+ * 
+ * @tparam T - The aggregate type to introspect (struct/class with public members)
+ * 
+ * @return std::array<std::string_view, N> where N is the member count of T,
+ *         containing the demangled/pretty type names of each member in declaration order
+ * 
+ * @note The type names are generated at compile time and stored as static data
+ * @note The returned string_views remain valid for the entire program lifetime
+ * @note Requires T to be an aggregate type with known member count at compile time
+ * 
+ * @example
+ * struct Person {
+ *     int age;
+ *     std::string name;
+ *     double height;
+ * };
+ * 
+ * auto names = member_type_names<Person>();
+ * // names[0] == "int"
+ * // names[1] == "std::string" (or "std::basic_string<char>")
+ * // names[2] == "double"
+ * 
+ * @see member_type_t, member_count
+ */
+template<typename T>
+constexpr auto member_type_names() {
+    return member_type_names_holder<T>::views;
+}
+
 } // namespace gmp
 
 #endif // GMP_META_HPP_
