@@ -176,6 +176,29 @@ static_assert(Vector3Members::get<1>() == "y");
 
 } // namespace member_test
 
+struct get_weather {
+  std::string_view description = "Get weather";
+
+  std::string city;
+  std::string unit = "celsius";
+  std::array<std::string_view, 5> test;
+  std::vector<std::string> haha;
+
+  std::string invoke() const { return "current time"; }
+};
+
+template<typename T>
+void print() {
+    std::cout << "name: " << gmp::type_name<T>() << "\n";
+    
+    constexpr auto member_names = gmp::member_names<T>();
+    constexpr auto member_type_names = gmp::member_type_names<T>();
+    
+    for (unsigned i = 0; i < member_names.size(); ++i) {
+        std::cout << "type: " << member_type_names[i] << " name: " << member_names[i] << "\n";
+    }
+}
+
 int main() {
     std::cout << "All compile-time tests passed successfully!" << std::endl;
     
@@ -200,4 +223,8 @@ int main() {
     for (const auto& e : gmp::member_names<S>()) {
         std::cout << e << ", ";
     }
+
+    std::cout << std::endl;
+
+    print<get_weather>();
 }
