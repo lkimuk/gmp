@@ -12,49 +12,11 @@
 #ifndef GMP_META_HPP_
 #define GMP_META_HPP_
 
-#include <array>
 #include <source_location>
 
-#include <gmp/meta/fixed_string.hpp>
-#include <gmp/meta/detail/name.hpp>
+#include <gmp/meta/type_name.hpp>
 
 namespace gmp {
-
-/**
- * @brief Get the string representation of a type at compile-time.
- * 
- * This function returns a compile-time string representing the name of the 
- * given type T. The implementation is compiler-specific and extracts the 
- * type name from compiler-generated function signatures.
- * 
- * @tparam T The type whose name is to be retrieved.
- * @return A fixed_string containing the type name. If the compiler is not 
- *         supported (currently GCC, Clang, and MSVC are supported), returns 
- *         "Unknown type name".
- * 
- * @note This function is marked as consteval, ensuring it's evaluated 
- *       entirely at compile-time. The returned string is suitable for 
- *       compile-time string manipulation and comparison.
- * 
- * @example
- * @code
- * auto int_name = type_name<int>();     // "int" on all compilers
- * auto vec_name = type_name<std::vector<int>>(); // Compiler-specific representation
- * 
- * // Can be used in static assertions
- * static_assert(type_name<int>().size() == 3);
- * @endcode
- */
-template<typename T>
-consteval auto type_name() {
-    constexpr auto name = detail::type_name_of<T>();
-#if GMP_COMPILER_MSVC
-    constexpr fixed_string<name.size()> type(name);
-    return remove_all<"class ", "struct ", "enum ">(constant_arg<type>);
-#else
-    return fixed_string<name.size()>(name);
-#endif
-}
 
 /**
  * @brief Count the number of enumerators in an enumeration type at compile-time.
@@ -396,7 +358,7 @@ struct member_type_names_holder {
     static constexpr std::size_t N = member_count<T>();
 
     static constexpr auto fixed_names = []<std::size_t... Is>(std::index_sequence<Is...>) {
-        return std::tuple{ type_name<member_type_t<Is, T>>()... };
+        return std::tuple{ pretty_type_name<member_type_t<Is, T>>()()... };
     }(std::make_index_sequence<N>{});
 
     static constexpr auto views = []<std::size_t... Is>(std::index_sequence<Is...>) {
@@ -436,7 +398,7 @@ struct member_type_names_holder {
  */
 template<typename T>
 constexpr auto member_type_names() {
-    return member_type_names_holder<T>::views;
+    return detail::member_type_names_holder<T>::views;
 }
 
 } // namespace gmp
