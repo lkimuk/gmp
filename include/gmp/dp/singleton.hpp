@@ -105,7 +105,7 @@ private:
   singleton(singleton&&);
   singleton& operator=(singleton&&);
 
-  static utils::spin_lock lock_;
+  static dp::spin_lock lock_;
 
 protected:
   singleton() = default;
@@ -120,7 +120,7 @@ protected:
 
 template <typename T> T* singleton<T, true>::pInstance_ = nullptr;
 template <typename T> bool singleton<T, true>::destroyed_ = false;
-template <typename T> utils::spin_lock singleton<T, true>::lock_;
+template <typename T> dp::spin_lock singleton<T, true>::lock_;
 
 } // namespace gmp
 
