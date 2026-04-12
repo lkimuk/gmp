@@ -21,11 +21,11 @@ struct to_fixed_string_impl {
         auto ptr = buf + buflen;
         *--ptr = '\0';
         
-        if (N != 0) {
+        if constexpr (N != 0) {
             auto n = N < 0 ? -N : N;
             for (; n; n /= 10)
                 *--ptr = "0123456789"[n % 10];
-            if (N < 0)
+            if constexpr (N < 0)
                 *--ptr = '-';
         } else {
             buf[0] = '0';

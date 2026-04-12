@@ -227,4 +227,16 @@ int main() {
     std::cout << std::endl;
 
     print<get_weather>();
+
+    std::cout << "-------------------\n";
+
+    member_test::Person person {
+        .name = "Miles",
+        .age = 28,
+        .height = 183.0
+    };
+
+    gmp::for_each_member(person, [](auto&& member_name, auto&& member_value) {
+        std::cout << member_name << ": " << member_value << "\n";
+    });
 }

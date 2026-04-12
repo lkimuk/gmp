@@ -75,7 +75,7 @@ consteval auto member_name_of() {
     return name.substr(start, end - start);
 }
 
-#define FIELD_GETTER_DEFINE(i) \
+#define GMP_FIELD_GETTER_DEFINE(i) \
     template<std::size_t I, typename T> \
     consteval auto field_getter(constant_arg_t<i>) { \
         const auto& [GMP_GET_FIRST_N(i, GMP_IDENTIFIERS)] = as_value<std::remove_cv_t<T>>(); \
@@ -88,12 +88,14 @@ consteval auto member_name_of() {
 #if GMP_STANDARD_PREPROCESSOR
     #define GMP_MAX_SUPPORTED_FIELDS 255
     // Standard preprocessor supports 256 arguments
-    GMP_FOR_EACH(FIELD_GETTER_DEFINE, GMP_RANGE(1, 256))
+    GMP_FOR_EACH(GMP_FIELD_GETTER_DEFINE, GMP_RANGE(1, 256))
 #else
     #define GMP_MAX_SUPPORTED_FIELDS 118
     // MSVC traditional preprocessor: MAX 199 due to nesting depth limit (fatal error C1009)
-    GMP_FOR_EACH(FIELD_GETTER_DEFINE, GMP_RANGE(1, 119))
+    GMP_FOR_EACH(GMP_FIELD_GETTER_DEFINE, GMP_RANGE(1, 119))
 #endif
+
+#undef GMP_FIELD_GETTER_DEFINE
 
 } // namespace gmp::detail
 

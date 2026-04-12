@@ -15,6 +15,7 @@
 #include <source_location>
 
 #include <gmp/meta/type_name.hpp>
+#include <gmp/meta/detail/member_ref.hpp>
 
 namespace gmp {
 
@@ -184,10 +185,11 @@ consteval auto enum_names() {
  * @endcode
  */
 template<typename T, typename... Args>
-  requires std::is_aggregate_v<T>
+  requires std::is_aggregate_v<std::remove_cvref_t<T>>
 consteval int member_count() {
-    if constexpr (requires { T{Args{}...}; }) {
-        return member_count<T, Args..., gmp::any>();
+    using value_type = std::remove_cvref_t<T>;
+    if constexpr (requires { value_type{Args{}...}; }) {
+        return member_count<value_type, Args..., gmp::any>();
     } else {
         return sizeof...(Args) - 1;
     }
@@ -319,13 +321,14 @@ consteval auto member_name() noexcept {
  */
 template<typename T>
 consteval auto member_names() {
-    constexpr auto size = member_count<T>();
+    using value_type = std::remove_cvref_t<T>;
+    constexpr auto size = member_count<value_type>();
     if constexpr (size == 0) {
         return std::array<std::string_view, 0>{};
     } else {
         return []<std::size_t... Is>(std::index_sequence<Is...>) {
             return (std::array<std::string_view, size> {
-                member_name<Is, T>()...
+                member_name<Is, value_type>()...
             });
         }(std::make_index_sequence<size>{});
     }
@@ -399,6 +402,62 @@ struct member_type_names_holder {
 template<typename T>
 constexpr auto member_type_names() {
     return detail::member_type_names_holder<T>::views;
+}
+
+template<std::size_t I, typename T>
+    requires std::is_aggregate_v<T> &&
+        (I < member_count<T>()) &&
+        (member_count<T>() <= GMP_MAX_SUPPORTED_FIELDS)     
+decltype(auto) member_ref(T&& value) noexcept {
+    return detail::member_ref<I, T>(value, constant_arg<member_count<T>>);
+}
+
+template<std::size_t I, typename T>
+decltype(auto) member_ref(T&&) noexcept {
+    static_assert(std::is_aggregate_v<T>, "member_ref() can only be used with aggregate types.");
+    static_assert(I < member_count<T>(), "Index out of bounds in member_ref().");
+    static_assert(member_count<T>() <= GMP_MAX_SUPPORTED_FIELDS, "member_ref() only supports up to " GMP_STRINGIFY(GMP_MAX_SUPPORTED_FIELDS) " fields.");
+}
+
+namespace detail {
+
+#define GMP_FOR_EACH_MEMBER_DEFINE(N) \
+  template<typename T, typename F> \
+  void for_each_member_impl(T&& value, F&& f, constant_arg_t<N>) noexcept { \
+    auto&& [GMP_GET_FIRST_N(N, GMP_IDENTIFIERS)] = value; \
+    auto members = std::forward_as_tuple(GMP_GET_FIRST_N(N, GMP_IDENTIFIERS)); \
+    constexpr auto mem_names = gmp::member_names<T>(); \
+    std::size_t index = 0; \
+    std::apply( \
+      [&](auto&&... member) { (f(mem_names[index++], std::forward<decltype(member)>(member)), ...); }, members); \
+  }
+
+#if GMP_STANDARD_PREPROCESSOR
+    // Standard preprocessor supports 256 arguments
+    GMP_FOR_EACH(GMP_FOR_EACH_MEMBER_DEFINE, GMP_RANGE(1, 256))
+#else
+    // MSVC traditional preprocessor: MAX 199 due to nesting depth limit (fatal error C1009)
+    GMP_FOR_EACH(GMP_FOR_EACH_MEMBER_DEFINE, GMP_RANGE(1, 119))
+#endif
+
+#undef GMP_FOR_EACH_MEMBER_DEFINE
+
+} // namespace detail
+
+template<typename T, typename F>
+    requires std::is_aggregate_v<std::remove_cvref_t<T>>
+void for_each_member(T&& value, F&& func) noexcept {
+    detail::for_each_member_impl(
+        std::forward<T>(value),
+        std::forward<F>(func),
+        constant_arg<member_count<T>()>
+    );
+}
+
+template<typename T, typename F>
+void for_each_member(T&& value, F&& func) noexcept {
+    static_assert(std::is_aggregate_v<std::remove_cvref_t<T>>,
+        "for_each_member() can only be used with aggregate types.");
 }
 
 } // namespace gmp
