@@ -1,3 +1,14 @@
+//   ___ __  __ ___ 
+//  / __|  \/  | _ \ GMP(Generative Metaprogramming)
+// | (_ | |\/| |  _/ version 0.3.0
+//  \___|_|  |_|_|   https://github.com/lkimuk/gmp
+//
+// SPDX-FileCopyrightText: 2026 Gaoxing Li <https://www.cppmore.com/>
+// SPDX-License-Identifier: MIT
+//
+// This file is part of the GMP (Generative Metaprogramming) library.
+// Full project source: https://github.com/lkimuk/gmp
+
 #ifndef GMP_META_TO_FIXED_STRING_HPP_
 #define GMP_META_TO_FIXED_STRING_HPP_
 

@@ -15,6 +15,8 @@
 #include <gmp/macro/macro.hpp>
 #include <gmp/meta/string.hpp>
 #include <gmp/meta/meta.hpp>
+#include <gmp/dp/singleton.hpp>
+#include <gmp/dp/object_factory.hpp>
 #include <gmp/meta/type_size.hpp>
 #include <gmp/meta/named_operator.hpp>
 
