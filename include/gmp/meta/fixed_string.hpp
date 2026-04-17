@@ -24,11 +24,11 @@ struct fixed_string final {
     using size_type = std::size_t;
     static constexpr size_type npos = size_type(-1);
 
-    constexpr fixed_string(const char (&str)[N + 1]) {
+    [[maybe_unused]] constexpr fixed_string(const char (&str)[N + 1]) {
         std::copy_n(str, N + 1, data_);
     }
 
-    constexpr fixed_string(std::string_view sv) {
+    [[maybe_unused]] constexpr fixed_string(std::string_view sv) {
         std::copy_n(sv.data(), N, data_);
         data_[N] = '\0';
     }
