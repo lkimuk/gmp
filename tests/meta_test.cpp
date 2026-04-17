@@ -16,6 +16,11 @@
 
 #include <gmp/gmp.hpp>
 
+#ifdef _MSC_VER
+#   pragma warning(push)
+#   pragma warning(disable: 5045 4820)
+#endif
+
 struct S {
     double b;
     std::string str;
@@ -240,3 +245,8 @@ int main() {
         std::cout << member_name << ": " << member_value << "\n";
     });
 }
+
+#ifdef _MSC_VER
+#   pragma warning(pop)
+#endif
+
