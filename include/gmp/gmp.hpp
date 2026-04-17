@@ -15,5 +15,7 @@
 #include <gmp/macro/macro.hpp>
 #include <gmp/meta/string.hpp>
 #include <gmp/meta/meta.hpp>
+#include <gmp/dp/singleton.hpp>
+#include <gmp/dp/object_factory.hpp>
 
 #endif // GMP_HPP_
