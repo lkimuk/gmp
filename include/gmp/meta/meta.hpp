@@ -12,6 +12,7 @@
 #ifndef GMP_META_HPP_
 #define GMP_META_HPP_
 
+#include <optional>
 #include <source_location>
 
 #include <gmp/meta/type_name.hpp>
@@ -19,12 +20,94 @@
 
 namespace gmp {
 
+template<typename E>
+struct enum_traits {
+    static constexpr int min = -128;
+    static constexpr int max = 127;
+    // static constexpr bool is_flags = false;
+    // static constexpr bool allow_alias = false;
+};
+
+#define GMP_ENUM_RANGE(Enum, Min, Max) \
+    template<>                             \
+    struct gmp::enum_traits<Enum> {             \
+        static constexpr int min = Min;    \
+        static constexpr int max = Max;    \
+    }
+
+#define GMP_ENUM_VALUES(Enum, ...) \
+    template<>                             \
+    struct gmp::enum_traits<Enum> {             \
+        static constexpr auto values = std::to_array({__VA_ARGS__}); \
+    }
+
+template<typename E>
+inline constexpr int enum_min_v = enum_traits<E>::min;
+
+template<typename E>
+inline constexpr int enum_max_v = enum_traits<E>::max;
+
+namespace detail {
+
+template<typename E>
+concept has_enum_values =
+    requires {
+        enum_traits<E>::values;
+        std::tuple_size<std::remove_cvref_t<decltype(enum_traits<E>::values)>>::value;
+    } &&
+    std::same_as<
+        typename std::remove_cvref_t<decltype(enum_traits<E>::values)>::value_type,
+        E
+    >;
+
+template<typename E, fixed_string P, auto V>
+consteval bool is_valid_enum_value() {
+    constexpr auto name = value_name_of<static_cast<E>(V)>();
+    return name.find(P.data()) != std::string_view::npos;
+}
+
+template<typename E, fixed_string P, int Min, std::size_t... I>
+consteval auto enum_values_scan(std::index_sequence<I...>) {
+    constexpr std::size_t count = (std::size_t{0} + ... + (is_valid_enum_value<E, P, Min + static_cast<int>(I)>() ? 1u : 0u));
+
+    std::array<E, count> result{};
+    std::size_t index = 0;
+
+    auto append = [&]<int V>() consteval {
+        if constexpr (is_valid_enum_value<E, P, V>()) {
+            result[index++] = static_cast<E>(V);
+        }
+    };
+
+    (append.template operator()<Min + static_cast<int>(I)>(), ...);
+    return result;
+}
+
+} // namespace detail
+
+template<typename E, fixed_string P = type_name<E>() + fixed_string("::")>
+consteval auto enum_values() {
+    static_assert(std::is_enum_v<E>, "enum_values<E>() requires E to be an enum type");
+
+    if constexpr (detail::has_enum_values<E>) {
+        return enum_traits<E>::values;
+    } else {
+        constexpr int min = enum_min_v<E>;
+        constexpr int max = enum_max_v<E>;
+
+        static_assert(min <= max, "enum_traits<E>::min must be <= max");
+
+        return detail::enum_values_scan<E, P, min>(
+            std::make_index_sequence<static_cast<std::size_t>(max - min + 1)>{}
+        );
+    }
+}
+
 /**
  * @brief Count the number of enumerators in an enumeration type at compile-time.
  * 
  * @tparam E The enumeration type to count enumerators for.
  * @tparam P The prefix string used to identify enumerator names (defaults to type name + "::").
- * @tparam R The current recursion index.
  * @return The number of valid enumerators in the enumeration.
  * 
  * @note This function is consteval and evaluated entirely at compile-time.
@@ -48,14 +131,11 @@ namespace gmp {
  * static_assert(EnumTraits<Color>::size == 4);
  * @endcode
  */
-template<typename E, fixed_string P = type_name<E>() + fixed_string("::"), std::size_t R = 0>
+template<typename E, fixed_string P = type_name<E>() + fixed_string("::")>
 consteval auto enum_count() {
-    constexpr auto name =  detail::value_name_of<E(R)>();
-    if constexpr (name.find(P.data()) != std::string_view::npos) {
-        return enum_count<E, P, R + 1>();
-    } else {
-        return R;
-    }
+    static_assert(std::is_enum_v<E>, "enum_count<E>() requires E to be an enum type");
+
+    return enum_values<E, P>().size();
 }
 
 /**
@@ -143,16 +223,70 @@ consteval auto enum_name() {
  */
 template<typename E>
 consteval auto enum_names() {
-    constexpr auto size = enum_count<E>();
+    constexpr auto values = enum_values<E>();
+    constexpr std::size_t size = values.size();
+
     if constexpr (size == 0) {
         return std::array<std::string_view, 0>{};
     } else {
-        return []<std::size_t... Is>(std::index_sequence<Is...>) {
-            return (std::array<std::string_view, size> {
-                enum_name<E(Is)>()...
-            });
+        return [&]<std::size_t... Is>(std::index_sequence<Is...>) {
+            return std::array<std::string_view, size>{
+                enum_name<values[Is]>()...
+            };
         }(std::make_index_sequence<size>{});
     }
+}
+
+/**
+ * @brief Get all enumerator entries (value, name) of an enumeration type at compile-time.
+ */
+template<typename E>
+consteval auto enum_entries() {
+    constexpr auto values = enum_values<E>();
+    constexpr auto names  = enum_names<E>();
+    constexpr std::size_t size = values.size();
+
+    if constexpr (size == 0) {
+        return std::array<std::pair<E, std::string_view>, 0>{};
+    } else {
+        return [&]<std::size_t... Is>(std::index_sequence<Is...>) {
+            return std::array<std::pair<E, std::string_view>, size>{
+                std::pair<E, std::string_view>{ values[Is], names[Is] }...
+            };
+        }(std::make_index_sequence<size>{});
+    }
+}
+
+/**
+ * @brief Get the index of an enumerator value in enum_values<E>().
+ *
+ * @return std::optional<std::size_t> containing the index if found, otherwise std::nullopt.
+ */
+template<typename E>
+constexpr auto enum_index(E value) -> std::optional<std::size_t> {
+    constexpr auto values = enum_values<E>();
+    for (std::size_t i = 0; i < values.size(); ++i) {
+        if (values[i] == value) {
+            return i;
+        }
+    }
+    return std::nullopt;
+}
+
+/**
+ * @brief Cast an enumerator name to its corresponding enumerator value.
+ *
+ * @return std::optional<E> containing the enumerator if found, otherwise std::nullopt.
+ */
+template<typename E>
+constexpr auto enum_cast(std::string_view name) -> std::optional<E> {
+    constexpr auto entries = enum_entries<E>();
+    for (const auto& [value, n] : entries) {
+        if (n == name) {
+            return value;
+        }
+    }
+    return std::nullopt;
 }
 
 /**
@@ -404,19 +538,19 @@ constexpr auto member_type_names() {
     return detail::member_type_names_holder<T>::views;
 }
 
-template<std::size_t I, typename T>
-    requires std::is_aggregate_v<T> &&
-        (I < member_count<T>()) &&
-        (member_count<T>() <= GMP_MAX_SUPPORTED_FIELDS)     
+template<std::size_t I, typename T, typename UnqualifiedT = std::remove_cvref_t<T>>
+    requires std::is_aggregate_v<UnqualifiedT>
+        && (I < member_count<UnqualifiedT>())
+        && (member_count<UnqualifiedT>() <= GMP_MAX_SUPPORTED_FIELDS)
 decltype(auto) member_ref(T&& value) noexcept {
-    return detail::member_ref<I, T>(value, constant_arg<member_count<T>>);
+    return detail::member_ref<I, T>(value, constant_arg<member_count<UnqualifiedT>()>);
 }
 
-template<std::size_t I, typename T>
+template<std::size_t I, typename T, typename UnqualifiedT = std::remove_cvref_t<T>>
 decltype(auto) member_ref(T&&) noexcept {
-    static_assert(std::is_aggregate_v<T>, "member_ref() can only be used with aggregate types.");
-    static_assert(I < member_count<T>(), "Index out of bounds in member_ref().");
-    static_assert(member_count<T>() <= GMP_MAX_SUPPORTED_FIELDS, "member_ref() only supports up to " GMP_STRINGIFY(GMP_MAX_SUPPORTED_FIELDS) " fields.");
+    static_assert(std::is_aggregate_v<UnqualifiedT>, "member_ref() can only be used with aggregate types.");
+    static_assert(I < member_count<UnqualifiedT>(), "Index out of bounds in member_ref().");
+    static_assert(member_count<UnqualifiedT>() <= GMP_MAX_SUPPORTED_FIELDS, "member_ref() only supports up to " GMP_STRINGIFY(GMP_MAX_SUPPORTED_FIELDS) " fields.");
 }
 
 namespace detail {
