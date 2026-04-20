@@ -17,12 +17,31 @@ int main() {
         return x * y;
     });
 
-    assert((a ^_^ b) == 13);
-    assert((a <_> b) == 13);
-    assert((a *_* b) == 13);
-    assert((a -_- b) == 13);
-    assert((a *_^ b) == 13);
-    assert((a ^o^ b) == 30);
+    auto r1 = a ^_^ b;
+    auto r2 = a <_> b;
+    auto r3 = a <<_>> b;
+    auto r4 = a +_+ b;
+    auto r5 = a *_* b;
+    auto r6 = a -_- b;
+    auto r7 = a /_/ b;
+    auto r8 = a %_% b;
+    auto r9 = a &_& b;
+    auto r10 = a |_| b;
+    auto r11 = a *_^ b;
+    auto r12 = a ^o^ b;
+
+    assert(r1 == 13);
+    assert(r2 == 13);
+    assert(r3 == 13);
+    assert(r4 == 13);
+    assert(r5 == 13);
+    assert(r6 == 13);
+    assert(r7 == 13);
+    assert(r8 == 13);
+    assert(r9 == 13);
+    assert(r10 == 13);
+    assert(r11 == 13);
+    assert(r12 == 30);
 
     auto add_assign = gmp::make_named_operator([](int& x, int y) -> int& {
         x += y;
@@ -47,7 +66,8 @@ int main() {
     auto consume = gmp::make_named_operator([](std::unique_ptr<int> p, int n) {
         return *p + n;
     });
-    assert((std::make_unique<int>(40) ^consume^ 2) == 42);
+    auto r13 = std::make_unique<int>(40) ^consume^ 2;
+    assert(r13 == 42);
 
     auto rhs_category = gmp::make_named_operator([](int, auto&& rhs) {
         return std::is_rvalue_reference_v<decltype(rhs)>;
