@@ -237,6 +237,7 @@ void print() {
 
 int main() {
     std::cout << "All compile-time tests passed successfully!" << std::endl;
+    [[maybe_unused]] get_weather weather;
     
     [[maybe_unused]] constexpr auto type = gmp::type_name<int>();
     // auto sv = gmp::type_name<int>();
@@ -263,6 +264,7 @@ int main() {
     std::cout << std::endl;
 
     print<get_weather>();
+    std::cout << weather.invoke() << "\n";
 
     std::cout << "-------------------\n";
 
