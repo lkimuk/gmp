@@ -181,6 +181,37 @@ static_assert(Vector3Members::get<1>() == "y");
 
 } // namespace member_test
 
+namespace type_size_test {
+
+struct Empty {};
+
+struct Padded {
+    char tag;
+    int value;
+    short code;
+};
+
+struct Inner {
+    char marker;
+    int count;
+};
+
+struct Outer {
+    char tag;
+    Inner inner;
+    double score;
+};
+
+static_assert(gmp::type_size<Empty>() == 0);
+static_assert(gmp::type_size<Padded>() == sizeof(char) + sizeof(int) + sizeof(short));
+static_assert(gmp::type_size<Padded>() < sizeof(Padded));
+static_assert(gmp::type_size<Outer>() == sizeof(char) + sizeof(char) + sizeof(int) + sizeof(double));
+static_assert(gmp::type_size<Outer>() < sizeof(Outer));
+static_assert(gmp::type_size<int[3]>() == sizeof(int) * 3);
+static_assert(gmp::type_size<int>() == sizeof(int));
+
+} // namespace type_size_test
+
 struct get_weather {
   std::string_view description = "Get weather";
 
