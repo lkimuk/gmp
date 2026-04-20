@@ -2,11 +2,6 @@
 
 #include <gmp/dp/singleton.hpp>
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4625 4626 4627 5026 5027 4820)
-#endif
-
 struct S : gmp::singleton<S> {
     int value = 42;
 
@@ -20,7 +15,3 @@ int main() {
     // okay
     std::cout << S::instance().value << "\n";
 }
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif

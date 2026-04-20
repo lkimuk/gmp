@@ -30,6 +30,7 @@ using shape_factory = gmp::object_factory<shape>;
 int main() {
     logger::instance().write("hello from singleton");
 
-    auto product = shape_factory::instance().create_unique("circle");
+    shape_factory factory;
+    auto product = factory.create_unique("circle");
     std::cout << product->name() << "\n";
 }

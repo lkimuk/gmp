@@ -7,11 +7,6 @@
 
 #include <gmp/gmp.hpp>
 
-#ifdef _MSC_VER
-#   pragma warning(push)
-#   pragma warning(disable: 5045)
-#endif
-
 // =========================
 // test enums
 // =========================
@@ -271,8 +266,3 @@ int main() {
     std::cout << "\nall enum tests passed\n";
     return 0;
 }
-
-#ifdef _MSC_VER
-#   pragma warning(pop)
-#endif
-

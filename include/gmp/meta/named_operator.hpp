@@ -24,11 +24,6 @@ namespace gmp {
 
 namespace detail {
 
-#if defined(_MSC_VER)
-#pragma warning(push)
-#pragma warning(disable : 4625 4626) // C4625/C4626: implicitly deleted special member for constrained value_holder instantiations
-#endif
-
 /**
  * @brief Store the operands captured while evaluating a named-operator expression.
  *
@@ -47,31 +42,7 @@ struct value_holder {
         requires std::constructible_from<std::tuple<Ts...>, Us&&...>
     constexpr explicit value_holder(Us&&... us)
         : values(std::forward<Us>(us)...) {}
-
-    constexpr value_holder(const value_holder&)
-        requires std::copy_constructible<std::tuple<Ts...>>
-    = default;
-
-    constexpr value_holder(const value_holder&)
-        requires (!std::copy_constructible<std::tuple<Ts...>>)
-    = delete;
-
-    constexpr value_holder(value_holder&&) = default;
-
-    constexpr value_holder& operator=(const value_holder&)
-        requires std::assignable_from<std::tuple<Ts...>&, const std::tuple<Ts...>&>
-    = default;
-
-    constexpr value_holder& operator=(const value_holder&)
-        requires (!std::assignable_from<std::tuple<Ts...>&, const std::tuple<Ts...>&>)
-    = delete;
-
-    constexpr value_holder& operator=(value_holder&&) = default;
 };
-
-#if defined(_MSC_VER)
-#pragma warning(pop)
-#endif
 
 /**
  * @brief Select the storage type for the left operand of a named operator.
@@ -157,7 +128,7 @@ constexpr decltype(auto) invoke_named_operator(value_holder<Lhs, Func>&& holder,
     GMP_FOR_EACH(GMP_DEFINE_NAMED_OPERATOR_PAIR, __VA_ARGS__)
 
 #ifndef GMP_DISABLE_DEFAULT_NAMED_OPERATORS
-GMP_GENERATE_NAMED_OPERATOR_PAIRS((<, >), (<<, >>))
+GMP_GENERATE_NAMED_OPERATOR_PAIRS((<, >))
 GMP_GENERATE_NAMED_OPERATOR_IDENTICAL_PAIRS(+, ^, *, -, /, %, &, |)
 #endif
 
@@ -175,7 +146,7 @@ GMP_GENERATE_NAMED_OPERATOR_IDENTICAL_PAIRS(+, ^, *, -, /, %, &, |)
  *
  * The returned token can be placed between two matching operator symbols to
  * call the stored callable with the left and right operands. Default generated
- * forms include `lhs ^op^ rhs`, `lhs <op> rhs`, `lhs <<op>> rhs`, and matching
+ * forms include `lhs ^op^ rhs`, `lhs <op> rhs`, and matching
  * pairs for `+`, `*`, `-`, `/`, `%`, `&`, and `|`.
  *
  * The callable is stored by value. The left operand is stored as a reference

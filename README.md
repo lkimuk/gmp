@@ -268,14 +268,14 @@ int main() {
 ## Named Operators
 
 ### Features
-- Expressive operator-like DSL syntax: Enables playful and readable forms such as `^_^`, `<_>`, `<<_>>`, `+_+`, `*_*`, `-_-`, `/_/`, `%_%`, `&_&`, `|_|`, and `^o^`
+- Expressive operator-like DSL syntax: Enables playful and readable forms such as `^_^`, `<_>`, `+_+`, `*_*`, `-_-`, `/_/`, `%_%`, `&_&`, `|_|`, and `^o^`
 - `make_named_operator(...)`: Creates a token that turns a callable into a named operator
 - `GMP_GENERATE_NAMED_OPERATOR_PAIRS(...)`: Generates named-operator pairs from explicit operator tuples
 - `GMP_GENERATE_NAMED_OPERATOR_IDENTICAL_PAIRS(...)`: Generates named-operator pairs that use the same token on both sides
 - `GMP_DISABLE_DEFAULT_NAMED_OPERATORS`: Disables the default predefined named-operator pairs so custom sets can be supplied
 - Value-category-aware binding: Preserves lvalue/rvalue semantics for operands during operator composition
-- Default operator forms: `lhs ^op^ rhs`, `lhs <op> rhs`, `lhs <<op>> rhs`, `lhs +op+ rhs`, `lhs *op* rhs`, `lhs -op- rhs`, `lhs /op/ rhs`, `lhs %op% rhs`, `lhs &op& rhs`, and `lhs |op| rhs`
-- Expression-style examples: `a ^_^ b`, `a <_> b`, `a <<_>> b`, `a +_+ b`, `a *_* b`, `a -_- b`, `a /_/ b`, `a %_% b`, `a &_& b`, `a |_| b`, `a *_^ b`, and `a ^o^ b`
+- Default operator forms: `lhs ^op^ rhs`, `lhs <op> rhs`, `lhs +op+ rhs`, `lhs *op* rhs`, `lhs -op- rhs`, `lhs /op/ rhs`, `lhs %op% rhs`, `lhs &op& rhs`, and `lhs |op| rhs`
+- Expression-style examples: `a ^_^ b`, `a <_> b`, `a +_+ b`, `a *_* b`, `a -_- b`, `a /_/ b`, `a %_% b`, `a &_& b`, `a |_| b`, `a *_^ b`, and `a ^o^ b`
 
 ### Examples
 #### Named Operators
@@ -300,33 +300,18 @@ int main() {
         return *p + n;
     });
 
-    auto r1 = a ^_^ b;
-    auto r2 = a <_> b;
-    auto r3 = a <<_>> b;
-    auto r4 = a +_+ b;
-    auto r5 = a *_* b;
-    auto r6 = a -_- b;
-    auto r7 = a /_/ b;
-    auto r8 = a %_% b;
-    auto r9 = a &_& b;
-    auto r10 = a |_| b;
-    auto r11 = a *_^ b;
-    auto r12 = a ^o^ b;
-    auto r13 = std::make_unique<int>(40) ^consume^ 2;
-
-    std::cout << r1 << "\n";
-    std::cout << r2 << "\n";
-    std::cout << r3 << "\n";
-    std::cout << r4 << "\n";
-    std::cout << r5 << "\n";
-    std::cout << r6 << "\n";
-    std::cout << r7 << "\n";
-    std::cout << r8 << "\n";
-    std::cout << r9 << "\n";
-    std::cout << r10 << "\n";
-    std::cout << r11 << "\n";
-    std::cout << r12 << "\n";
-    std::cout << r13 << "\n";
+    assert((a ^_^ b) == 13);
+    assert((a <_> b) == 13);
+    assert((a +_+ b) == 13);
+    assert((a *_* b) == 13);
+    assert((a -_- b) == 13);
+    assert((a /_/ b) == 13);
+    assert((a %_% b) == 13);
+    assert((a &_& b) == 13);
+    assert((a |_| b) == 13);
+    assert((a *_^ b) == 13);
+    assert((a ^o^ b) == 30);
+    assert((std::make_unique<int>(40) ^consume^ 2) == 42);
 }
 ```
 
