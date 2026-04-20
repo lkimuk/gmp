@@ -95,9 +95,16 @@ private:
 
 #define _GMP_GET_CONCRETE_PRODUCT_CLASS(ConcreteProduct) GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConcreteProduct), GMP_GET_TUPLE, ConcreteProduct)GMP_IF(GMP_IS_TUPLE(ConcreteProduct), (1, ConcreteProduct))
 #define _GMP_GET_CONSTRUCTOR_TYPES(ConstructorArgs) GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConstructorArgs), GMP_REMOVE_PARENS, ConstructorArgs)GMP_IF(GMP_IS_TUPLE(ConstructorArgs), (ConstructorArgs))
+#define _GMP_APPEND_CONSTRUCTOR_TYPES(ConstructorArgs) GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConstructorArgs), _GMP_APPEND_CONSTRUCTOR_TYPES_TUPLE, _GMP_APPEND_CONSTRUCTOR_TYPES_SINGLE)(ConstructorArgs)
+#define _GMP_APPEND_CONSTRUCTOR_TYPES_SINGLE(ConstructorArgs) , ConstructorArgs
+#define _GMP_APPEND_CONSTRUCTOR_TYPES_TUPLE(ConstructorArgs) GMP_IF(GMP_BOOL(GMP_TUPLE_SIZE(ConstructorArgs)), _GMP_APPEND_CONSTRUCTOR_TYPES_NONEMPTY) GMP_IF(GMP_BOOL(GMP_TUPLE_SIZE(ConstructorArgs)), (ConstructorArgs))
+#define _GMP_APPEND_CONSTRUCTOR_TYPES_NONEMPTY(ConstructorArgs) , GMP_REMOVE_PARENS(ConstructorArgs)
+#define _GMP_OBJECT_FACTORY_TYPE(AbstractProduct, ConstructorArgs) gmp::object_factory<AbstractProduct GMP_EXPAND(_GMP_APPEND_CONSTRUCTOR_TYPES(ConstructorArgs))>
+#define _GMP_OBJECT_FACTORY_REGISTER_NAME(AbstractProduct, ConcreteProduct) \
+  GMP_CONCAT(GMP_CONCAT(GMP_CONCAT(gmp_reg_, AbstractProduct), _), _GMP_GET_CONCRETE_PRODUCT_CLASS(ConcreteProduct))
 #define GMP_FACTORY_REGISTER_ONE(AbstractProduct, ConstructorArgs, ConcreteProduct) \
-  static gmp::object_factory<AbstractProduct, _GMP_GET_CONSTRUCTOR_TYPES(ConstructorArgs)>::register_type<_GMP_GET_CONCRETE_PRODUCT_CLASS(ConcreteProduct)> \
-        GMP_CONCATS(gmp_reg_, AbstractProduct, _, _GMP_GET_CONCRETE_PRODUCT_CLASS(ConcreteProduct))(GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConcreteProduct), GMP_STRINGIFY(GMP_GET_TUPLE(0, ConcreteProduct)), GMP_STRINGIFY(ConcreteProduct)));
+  static _GMP_OBJECT_FACTORY_TYPE(AbstractProduct, ConstructorArgs)::register_type<_GMP_GET_CONCRETE_PRODUCT_CLASS(ConcreteProduct)> \
+        _GMP_OBJECT_FACTORY_REGISTER_NAME(AbstractProduct, ConcreteProduct)(GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConcreteProduct), GMP_STRINGIFY(GMP_GET_TUPLE(0, ConcreteProduct)), GMP_STRINGIFY(ConcreteProduct)));
 
 /**
  * @brief 
