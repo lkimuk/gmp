@@ -10,7 +10,7 @@ foreach(source_file ${SOURCE_FILES})
     message(STATUS " ${name}")
     add_executable(${name} "${name}.cpp")
     target_link_libraries(${name} PRIVATE gmp)
-    target_compile_options(${name} PRIVATE -Wall)
+    target_compile_options(${name} PRIVATE)
 endforeach()
 
 if(MSVC)
@@ -24,8 +24,8 @@ else()
 endif()
 
 add_custom_target(preprocess
-    ${CMAKE_CXX_COMPILER} 
-        -E -P 
+    ${CMAKE_CXX_COMPILER}
+        -E -P
         ${CMAKE_CXX_FLAGS}
         ${PREPROCESS_FLAGS}
         -I${CMAKE_SOURCE_DIR}/include

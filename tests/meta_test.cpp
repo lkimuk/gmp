@@ -1,4 +1,4 @@
-//   ___ __  __ ___ 
+//   ___ __  __ ___
 //  / __|  \/  | _ \ GMP(Generative Metaprogramming)
 // | (_ | |\/| |  _/ version 0.2.0
 //  \___|_|  |_|_|   https://github.com/lkimuk/gmp
@@ -15,11 +15,6 @@
 #include <vector>
 
 #include <gmp/gmp.hpp>
-
-#ifdef _MSC_VER
-#   pragma warning(push)
-#   pragma warning(disable: 5045 4820)
-#endif
 
 struct S {
     double b;
@@ -87,7 +82,7 @@ static_assert(!has_enumerator<Permission>("Delete"));
 constexpr auto empty_names = gmp::enum_names<Empty>();
 static_assert(empty_names.empty());
 
-} // namespace 
+} // namespace
 
 namespace member_test {
 
@@ -170,7 +165,7 @@ template<typename T>
 struct MemberList {
     static constexpr auto names = gmp::member_names<T>();
     static constexpr size_t size = names.size();
-    
+
     template<size_t I>
     static constexpr auto get() { return names[I]; }
 };
@@ -226,10 +221,10 @@ struct get_weather {
 template<typename T>
 void print() {
     std::cout << "name: " << gmp::type_name<T>() << "\n";
-    
+
     constexpr auto member_names = gmp::member_names<T>();
     constexpr auto member_type_names = gmp::member_type_names<T>();
-    
+
     for (unsigned i = 0; i < member_names.size(); ++i) {
         std::cout << "type: " << member_type_names[i] << " name: " << member_names[i] << "\n";
     }
@@ -238,7 +233,7 @@ void print() {
 int main() {
     std::cout << "All compile-time tests passed successfully!" << std::endl;
     [[maybe_unused]] get_weather weather;
-    
+
     [[maybe_unused]] constexpr auto type = gmp::type_name<int>();
     // auto sv = gmp::type_name<int>();
     std::cout << "int: " << gmp::type_name<int>() << "\n";
@@ -278,7 +273,3 @@ int main() {
         std::cout << member_name << ": " << member_value << "\n";
     });
 }
-
-#ifdef _MSC_VER
-#   pragma warning(pop)
-#endif

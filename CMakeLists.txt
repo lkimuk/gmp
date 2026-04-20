@@ -53,7 +53,20 @@ target_include_directories(gmp INTERFACE
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-target_compile_options(gmp INTERFACE -Wall)
+if(MSVC)
+    target_compile_options(gmp INTERFACE
+        /W4
+        /wd4514
+        /wd4625
+        /wd4626
+        /wd4820
+        /wd5026
+        /wd5027
+        /wd5045
+    )
+else()
+    target_compile_options(gmp INTERFACE -Wall -Wextra -Wpedantic)
+endif()
 target_compile_features(gmp INTERFACE cxx_std_20)
 
 # ---------------------------------------------------------------------------------------
