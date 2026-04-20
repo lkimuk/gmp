@@ -69,7 +69,7 @@ Compiler Explorer: [https://godbolt.org/z/W156818n5](https://godbolt.org/z/W1568
 
 **Header-only version**
 
-Copy the [include](https://github.com/lkimuk/gmp/releases/download/v0.2.0/include.zip) folder to your build tree and include `gmp/gmp.hpp`.
+Copy the [include](https://github.com/lkimuk/gmp/releases/download/v0.3.0/include.zip) folder to your build tree and include `gmp/gmp.hpp`.
 
 **CMake integration**
 
@@ -97,13 +97,14 @@ target_link_libraries(your_target PRIVATE gmp::gmp)
 - **Stringification**: `GMP_STRINGIFY`, `GMP_CONCAT`, `GMP_CONCATS`
 - **Variadic handling**: `GMP_SIZE_OF_VAARGS`, `GMP_GET_N`, `GMP_GET_FIRST_N`, `GMP_IS_EMPTY`
 - **Algorithms**: `GMP_MAX`, `GMP_MIN`, `GMP_MINMAX`, `GMP_MAXMIN`, `GMP_SWAP`
-- **Tuple detection and cleanup**: `GMP_IS_TUPLE`, `GMP_REMOVE_TRAILING_COMMA`
+- **Remove trailing comma**: `GMP_REMOVE_TRAILING_COMMA`
 - **Identifiers**: `GMP_IDENTIFIERS`
 
 #### Tuple Operations
 - **Size & Access**: `GMP_TUPLE_SIZE`, `GMP_GET_TUPLE`
 - **Modification**: `GMP_TUPLE_APPEND`, `GMP_TUPLE_PREPEND`, `GMP_TUPLE_CONCAT`
 - **Slicing**: `GMP_TUPLE_SKIP`, `GMP_TUPLE_TAKE`
+- **Detection**: `GMP_IS_TUPLE`
 
 #### Advanced Features
 - **Loop macros**: `GMP_REPEAT`, `GMP_WHILE`, `GMP_FOR_EACH`, `GMP_FOR_EACH_INDEPENDENT`
@@ -268,7 +269,7 @@ int main() {
 
 ### Features
 - Expressive operator-like DSL syntax: Enables playful and readable forms such as `^_^`, `<_>`, `<<_>>`, `+_+`, `*_*`, `-_-`, `/_/`, `%_%`, `&_&`, `|_|`, and `^o^`
-- `make_named_operator(...)`: Creates a token that turns a callable into a named infix operator
+- `make_named_operator(...)`: Creates a token that turns a callable into a named operator
 - `GMP_GENERATE_NAMED_OPERATOR_PAIRS(...)`: Generates named-operator pairs from explicit operator tuples
 - `GMP_GENERATE_NAMED_OPERATOR_IDENTICAL_PAIRS(...)`: Generates named-operator pairs that use the same token on both sides
 - `GMP_DISABLE_DEFAULT_NAMED_OPERATORS`: Disables the default predefined named-operator pairs so custom sets can be supplied
