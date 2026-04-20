@@ -223,6 +223,7 @@ MYLIB_NAMESPACE_END
 #include <array>
 #include <iostream>
 #include <string>
+#include <type_traits>
 #include <vector>
 #include <gmp/gmp.hpp>
 
@@ -245,24 +246,63 @@ int main() {
     static_assert(std::is_same_v<gmp::member_type_t<1, Person>, int>);
     static_assert(gmp::type_size<Person>() == sizeof(std::string) + sizeof(int) + sizeof(std::array<int, 3>));
 
-    std::cout << "raw type: " << type << "\n";
-    std::cout << "pretty type: " << pretty << "\n";
-    std::cout << "first member: " << member_names[0] << " -> " << member_types[0] << "\n";
+    std::cout << "== Type Info ==\n";
+    std::cout << "raw_type     : " << type << "\n";
+    std::cout << "pretty_type  : " << pretty << "\n";
+    std::cout << "first_member : " << member_names[0] << " -> " << member_types[0] << "\n";
 
+    std::cout << "\n== Enum Entries ==\n";
     for (const auto& [value, name] : colors) {
-        std::cout << static_cast<int>(value) << ": " << name << "\n";
+        std::cout << static_cast<int>(value) << " : " << name << "\n";
     }
 
     Person person{ "Miles", 28, {95, 88, 91} };
+    std::cout << "\n== Person Members ==\n";
     gmp::for_each_member(person, [](auto&& member_name, auto&& member_value) {
-        std::cout << member_name << ": " << member_value << "\n";
+        using member_t = std::remove_cvref_t<decltype(member_value)>;
+        if constexpr (std::is_same_v<member_t, std::array<int, 3>>) {
+            std::cout << member_name << ": [";
+            for (std::size_t i = 0; i < member_value.size(); ++i) {
+                if (i != 0) {
+                    std::cout << ", ";
+                }
+                std::cout << member_value[i];
+            }
+            std::cout << "]\n";
+        } else {
+            std::cout << member_name << ": " << member_value << "\n";
+        }
     });
 
     gmp::member_ref<1>(person) = 29;
     auto color = gmp::enum_cast<Color>("Green");
-    std::cout << "updated age: " << person.age << "\n";
-    std::cout << "enum cast success: " << color.has_value() << "\n";
+    std::cout << std::boolalpha;
+    std::cout << "\n== Mutations ==\n";
+    std::cout << "updated_age       : " << person.age << "\n";
+    std::cout << "enum_cast_success : " << color.has_value() << "\n";
 }
+```
+
+On MSVC, the output is:
+```cpp
+== Type Info ==
+raw_type     : std::vector<std::basic_string<char,std::char_traits<char>,std::allocator<char> >,std::allocator<std::basic_string<char,std::char_traits<char>,std::allocator<char> > > >
+pretty_type  : std::vector<std::string>
+first_member : name -> std::string
+
+== Enum Entries ==
+0 : Red
+1 : Green
+2 : Blue
+
+== Person Members ==
+name: Miles
+age: 28
+scores: [95, 88, 91]
+
+== Mutations ==
+updated_age       : 29
+enum_cast_success : true
 ```
 
 ## Named Operators
