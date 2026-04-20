@@ -1,13 +1,17 @@
 #include <iostream>
 
-#include <gmp/gmp.hpp>
+#include <gmp/dp/singleton.hpp>
 
-struct impl : gmp::singleton<impl> {
-    int v = 3;
+struct S : gmp::singleton<S> {
+    int value = 42;
+
+    GMP_DISABLE_CONSTRUCTION(S)
 };
 
 int main() {
-    impl var;
+    // S* s = new S; // error
+    // std::cout << s->val << "\n"; // error
 
-    std::cout << var.v << '\n';
+    // okay
+    std::cout << S::instance().value << "\n";
 }

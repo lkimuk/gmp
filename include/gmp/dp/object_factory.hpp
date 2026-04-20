@@ -1,27 +1,18 @@
-/*
- *
-MIT License
+//   ___ __  __ ___ 
+//  / __|  \/  | _ \ GMP(Generative Metaprogramming)
+// | (_ | |\/| |  _/ version 0.3.0
+//  \___|_|  |_|_|   https://github.com/lkimuk/gmp
+//
+// SPDX-FileCopyrightText: 2020-2026 Gaoxing Li <https://www.cppmore.com/>
+// SPDX-License-Identifier: MIT
+//
+// This file is part of the GMP (Generative Metaprogramming) library.
+// Full project source: https://github.com/lkimuk/gmp
+//
+// This object factory implementation was originally written by the same author
+// for the okdp library in 2020 and later adapted for GMP:
+// https://github.com/lkimuk/okdp
 
-Copyright (c) 2020-2026 Gaoxing Li
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
 #ifndef GMP_DP_OBJECT_FACTORY_HPP_
 #define GMP_DP_OBJECT_FACTORY_HPP_
 
@@ -43,7 +34,7 @@ namespace gmp {
 /*!
 @brief Automatically register type into factory and yield them by identifier "key".
 
-This class template is inherited from okdp::singleton and it can hence be used as a "singleton
+This class template is inherited from gmp::singleton and it can hence be used as a "singleton
 class".
 
 @tparam AbstractProduct The abstract base class of the products, all registered types are its
