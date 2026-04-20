@@ -20,6 +20,11 @@
 
 namespace gmp::dp {
 
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4514) // C4514: unreferenced inline function has been removed
+#endif
+
 /*!
 @brief add lock via memory model
 
@@ -30,15 +35,26 @@ private:
   std::atomic_flag flag_ = ATOMIC_FLAG_INIT;
 
 public:
+  spin_lock() = default;
+  ~spin_lock() = default;
+
+  spin_lock(const spin_lock&) = delete;
+  spin_lock& operator=(const spin_lock&) = delete;
+  spin_lock(spin_lock&&) = delete;
+  spin_lock& operator=(spin_lock&&) = delete;
+
   void lock() {
-    while (flag_.test_and_set(std::memory_order_acquire))
-      ;
+    while (flag_.test_and_set(std::memory_order_acquire));
   }
 
   void unlock() {
     flag_.clear(std::memory_order_release);
   }
 };
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 } // namespace gmp::dp
 

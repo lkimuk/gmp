@@ -24,6 +24,11 @@ namespace gmp {
 
 namespace detail {
 
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4625 4626) // C4625/C4626: implicitly deleted special member for constrained value_holder instantiations
+#endif
+
 /**
  * @brief Store the operands captured while evaluating a named-operator expression.
  *
@@ -63,6 +68,10 @@ struct value_holder {
 
     constexpr value_holder& operator=(value_holder&&) = default;
 };
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 /**
  * @brief Select the storage type for the left operand of a named operator.
