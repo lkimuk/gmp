@@ -14,6 +14,10 @@
 
 namespace gmp {
 
+/** @addtogroup type_utilities
+ * @{
+ */
+
 /**
  * @brief Wrap a compile-time value as a distinct function argument type.
  * 
@@ -43,6 +47,8 @@ inline constexpr constant_arg_t<V> constant_arg{};
  */
 struct any { template<typename T> operator T() const; };
 
+/** @} */
+
 namespace detail {
 
 template<typename T>
@@ -61,6 +67,10 @@ const wrapper<T> wrapper<T>::long_lifetime_obj{};
 
 } // namespace detail
 
+/** @addtogroup type_utilities
+ * @{
+ */
+
 /**
  * @brief Expose a default-constructed value of type `T` as a compile-time reference.
  * 
@@ -71,6 +81,8 @@ template<typename T>
 consteval const T& as_value() noexcept {
     return detail::wrapper<T>::long_lifetime_obj.value;
 }
+
+/** @} */
 
 } // namespace gmp
 

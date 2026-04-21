@@ -20,6 +20,10 @@
 
 namespace gmp {
 
+/** @addtogroup reflection_metaprogramming
+ * @{
+ */
+
 /**
  * @brief Customize the reflection range or explicit values for an enumeration.
  * 
@@ -89,6 +93,8 @@ inline constexpr int enum_min_v = enum_traits<E>::min;
 template<typename E>
 inline constexpr int enum_max_v = enum_traits<E>::max;
 
+/** @} */
+
 namespace detail {
 
 template<typename E>
@@ -126,6 +132,10 @@ consteval auto enum_values_scan(std::index_sequence<I...>) {
 }
 
 } // namespace detail
+
+/** @addtogroup reflection_metaprogramming
+ * @{
+ */
 
 /**
  * @brief Get all enumerator values of an enumeration type at compile-time.
@@ -557,6 +567,8 @@ template<std::size_t I, typename T>
 using member_type_t = std::remove_cvref_t<
     decltype(*detail::field_getter<I, T>(constant_arg<member_count<T>()>))>;
 
+/** @} */
+
 namespace detail {
 
 template<typename T>
@@ -575,6 +587,10 @@ struct member_type_names_holder {
 };
 
 } // namespace detail
+
+/** @addtogroup reflection_metaprogramming
+ * @{
+ */
 
 /**
  * @brief Returns an array of string_view containing the type names of all members of aggregate type T
@@ -686,6 +702,8 @@ void for_each_member(T&& value, F&& func) noexcept {
     static_assert(std::is_aggregate_v<std::remove_cvref_t<T>>,
         "for_each_member() can only be used with aggregate types.");
 }
+
+/** @} */
 
 } // namespace gmp
 

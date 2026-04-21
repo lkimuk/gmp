@@ -21,6 +21,10 @@
 
 namespace gmp {
 
+/** @addtogroup type_utilities
+ * @{
+ */
+
 /**
  * @brief Get the string representation of a type at compile-time.
  * 
@@ -136,6 +140,8 @@ struct pretty_type_name<std::array<T, N>> {
             ", "_fs + to_fixed_string_v<N> + ">"_fs;
     }
 };
+
+/** @} */
 
 } // namespace gmp
 

@@ -12,6 +12,10 @@
 #ifndef GMP_PLATFORM_HPP_
 #define GMP_PLATFORM_HPP_
 
+/** @addtogroup macro_metaprogramming
+ * @{
+ */
+
 /** 
  * @brief Platform detection macros.
  * 
@@ -216,5 +220,7 @@
     #define GMP_PREPROCESSOR_TYPE "C++ Standard Compliant"
     #define GMP_STANDARD_PREPROCESSOR 1
 #endif
+
+/** @} */
 
 #endif // GMP_PLATFORM_HPP_

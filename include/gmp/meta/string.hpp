@@ -14,9 +14,15 @@
 
 namespace gmp {
 
+/** @addtogroup compile_time_string_utilities
+ * @{
+ */
+
 constexpr bool is_equal(const char* lhs, const char* rhs) noexcept {
     return *lhs == *rhs && (!*lhs || is_equal(lhs + 1, rhs + 1));
 }
+
+/** @} */
 
 } // namespace gmp
 

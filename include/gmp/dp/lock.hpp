@@ -20,6 +20,10 @@
 
 namespace gmp::dp {
 
+/** @addtogroup design_patterns
+ * @{
+ */
+
 /**
  * @brief A minimal spin lock built on `std::atomic_flag`.
  *
@@ -51,6 +55,8 @@ public:
     flag_.clear(std::memory_order_release);
   }
 };
+
+/** @} */
 
 } // namespace gmp::dp
 

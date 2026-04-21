@@ -48,8 +48,14 @@ struct to_fixed_string_impl {
 
 } // namespace detail
 
+/** @addtogroup compile_time_string_utilities
+ * @{
+ */
+
 template<std::intmax_t N>
 static constexpr auto to_fixed_string_v = detail::to_fixed_string_impl<N>::value;
+
+/** @} */
 
 } // namespace gmp
 

@@ -21,6 +21,10 @@
 namespace gmp
 {
 
+/** @addtogroup type_utilities
+ * @{
+ */
+
 /**
  * \brief A variadic template structure representing a list of types.
  *
@@ -184,6 +188,8 @@ struct type_list_contains<U, type_list<Types...>>
 template<typename U, type_list_like T>
 inline constexpr bool type_list_contains_v = type_list_contains<U, T>::value;
 
+/** @} */
+
 
 /*!
  * \brief detail namespace with internal helper functions and types.
@@ -311,6 +317,9 @@ struct type_list_filter_impl<0, type_list<Heads...>, type_list<Types...>, Pred, 
 } // namespace detail
 
 
+/** @addtogroup type_utilities
+ * @{
+ */
 
 /**
  * @brief Public implementation of type-list element removal.
@@ -443,6 +452,8 @@ struct type_list_filter<type_list<>, Pred>
 
 template<type_list_like T, template<typename> class Pred>
 using type_list_filter_t = type_list_filter<T, Pred>::type;
+
+/** @} */
 
 } // namespace gmp
 

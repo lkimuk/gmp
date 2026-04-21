@@ -14,6 +14,10 @@
 
 #include "platform.hpp"
 
+/** @addtogroup macro_metaprogramming
+ * @{
+ */
+
 /**
  * @def GMP_EXPAND(...)
  * @brief Force the full expansion of macro arguments.
@@ -4948,5 +4952,7 @@
 #else
 #define GMP_INLINE
 #endif
+
+/** @} */
 
 #endif // GMP_MACRO_HPP_

@@ -52,6 +52,10 @@ consteval std::size_t type_size_impl() {
 
 } // namespace detail
 
+/** @addtogroup type_utilities
+ * @{
+ */
+
 /**
  * @brief Calculate the actual payload size of a type without aggregate padding.
  *
@@ -78,6 +82,8 @@ template<typename T>
 consteval std::size_t type_size() {
     return detail::type_size_impl<T>();
 }
+
+/** @} */
 
 } // namespace gmp
 

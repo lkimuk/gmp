@@ -31,6 +31,10 @@
 
 namespace gmp {
 
+/** @addtogroup design_patterns
+ * @{
+ */
+
 /**
  * @brief A singleton-backed runtime factory that creates products by string key.
  *
@@ -192,6 +196,8 @@ private:
 #define _GMP_FACTORY_REGISTER_WHEN_1_CONTINUE(AbstractProduct, ConstructorArgs, ...) \
   GMP_DEFER(_GMP_FACTORY_REGISTER_INDIRECT)()(AbstractProduct, ConstructorArgs, __VA_ARGS__)
 #define _GMP_FACTORY_REGISTER_INDIRECT() _GMP_FACTORY_REGISTER_IMPL
+
+/** @} */
 
 } // namespace gmp
 

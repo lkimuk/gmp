@@ -19,6 +19,10 @@
 
 namespace gmp {
 
+/** @addtogroup compile_time_string_utilities
+ * @{
+ */
+
 /**
  * @brief A compile-time string type with fixed length and constexpr operations.
  * 
@@ -186,6 +190,8 @@ consteval auto operator""_fs() {
     return s;
 }
 
+/** @} */
+
 namespace detail {
 
 template<fixed_string Value, auto String>
@@ -206,6 +212,10 @@ consteval auto remove_all_impl(constant_arg_t<String>) {
 
 } // namespace detail
 
+/** @addtogroup compile_time_string_utilities
+ * @{
+ */
+
 /**
  * @brief Remove all occurrences of one or more compile-time substrings.
  * 
@@ -224,6 +234,8 @@ consteval auto remove_all(constant_arg_t<String>) {
         return after;
     }
 }
+
+/** @} */
 
 } // namespace gmp
 

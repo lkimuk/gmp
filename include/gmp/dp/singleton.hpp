@@ -23,6 +23,10 @@
 
 namespace gmp {
 
+/** @addtogroup design_patterns
+ * @{
+ */
+
 /**
  * @brief CRTP-based singleton helper with optional dead-reference recovery.
  *
@@ -178,6 +182,8 @@ template<typename T> dp::spin_lock singleton<T, true>::lock_;
 private:                                \
     friend class gmp::singleton<Class>; \
     Class() = default;
+
+/** @} */
 
 } // namespace gmp
 

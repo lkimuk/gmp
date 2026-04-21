@@ -141,6 +141,10 @@ GMP_GENERATE_NAMED_OPERATOR_IDENTICAL_PAIRS(+, ^, *, -, /, %, &, |)
 
 } // namespace detail
 
+/** @addtogroup named_operators
+ * @{
+ */
+
 /**
  * @brief Create a token that lets a callable be used as a named infix operator.
  *
@@ -185,6 +189,8 @@ constexpr auto make_named_operator(Func&& f) {
 
     return detail::value_holder<func_type>(std::forward<Func>(f));
 }
+
+/** @} */
 
 } // namespace gmp
 
