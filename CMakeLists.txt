@@ -24,6 +24,7 @@ project(
 )
 
 option(BUILD_TESTS "Build the tests" OFF)
+option(BUILD_DOCS "Build the API documentation with Doxygen" OFF)
 
 # Display project welcome message and version information
 message("\
@@ -119,4 +120,33 @@ install(FILES
 
 if(BUILD_TESTS)
     add_subdirectory(tests)
+endif()
+
+# ---------------------------------------------------------------------------------------
+# Documentation configuration
+# ---------------------------------------------------------------------------------------
+if(BUILD_DOCS)
+    find_package(Doxygen REQUIRED)
+
+    set(GMP_DOXYGEN_INPUT
+        "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include"
+        "${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/mainpage.md"
+    )
+
+    set(GMP_DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/docs/api/reference")
+    set(GMP_DOXYGEN_CONFIG_FILE "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile")
+
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Doxyfile.in"
+        "${GMP_DOXYGEN_CONFIG_FILE}"
+        @ONLY
+    )
+
+    add_custom_target(docs
+        COMMAND ${DOXYGEN_EXECUTABLE} "${GMP_DOXYGEN_CONFIG_FILE}"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM
+    )
 endif()
