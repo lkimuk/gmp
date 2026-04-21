@@ -1126,6 +1126,28 @@
 #define GMP_TUPLE_SIZE(tup) GMP_SIZE_OF_VAARGS(GMP_REMOVE_PARENS(tup))
 
 /**
+ * @def GMP_TUPLE_EMPTY(tup)
+ * @brief Check if a tuple is empty.
+ * 
+ * This macro determines whether a tuple has zero elements.
+ * 
+ * @param tup The tuple enclosed in parentheses, e.g., ()
+ * @return 1 if the tuple is empty, 0 otherwise
+ * 
+ * @par Example
+ * @code
+ * #define EMPTY_TUPLE ()
+ * #define NON_EMPTY_TUPLE (a, b, c)
+ * 
+ * int is_empty1 = GMP_TUPLE_EMPTY(EMPTY_TUPLE);      // expands to 1
+ * int is_empty2 = GMP_TUPLE_EMPTY(NON_EMPTY_TUPLE);  // expands to 0
+ * int is_empty3 = GMP_TUPLE_EMPTY((x));              // expands to 0
+ * @endcode
+ * @hideinitializer
+ */
+#define GMP_TUPLE_EMPTY(tup) GMP_NOT(GMP_BOOL(GMP_TUPLE_SIZE(tup)))
+
+/**
  * @def GMP_TUPLE_SKIP(count, tup)
  * @brief Skip the first 'count' elements from a tuple and return the remaining elements.
  * 
