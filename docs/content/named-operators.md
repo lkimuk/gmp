@@ -1,6 +1,9 @@
-# Named Operators
+---
+title: Named Operators
+sidebar_position: 5
+---
 
-Language: English | [简体中文](zh/named-operators.html)
+# Named Operators
 
 The named operator layer lets you build custom infix-style syntax by wrapping callables in lightweight operator tokens.
 
@@ -66,6 +69,7 @@ int main() {
 
 ## Related Pages
 
-- [Reflection Metaprogramming](reflection.html)
-- [Generic Design Patterns](design-patterns.html)
-- [API Reference](api/)
+- [Reflection Metaprogramming](./reflection.md)
+- [Generic Design Patterns](./design-patterns.md)
+- [API Guide](./api-guide.md)
+- [API Reference](https://lkimuk.github.io/gmp/api/)

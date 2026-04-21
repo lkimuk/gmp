@@ -1,5 +1,0 @@
-title: GMP Documentation
-description: Generative Metaprogramming for C++
-theme: jekyll-theme-cayman
-exclude:
-  - doxygen

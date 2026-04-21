@@ -14,12 +14,13 @@ This section is currently maintained in **English only**.
 
 Start with the hand-written guides for concepts and examples:
 
-- [Documentation home](../../index.html)
-- [Getting Started](../../getting-started.html)
-- [Macro Metaprogramming](../../macro-metaprogramming.html)
-- [Reflection Metaprogramming](../../reflection.html)
-- [Named Operators](../../named-operators.html)
-- [Generic Design Patterns](../../design-patterns.html)
-- [Simplified Chinese guides](../../zh/index.html)
+- [Documentation home](../../)
+- [Docs overview](../../docs/)
+- [Getting Started](../../docs/getting-started)
+- [Macro Metaprogramming](../../docs/macro-metaprogramming)
+- [Reflection Metaprogramming](../../docs/reflection)
+- [Named Operators](../../docs/named-operators)
+- [Generic Design Patterns](../../docs/design-patterns)
+- [Simplified Chinese docs](../../zh-Hans/docs/)
 
 Then use the generated API pages in this section for symbol-level lookup.

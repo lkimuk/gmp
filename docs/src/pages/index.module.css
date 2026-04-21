@@ -1,0 +1,42 @@
+.heroBanner {
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.18), transparent 34%),
+    linear-gradient(135deg, #0c4a6e 0%, #0f766e 52%, #166534 100%);
+  padding: 5rem 0 4rem;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.languageNote {
+  margin: 1.25rem auto 0;
+  max-width: 52rem;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.main {
+  padding: 3rem 0 4rem;
+}
+
+.featureGrid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.featureCard {
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  background: var(--ifm-background-surface-color);
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
+}
+
+.featureCard h2 {
+  margin-bottom: 0.75rem;
+}

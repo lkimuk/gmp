@@ -1,10 +1,14 @@
-# GMP 文档
+---
+title: GMP 文档
+slug: /
+sidebar_position: 1
+---
 
-语言：简体中文 | [English](../index.html)
+# GMP 文档
 
 **GMP** 是一个面向编译时代码生成的 C++ 头文件式元编程库。
 
-它包含四个互补的模块：
+它包含四个互补模块：
 
 - **宏元编程**：面向预处理器的代码生成与 token 操作
 - **反射元编程**：编译期类型、枚举和聚合类型反射
@@ -13,12 +17,12 @@
 
 ## 快速入口
 
-- [快速开始](getting-started.html)
-- [宏元编程](macro-metaprogramming.html)
-- [反射元编程](reflection.html)
-- [命名操作符](named-operators.html)
-- [通用设计模式](design-patterns.html)
-- [API Reference (English)](../api/)
+- [快速开始](./getting-started.md)
+- [宏元编程](./macro-metaprogramming.md)
+- [反射元编程](./reflection.md)
+- [命名操作符](./named-operators.md)
+- [通用设计模式](./design-patterns.md)
+- [API Reference (English)](https://lkimuk.github.io/gmp/api/)
 
 ## 功能概览
 
@@ -32,9 +36,5 @@
 ## 多语言说明
 
 - 英文文档是当前的主版本
-- 简体中文优先覆盖使用指南和概念说明
-- [API Reference](../api/) 目前仅提供英文版本
-
-## 下一步
-
-建议从 [快速开始](getting-started.html) 开始，然后按模块进入对应页面。
+- 简体中文优先覆盖使用指南与概念说明
+- [API Reference](https://lkimuk.github.io/gmp/api/) 目前仅提供英文版本

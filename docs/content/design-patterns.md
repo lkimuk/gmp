@@ -1,6 +1,9 @@
-# Generic Design Patterns
+---
+title: Generic Design Patterns
+sidebar_position: 6
+---
 
-Language: English | [简体中文](zh/design-patterns.html)
+# Generic Design Patterns
 
 The generic design patterns layer provides reusable infrastructure helpers such as a spin lock, a CRTP singleton, and a runtime object factory.
 
@@ -76,6 +79,7 @@ int main() {
 
 ## Related Pages
 
-- [Getting Started](getting-started.html)
-- [Named Operators](named-operators.html)
-- [API Reference](api/)
+- [Getting Started](./getting-started.md)
+- [Named Operators](./named-operators.md)
+- [API Guide](./api-guide.md)
+- [API Reference](https://lkimuk.github.io/gmp/api/)

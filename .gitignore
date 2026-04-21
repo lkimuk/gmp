@@ -33,6 +33,10 @@
 
 # Build
 build/
+docs/build-docs/
+docs/build/
+docs/node_modules/
+docs/.docusaurus/
 
 # .vscode
 .vscode/

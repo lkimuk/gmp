@@ -1,6 +1,9 @@
-# Reflection Metaprogramming
+---
+title: Reflection Metaprogramming
+sidebar_position: 4
+---
 
-Language: English | [简体中文](zh/reflection.html)
+# Reflection Metaprogramming
 
 The reflection metaprogramming layer provides compile-time utilities for fixed strings, type names, enum reflection, and aggregate member introspection.
 
@@ -115,6 +118,7 @@ int main() {
 
 ## Related Pages
 
-- [Getting Started](getting-started.html)
-- [Named Operators](named-operators.html)
-- [API Reference](api/)
+- [Getting Started](./getting-started.md)
+- [Named Operators](./named-operators.md)
+- [API Guide](./api-guide.md)
+- [API Reference](https://lkimuk.github.io/gmp/api/)
