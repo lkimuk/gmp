@@ -104,4 +104,4 @@ MYLIB_NAMESPACE_END
 
 - [Getting Started](getting-started.md)
 - [Reflection Metaprogramming](reflection.md)
-- [API Reference](api/index.md)
+- [API Reference](api/)

@@ -66,4 +66,4 @@ int main() {
 
 - [Reflection Metaprogramming](reflection.md)
 - [Generic Design Patterns](design-patterns.md)
-- [API Reference](api/index.md)
+- [API Reference](api/)

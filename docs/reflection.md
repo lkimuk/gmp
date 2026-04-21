@@ -115,4 +115,4 @@ int main() {
 
 - [Getting Started](getting-started.md)
 - [Named Operators](named-operators.md)
-- [API Reference](api/index.md)
+- [API Reference](api/)
