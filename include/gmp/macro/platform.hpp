@@ -16,12 +16,37 @@
  * @{
  */
 
-/** 
- * @brief Platform detection macros.
- * 
- * Defines compile-time macros to detect the operating system.
- * Provides boolean macros for Windows, Linux, macOS, iOS and Android,
- * as well as a string macro for the platform name.
+/**
+ * @name Platform Detection
+ * @brief Compile-time operating system detection macros.
+ *
+ * These macros expose the detected target platform as boolean constants
+ * and provide a human-readable platform name.
+ * @{
+ */
+/** @def GMP_PLATFORM_WINDOWS
+ * @brief Evaluate to `1` when compiling for Windows, otherwise `0`.
+ * @hideinitializer
+ */
+/** @def GMP_PLATFORM_LINUX
+ * @brief Evaluate to `1` when compiling for Linux, otherwise `0`.
+ * @hideinitializer
+ */
+/** @def GMP_PLATFORM_MAC
+ * @brief Evaluate to `1` when compiling for macOS, otherwise `0`.
+ * @hideinitializer
+ */
+/** @def GMP_PLATFORM_IOS
+ * @brief Evaluate to `1` when compiling for iOS, otherwise `0`.
+ * @hideinitializer
+ */
+/** @def GMP_PLATFORM_ANDROID
+ * @brief Evaluate to `1` when compiling for Android, otherwise `0`.
+ * @hideinitializer
+ */
+/** @def GMP_PLATFORM_NAME
+ * @brief Expand to a string literal describing the detected target platform.
+ * @hideinitializer
  */
 #if defined(_WIN32) || defined(_WIN64)
     #define GMP_PLATFORM_WINDOWS 1
@@ -64,19 +89,40 @@
     #define GMP_PLATFORM_ANDROID 0
     #define GMP_PLATFORM_NAME "Unknown"
 #endif
+/** @} */
 
 /**
- * @brief Platform-specific code block macros.
- * 
- * These macros allow writing platform-specific code blocks that are
- * conditionally compiled based on the target platform.
- * 
- * Usage example:
- * @code
- *   GMP_WINDOWS_ONLY({
- *       // Windows code here
- *   });
- * @endcode
+ * @name Platform-Specific Code Blocks
+ * @brief Conditionally include a code block for a specific platform.
+ *
+ * These macros expand to their argument only when the named platform is
+ * active. Otherwise they expand to nothing.
+ * @{
+ */
+/** @def GMP_WINDOWS_ONLY(code)
+ * @brief Expand `code` only when compiling for Windows.
+ * @param code The code block to include conditionally.
+ * @hideinitializer
+ */
+/** @def GMP_LINUX_ONLY(code)
+ * @brief Expand `code` only when compiling for Linux.
+ * @param code The code block to include conditionally.
+ * @hideinitializer
+ */
+/** @def GMP_MAC_ONLY(code)
+ * @brief Expand `code` only when compiling for macOS.
+ * @param code The code block to include conditionally.
+ * @hideinitializer
+ */
+/** @def GMP_IOS_ONLY(code)
+ * @brief Expand `code` only when compiling for iOS.
+ * @param code The code block to include conditionally.
+ * @hideinitializer
+ */
+/** @def GMP_ANDROID_ONLY(code)
+ * @brief Expand `code` only when compiling for Android.
+ * @param code The code block to include conditionally.
+ * @hideinitializer
  */
 #if GMP_PLATFORM_WINDOWS
     #define GMP_WINDOWS_ONLY(code) code
@@ -107,12 +153,35 @@
     #define GMP_IOS_ONLY(code) code
     #define GMP_ANDROID_ONLY(code)
 #endif
+/** @} */
 
 /**
- * @brief Compiler detection macros.
- * 
- * These macros detect the compiler being used and provide version information.
- * Supports MSVC, Clang, and GCC compilers with version numbering.
+ * @name Compiler Detection
+ * @brief Compile-time compiler detection macros.
+ *
+ * These macros identify the active compiler and expose a numeric version and
+ * descriptive compiler name.
+ * @{
+ */
+/** @def GMP_COMPILER_MSVC
+ * @brief Evaluate to `1` when compiling with MSVC, otherwise `0`.
+ * @hideinitializer
+ */
+/** @def GMP_COMPILER_GCC
+ * @brief Evaluate to `1` when compiling with GCC, otherwise `0`.
+ * @hideinitializer
+ */
+/** @def GMP_COMPILER_CLANG
+ * @brief Evaluate to `1` when compiling with Clang, otherwise `0`.
+ * @hideinitializer
+ */
+/** @def GMP_COMPILER_NAME
+ * @brief Expand to a string literal describing the detected compiler.
+ * @hideinitializer
+ */
+/** @def GMP_COMPILER_VERSION
+ * @brief Expand to a compiler-specific numeric version value.
+ * @hideinitializer
  */
 #if defined(_MSC_VER)
     #define GMP_COMPILER_MSVC 1
@@ -139,19 +208,27 @@
     #define GMP_COMPILER_NAME "Unknown"
     #define GMP_COMPILER_VERSION 0
 #endif
+/** @} */
 
 /**
- * @brief Compiler-specific code block macros.
- * 
- * These macros allow writing compiler-specific code blocks that are
- * conditionally compiled based on the detected compiler.
- *
- * Usage example:
- * @code
- *   GMP_MSVC_ONLY({
- *       // MSVC specific code
- *   });
- * @endcode
+ * @name Compiler-Specific Code Blocks
+ * @brief Conditionally include a code block for a specific compiler.
+ * @{
+ */
+/** @def GMP_MSVC_ONLY(code)
+ * @brief Expand `code` only when compiling with MSVC.
+ * @param code The code block to include conditionally.
+ * @hideinitializer
+ */
+/** @def GMP_GCC_ONLY(code)
+ * @brief Expand `code` only when compiling with GCC.
+ * @param code The code block to include conditionally.
+ * @hideinitializer
+ */
+/** @def GMP_CLANG_ONLY(code)
+ * @brief Expand `code` only when compiling with Clang.
+ * @param code The code block to include conditionally.
+ * @hideinitializer
  */
 #if GMP_COMPILER_MSVC
     #define GMP_MSVC_ONLY(code) code
@@ -166,12 +243,24 @@
     #define GMP_GCC_ONLY(code) code
     #define GMP_CLANG_ONLY(code)
 #endif
+/** @} */
 
 /**
- * @brief Build configuration detection macros.
- * 
- * These macros detect whether the code is being compiled in debug or release mode.
- * Determined by the presence of NDEBUG or _NDEBUG preprocessor definitions.
+ * @name Build Configuration Detection
+ * @brief Detect whether the current build is a debug or release build.
+ * @{
+ */
+/** @def GMP_BUILD_RELEASE
+ * @brief Evaluate to `1` for release builds, otherwise `0`.
+ * @hideinitializer
+ */
+/** @def GMP_BUILD_DEBUG
+ * @brief Evaluate to `1` for debug builds, otherwise `0`.
+ * @hideinitializer
+ */
+/** @def GMP_BUILD_TYPE
+ * @brief Expand to a string literal describing the active build configuration.
+ * @hideinitializer
  */
 #if defined(NDEBUG) || defined(_NDEBUG)
     #define GMP_BUILD_RELEASE 1
@@ -182,12 +271,28 @@
     #define GMP_BUILD_RELEASE 0
     #define GMP_BUILD_TYPE "Debug"
 #endif
+/** @} */
 
 /**
- * @brief Processor architecture detection macros.
- * 
- * These macros detect the CPU architecture at compile-time.
- * Supports x86, x64, and ARM64 architectures.
+ * @name Architecture Detection
+ * @brief Detect the target processor architecture at compile time.
+ * @{
+ */
+/** @def GMP_ARCH_X64
+ * @brief Evaluate to `1` when targeting x64, otherwise `0`.
+ * @hideinitializer
+ */
+/** @def GMP_ARCH_ARM64
+ * @brief Evaluate to `1` when targeting ARM64, otherwise `0`.
+ * @hideinitializer
+ */
+/** @def GMP_ARCH_X86
+ * @brief Evaluate to `1` when targeting x86, otherwise `0`.
+ * @hideinitializer
+ */
+/** @def GMP_ARCH_NAME
+ * @brief Expand to a string literal describing the detected architecture.
+ * @hideinitializer
  */
 #if defined(__x86_64__) || defined(_M_X64)
     #define GMP_ARCH_X64 1
@@ -210,7 +315,25 @@
     #define GMP_ARCH_X86 0
     #define GMP_ARCH_NAME "Unknown"
 #endif
+/** @} */
 
+/**
+ * @name Preprocessor Capabilities
+ * @brief Describe the supported preprocessor mode and argument limits.
+ * @{
+ */
+/** @def GMP_MAX_MACRO_ARGS
+ * @brief Maximum supported variadic macro arity for the active preprocessor mode.
+ * @hideinitializer
+ */
+/** @def GMP_PREPROCESSOR_TYPE
+ * @brief Expand to a string literal describing the detected preprocessor mode.
+ * @hideinitializer
+ */
+/** @def GMP_STANDARD_PREPROCESSOR
+ * @brief Evaluate to `1` when the compiler provides a standard-conforming preprocessor.
+ * @hideinitializer
+ */
 #if defined(_MSC_VER) && (!defined(_MSVC_TRADITIONAL) || _MSVC_TRADITIONAL)
     #define GMP_MAX_MACRO_ARGS 127
     #define GMP_PREPROCESSOR_TYPE "MSVC Traditional"
@@ -220,6 +343,7 @@
     #define GMP_PREPROCESSOR_TYPE "C++ Standard Compliant"
     #define GMP_STANDARD_PREPROCESSOR 1
 #endif
+/** @} */
 
 /** @} */
 

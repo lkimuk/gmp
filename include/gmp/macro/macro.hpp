@@ -30,6 +30,7 @@
  *
  * @param ... The macro argument(s) to be expanded.
  * @return The fully expanded result of the argument(s).
+ * @hideinitializer
  *
  * @par Example
  * @code
@@ -95,6 +96,7 @@
  * @endcode
  *
  * @see GMP_EXPAND for the variadic version that can handle multiple arguments
+ * @hideinitializer
  */
 #define GMP_IDENTITY(x) x
 
@@ -109,6 +111,7 @@
  *
  * \param x The value to convert to a string.
  * \return A string literal containing the expanded value of \a x.
+ * \hideinitializer
  *
  * \par Example
  * \code
@@ -139,6 +142,7 @@
  * \param lhs First token.
  * \param rhs Second token.
  * \return The concatenation of the expanded \a lhs and \a rhs.
+ * \hideinitializer
  * 
  * \par Example
  * \code
@@ -158,6 +162,7 @@
  *
  * \param ... Variable argument list
  * \return Number of arguments
+ * @hideinitializer
  */
 #define GMP_GET_VARARGS(...) GMP_EXPAND( _GMP_GET_VARARGS_IMPL(__VA_ARGS__) )
 #if GMP_STANDARD_PREPROCESSOR
@@ -196,6 +201,7 @@
  * 
  * \param ... Variable argument list
  * \return Size of arguments
+ * \hideinitializer
  * 
  * \par Example
  * \code
@@ -241,6 +247,7 @@
  * 
  * \param ... Variable argument list
  * \return 1 if variable arguments are empty, otherwise 0.
+ * @hideinitializer
  * 
  * \par Example
  * \code
@@ -270,6 +277,7 @@
  *
  * \param ... Variable argument list.
  * \return 1 if a comma is found, otherwise 0.
+ * \hideinitializer
  */
 #if GMP_STANDARD_PREPROCESSOR
     #define GMP_HAS_COMMA(...) GMP_EXPAND( _GMP_COMMA_CHECK(__VA_ARGS__, \
@@ -351,6 +359,7 @@
  *
  * \param ... Variable argument list.
  * \return Comma if arguments are empty, otherwise nothing.
+ * \hideinitializer
  */
 #define GMP_OPT_COMMA(...) GMP_CONCAT(_GMP_OPT_COMMA_, GMP_IS_EMPTY(__VA_ARGS__))
 #define _GMP_OPT_COMMA_1
@@ -378,6 +387,7 @@
  * \param call The base macro to be called.
  * \param ... The arguments to be passed to the macro. The arguments
  *            determine which overloaded version of the macro is invoked.
+ * \hideinitializer
  */
 #define GMP_OVERLOAD_INVOKE(call, ...) GMP_EXPAND( GMP_CONCAT( _GMP_OVERLOAD_INVOKE_, GMP_SIZE_OF_VAARGS(__VA_ARGS__) )(call, __VA_ARGS__ ) )
 #define _GMP_OVERLOAD_INVOKE_1(call, v1) GMP_CONCAT( GMP_CONCAT(call, _), v1 )
@@ -392,6 +402,7 @@
  * @param idx Zero-based index of the parameter to retrieve
  * @param ... Variable argument list
  * @return The parameter at the specified index, or empty if index out of bounds
+ * @hideinitializer
  * 
  * @par Example
  * \code
@@ -661,6 +672,15 @@
 #define _GMP_GET_256(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, _64, _65, _66, _67, _68, _69, _70, _71, _72, _73, _74, _75, _76, _77, _78, _79, _80, _81, _82, _83, _84, _85, _86, _87, _88, _89, _90, _91, _92, _93, _94, _95, _96, _97, _98, _99, _100, _101, _102, _103, _104, _105, _106, _107, _108, _109, _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _123, _124, _125, _126, _127, _128, _129, _130, _131, _132, _133, _134, _135, _136, _137, _138, _139, _140, _141, _142, _143, _144, _145, _146, _147, _148, _149, _150, _151, _152, _153, _154, _155, _156, _157, _158, _159, _160, _161, _162, _163, _164, _165, _166, _167, _168, _169, _170, _171, _172, _173, _174, _175, _176, _177, _178, _179, _180, _181, _182, _183, _184, _185, _186, _187, _188, _189, _190, _191, _192, _193, _194, _195, _196, _197, _198, _199, _200, _201, _202, _203, _204, _205, _206, _207, _208, _209, _210, _211, _212, _213, _214, _215, _216, _217, _218, _219, _220, _221, _222, _223, _224, _225, _226, _227, _228, _229, _230, _231, _232, _233, _234, _235, _236, _237, _238, _239, _240, _241, _242, _243, _244, _245, _246, _247, _248, _249, _250, _251, _252, _253, _254, _255, _256, ...) _256
 #endif // GMP_STANDARD_PREPROCESSOR
 
+/**
+ * @def GMP_GET_FIRST_N(n, ...)
+ * @brief Get the first `n` arguments from a variadic argument list.
+ *
+ * @param n The number of leading arguments to keep.
+ * @param ... The source variadic argument list.
+ * @return The first `n` arguments from `__VA_ARGS__`.
+ * @hideinitializer
+ */
 #define GMP_GET_FIRST_N(n, ...) GMP_EXPAND( GMP_OVERLOAD_INVOKE(_GMP_GET_FIRST, n)(__VA_ARGS__) )
 #define _GMP_GET_FIRST_0(...)
 #define _GMP_GET_FIRST_1(_0, ...) _0
@@ -932,6 +952,7 @@
  * Example:
  *   GMP_REMOVE_PARENS((int, float, char))  // Expands to: int, float, char
  *   GMP_REMOVE_PARENS((42, "hello", 3.14)) // Expands to: 42, "hello", 3.14
+ * @hideinitializer
  */
 #define GMP_REMOVE_PARENS(tup) GMP_EXPAND( _GMP_REMOVE_PARENS tup )
 #define _GMP_REMOVE_PARENS(...) __VA_ARGS__
@@ -949,6 +970,7 @@
  * 
  * @param idx Zero-based index of the element to retrieve
  * @param tup Parenthesized tuple containing the elements
+ * @hideinitializer
  * 
  * @note The tuple must contain at least (idx + 1) elements.
  *       If idx is out of bounds, the behavior is undefined.
@@ -960,6 +982,7 @@
  * 
  * Evaluates to 1 if @p symbol is a non-empty parenthesized list (e.g., (a, b, c)),
  * and 0 if it is empty or not a tuple.
+ * @hideinitializer
  */
 #define GMP_IS_TUPLE(symbol) GMP_IS_EMPTY(GMP_EMPTY symbol)
 
@@ -992,6 +1015,7 @@
  * 
  * @see GMP_TUPLE_PREPEND for adding elements to the beginning
  * @see GMP_TUPLE_CONCAT for concatenating two tuples
+ * @hideinitializer
  */
 #define GMP_TUPLE_APPEND(tup, x) GMP_OVERLOAD_INVOKE(_GMP_TUPLE_APPEND, GMP_BOOL(GMP_TUPLE_SIZE(tup)))(tup, x)
 #define _GMP_TUPLE_APPEND_1(tup, x) (GMP_REMOVE_PARENS(tup), x)
@@ -1026,6 +1050,7 @@
  * 
  * @see GMP_TUPLE_APPEND for adding elements to the end
  * @see GMP_TUPLE_CONCAT for concatenating two tuples
+ * @hideinitializer
  */
 #define GMP_TUPLE_PREPEND(tup, x) GMP_OVERLOAD_INVOKE(_GMP_TUPLE_PREPEND, GMP_BOOL(GMP_TUPLE_SIZE(tup)))(tup, x)
 #define _GMP_TUPLE_PREPEND_1(tup, x) (x, GMP_REMOVE_PARENS(tup))
@@ -1069,6 +1094,7 @@
  * @see GMP_TUPLE_APPEND for adding a single element to the end
  * @see GMP_TUPLE_PREPEND for adding a single element to the beginning
  * @see GMP_TUPLE_SLICE for extracting a subsequence from a tuple
+ * @hideinitializer
  */
 #define GMP_TUPLE_CONCAT(tup_a, tup_b) _GMP_TUPLE_CONCAT_COMPAT_MSVC(tup_a, tup_b, GMP_BOOL(GMP_TUPLE_SIZE(tup_a)), GMP_BOOL(GMP_TUPLE_SIZE(tup_b)))
 #define _GMP_TUPLE_CONCAT_COMPAT_MSVC(tup_a, tup_b, _0, _1) GMP_OVERLOAD_INVOKE(_GMP_TUPLE_CONCAT, _0, _1)(tup_a, tup_b)
@@ -1095,6 +1121,7 @@
  * int size2 = GMP_TUPLE_SIZE(TUPLE_2);  // expands to 2
  * int size3 = GMP_TUPLE_SIZE(());       // expands to 0 (empty tuple)
  * @endcode
+ * @hideinitializer
  */
 #define GMP_TUPLE_SIZE(tup) GMP_SIZE_OF_VAARGS(GMP_REMOVE_PARENS(tup))
 
@@ -1139,6 +1166,7 @@
  * 
  * @see GMP_TUPLE_TAKE for taking the first N elements
  * @see GMP_TUPLE_SLICE for selecting a range of elements
+ * @hideinitializer
  */
 #define GMP_TUPLE_SKIP(count, tup) GMP_EVAL( GMP_IF_THEN_ELSE(GMP_GREATER_EQUAL_INT(count, GMP_TUPLE_SIZE(tup)), _GMP_TUPLE_SKIP_ERROR, _GMP_TUPLE_SKIP_IMPL)(count, tup, ()) )
 #define _GMP_TUPLE_SKIP_ERROR(count, tup, res) res
@@ -1203,6 +1231,7 @@
  * @see GMP_TUPLE_SLICE for taking a range of elements
  * @see GMP_TUPLE_APPEND for adding elements to the end
  * @see GMP_TUPLE_PREPEND for adding elements to the beginning
+ * @hideinitializer
  */
 #define GMP_TUPLE_TAKE(count, tup) GMP_EVAL( GMP_IF_THEN_ELSE(GMP_GREATER_INT(count, GMP_TUPLE_SIZE(tup)), _GMP_TUPLE_TAKE_ERROR, _GMP_TUPLE_TAKE_IMPL)(count, tup, ()) )
 #define _GMP_TUPLE_TAKE_ERROR(count, tup, res) tup
@@ -1234,6 +1263,7 @@
  *
  * \param call The macro to be called for each argument.
  * \param ... The list of arguments to be passed to the macro.
+ * \hideinitializer
  */
 #define GMP_FOR_EACH(call, ...) \
     GMP_EXPAND( GMP_OVERLOAD_INVOKE(_GMP_FOR_EACH, GMP_SIZE_OF_VAARGS(__VA_ARGS__))(call, __VA_ARGS__) )
@@ -1512,6 +1542,7 @@
  *       to macro recursion restrictions.
  * 
  * @see GMP_FOR_EACH for the standard non-nestable version
+ * @hideinitializer
  */
 #define GMP_FOR_EACH_INDEPENDENT(call, ...) GMP_EVAL( _GMP_FOR_EACH_INDEPENDENT_IMPL(call, __VA_ARGS__) )
 #define _GMP_FOR_EACH_INDEPENDENT_IMPL(call, ...) GMP_OVERLOAD_INVOKE(_GMP_FOR_EACH_INDEPENDENT_IMPL_WHEN, GMP_BOOL(GMP_SIZE_OF_VAARGS(__VA_ARGS__)))(call, __VA_ARGS__)// GMP_EXPAND( GMP_OVERLOAD_INVOKE(_GMP_FOR_EACH_INDEPENDENT_IMPL_WHEN, GMP_BOOL(GMP_SIZE_OF_VAARGS(__VA_ARGS__)))(call, __VA_ARGS__) )
@@ -1525,13 +1556,13 @@
 // #define _GMP_FOR_EACH_INDEPENDENT_INDIRECT() _GMP_FOR_EACH_INDEPENDENT_IMPL
 
 /**
- * @def GMP_WHILE(cond, call, ...)
- * 
- * Example usage:
- * \code
- * #define DECLARE_VARIABLES(num) int variable_ ## num;
- * GMP_FOR_EACH(DECLARE_VARIABLES, 1, 2) // Expands to: int variable_1; int variable_2;
- * \endcode
+ * @def GMP_WHILE(pred, op, args)
+ * @brief Repeatedly apply an operation while a predicate remains true.
+ *
+ * @param pred A macro that receives `args` and returns a truthy preprocessor value.
+ * @param op A macro that transforms `args` for the next iteration.
+ * @param args The initial state passed to `pred` and `op`.
+ * @hideinitializer
  */
 #define GMP_WHILE(pred, op, args) GMP_IF_THEN_ELSE(pred(args), _GMP_WHILE_1, args GMP_EMPTY)(pred, op, op(args))
 #define _GMP_WHILE_1(pred, op, args) GMP_IF_THEN_ELSE(pred(args), _GMP_WHILE_2, args GMP_EMPTY)(pred, op, op(args))
@@ -1814,6 +1845,7 @@
  * @param x First number to compare (non-negative)
  * @param y Second number to compare (non-negative)
  * @return Final state tuple (x_final, y_final) indicating comparison result
+ * @hideinitializer
  */
 #define GMP_CMP(x, y) GMP_WHILE(_GMP_CMP_COND, _GMP_CMP_OP, (x, y))
 #define _GMP_CMP_COND(args) GMP_AND(GMP_BOOL(GMP_GET_TUPLE(0, args)), GMP_BOOL(GMP_GET_TUPLE(1, args)))
@@ -1828,6 +1860,7 @@
  * 
  * \param value The value to increment.
  * \return The incremented value.
+ * \hideinitializer
  */
 #define GMP_INC(value) GMP_OVERLOAD_INVOKE(_GMP_INC, value)
 #define _GMP_INC_0 1
@@ -2352,6 +2385,7 @@
  * 
  * \param value The value to decrement.
  * \return The decremented value.
+ * \hideinitializer
  */
 #define GMP_DEC(value) GMP_OVERLOAD_INVOKE(_GMP_DEC, value)
 #define _GMP_DEC_0 NULL
@@ -2877,6 +2911,7 @@
  * 
  * \param value The value to perform logical NOT on.
  * \return 1 if the value is 0, 0 otherwise.
+ * \hideinitializer
  */
 #define GMP_NOT(value) GMP_OVERLOAD_INVOKE(_GMP_NOT, value)
 #define _GMP_NOT_0 1
@@ -2891,6 +2926,7 @@
  * \param a The first operand (0 or 1).
  * \param b The second operand (0 or 1).
  * \return 1 if both operands are 1, 0 otherwise.
+ * \hideinitializer
  */
 #define GMP_AND(a, b) GMP_OVERLOAD_INVOKE(_GMP_AND, a, b)
 #define _GMP_AND_0_0 0
@@ -2927,6 +2963,7 @@
  * 
  * @see GMP_AND for logical AND operation
  * @see GMP_NOT for logical NOT operation
+ * @hideinitializer
  */
 #define GMP_OR(a, b) GMP_OVERLOAD_INVOKE(_GMP_OR, a, b)
 #define _GMP_OR_0_0 0
@@ -2972,6 +3009,7 @@
  * @see GMP_AND for logical AND operation
  * @see GMP_OR for logical OR operation
  * @see GMP_NOT for logical NOT operation
+ * @hideinitializer
  */
 #define GMP_XOR(a, b) GMP_OVERLOAD_INVOKE(_GMP_XOR, a, b)
 #define _GMP_XOR_0_0 0
@@ -2982,6 +3020,7 @@
 /**
  * @def GMP_IMPLIES(p, q)
  * @brief Logical implication: p ⇒ q ≡ ¬p ∨ q
+ * @hideinitializer
  */
 #define GMP_IMPLIES(p, q) GMP_OR(GMP_NOT(p), q)
 
@@ -2993,6 +3032,7 @@
  * 
  * \param value The value to convert (0 or non-zero).
  * \return 0 if the value is 0, 1 otherwise.
+ * \hideinitializer
  */
 #define GMP_BOOL(value) GMP_OVERLOAD_INVOKE(_GMP_BOOL, value)
 #define _GMP_BOOL_0 0
@@ -3271,6 +3311,7 @@
  * GMP_MAX(10, 2)  // expands to 10
  * GMP_MAX(5, 5)   // expands to 5
  * @endcode
+ * @hideinitializer
  */
 #define GMP_MAX(a, b) GMP_IF_THEN_ELSE(GMP_GREATER_INT(a, b), a, b)
 
@@ -3290,6 +3331,7 @@
  * GMP_MIN(10, 2)  // expands to 2
  * GMP_MIN(5, 5)   // expands to 5
  * @endcode
+ * @hideinitializer
  */
 
 #define GMP_MIN(a, b) GMP_IF_THEN_ELSE(GMP_LESS_INT(a, b), a, b)
@@ -3311,6 +3353,7 @@
  * GMP_MINMAX(2, 10)  // expands to (2, 10)
  * GMP_MINMAX(5, 5)   // expands to (5, 5)
  * @endcode
+ * @hideinitializer
  */
 #define GMP_MINMAX(a, b) GMP_IF_THEN_ELSE(GMP_LESS_INT(a, b), (a, b), (b, a))
 
@@ -3331,6 +3374,7 @@
  * GMP_MAXMIN(2, 10)  // expands to (10, 2)
  * GMP_MAXMIN(5, 5)   // expands to (5, 5)
  * @endcode
+ * @hideinitializer
  */
 #define GMP_MAXMIN(a, b) GMP_IF_THEN_ELSE(GMP_LESS_INT(a, b), (b, a), (a, b))
 
@@ -3349,6 +3393,7 @@
  * @code
  * GMP_SWAP(x, y)   // expands to y, x
  * @endcode
+ * @hideinitializer
  */
 #define GMP_SWAP(a, b) b, a
 
@@ -3372,6 +3417,7 @@
  * GMP_ADD(0, 5)   // expands to 5
  * GMP_ADD(7, 0)   // expands to 7
  * @endcode
+ * @hideinitializer
  */
 #define GMP_ADD(a, b) _GMP_ADD_IMPL(GMP_MINMAX(a, b))
 #define _GMP_ADD_IMPL(pair) GMP_GET_TUPLE(1, GMP_WHILE(_GMP_ADD_IMPL_COND, _GMP_ADD_IMPL_OP, pair))
@@ -3398,6 +3444,7 @@
  * @endcode
  * 
  * @note The negative result is represented with a minus sign prefix.
+ * @hideinitializer
  */
 #define GMP_SUB(a, b) _GMP_SUB(GMP_LESS_INT(a, b), a, b)
 #define _GMP_SUB(sym, a, b) GMP_CONCAT(_GMP_SUB_RESULT_, sym) (_GMP_SUB_IMPL(GMP_MINMAX(a, b)))
@@ -3431,6 +3478,7 @@
  * GMP_IF_THEN_ELSE(0, "This won't appear", "This will appear")  
  * // Expands to: "This will appear"
  * \endcode
+ * @hideinitializer
  */
 #define GMP_IF_THEN_ELSE(cond, then_expr, else_expr) GMP_OVERLOAD_INVOKE(_GMP_IF_THEN_ELSE, cond)(then_expr, else_expr)
 #define _GMP_IF_THEN_ELSE_1(then_expr, _) then_expr
@@ -3469,6 +3517,7 @@
  * 
  * @see GMP_IF_THEN_ELSE for if-then-else with both branches
  * @see GMP_BOOL for explicit boolean conversion
+ * @hideinitializer
  */
 #define GMP_IF(cond, expr) GMP_OVERLOAD_INVOKE(_GMP_IF, cond)(expr) 
 #define _GMP_IF_1(expr) expr
@@ -3480,6 +3529,7 @@
  * This macro defines the maximum depth allowed for macro nesting.
  * Exceeding this depth may lead to compiler errors or warnings related to
  * macro recursion depth.
+ * @hideinitializer
  */
 #define GMP_MAX_INDEX GMP_IF_THEN_ELSE(GMP_STANDARD_PREPROCESSOR, 256, 128)
 
@@ -3490,6 +3540,7 @@
  * If the index exceeds \ref GMP_MAX_INDEX, an error is generated; otherwise, it performs no action.
  * 
  * \param index The index to check.
+ * \hideinitializer
  */
 #define GMP_CHECK_INDEX(index) GMP_OVERLOAD_INVOKE(_GMP_CHECK_INDEX_R, _GMP_HAS_COMMA_MINIMUM(GMP_OVERLOAD_INVOKE(_GMP_CHECK_INDEX, index)))(index)
 #define _GMP_CHECK_INDEX_R_1(index)
@@ -3762,6 +3813,7 @@
   *
   * \param index The index to check.
   * \return 1 if the given index is valid, 0 otherwise.
+  * \hideinitializer
   */
 #define GMP_CHECK_INDEX_BOOL(index) GMP_OVERLOAD_INVOKE(_GMP_CHECK_INDEX_BOOL_R, GMP_HAS_COMMA(GMP_OVERLOAD_INVOKE(_GMP_CHECK_INDEX, index)))
 #define _GMP_CHECK_INDEX_BOOL_R_1 1
@@ -3776,6 +3828,7 @@
  * 
  * \param index The maximum index value to include in the sequence.
  * \return A comma-separated sequence of indices.
+ * \hideinitializer
  */
 #define GMP_MAKE_INDEX_SEQUENCE(index) GMP_OVERLOAD_INVOKE(_GMP_MAKE_INDEX_SEQUENCE_PRECHECK, GMP_CHECK_INDEX_BOOL(index))(index)
 #define _GMP_MAKE_INDEX_SEQUENCE_PRECHECK_1(index) GMP_OVERLOAD_INVOKE(_GMP_MAKE_INDEX_SEQUENCE, GMP_DEC(index))()
@@ -4048,11 +4101,20 @@
  * \param i The first integer value to compare.
  * \param j The second integer value to compare.
  * \return 1 if \a i and \a j are equal, 0 otherwise.
+ * \hideinitializer
  */
 #define GMP_EQUAL_INT(i, j) GMP_IDENTITY(_GMP_EQUAL_INT_IMPL GMP_CMP(i, j))
 #define _GMP_EQUAL_INT_IMPL(i, j) GMP_AND(GMP_NOT(GMP_BOOL(i)), GMP_NOT(GMP_BOOL(j)))
 
-
+/**
+ * @def GMP_EQUAL_INT_INDEPENDENT(i, j)
+ * @brief Compare two integer literal macros without relying on `GMP_CMP`.
+ *
+ * @param i The first integer value to compare.
+ * @param j The second integer value to compare.
+ * @return `1` when `i` and `j` are equal, otherwise `0`.
+ * @hideinitializer
+ */
 #define GMP_EQUAL_INT_INDEPENDENT(i, j) GMP_OVERLOAD_INVOKE(_GMP_EQUAL_INT_INDEPENDENT_RESULT, \
     GMP_HAS_COMMA(GMP_OVERLOAD_INVOKE(_GMP_EQUAL_INT_INDEPENDENT, i, j)))
 #define _GMP_EQUAL_INT_INDEPENDENT_RESULT_0 0
@@ -4583,6 +4645,7 @@
  * @param i First number to compare
  * @param j Second number to compare
  * @return True if i < j, false otherwise
+ * @hideinitializer
  */
 #define GMP_LESS_INT(i, j) GMP_IDENTITY(_GMP_LESS_INT_IMPL GMP_CMP(i, j))
 #define _GMP_LESS_INT_IMPL(i, j) GMP_AND(GMP_NOT(GMP_BOOL(i)), GMP_BOOL(j))
@@ -4611,6 +4674,7 @@
  * @see GMP_LESS_INT for strict less than (<)
  * @see GMP_EQUAL_INT for equality (==)
  * @see GMP_GREATER_EQUAL_INT for greater than or equal (≥)
+ * @hideinitializer
  */
 #define GMP_LESS_EQUAL_INT(i, j) GMP_IF_THEN_ELSE(GMP_EQUAL_INT_INDEPENDENT(i, j), 1, GMP_LESS_INT(i, j))
 
@@ -4626,6 +4690,7 @@
  * @param i First number to compare
  * @param j Second number to compare
  * @return 1 if i > j, 0 otherwise
+ * @hideinitializer
  */
 #define GMP_GREATER_INT(i, j) GMP_IDENTITY(_GMP_GREATER_INT_IMPL GMP_CMP(i, j))
 #define _GMP_GREATER_INT_IMPL(i, j) GMP_AND(GMP_BOOL(i), GMP_NOT(GMP_BOOL(j)))
@@ -4654,6 +4719,7 @@
  * @see GMP_GREATER_INT for strict greater than (>)
  * @see GMP_EQUAL_INT for equality (==)
  * @see GMP_LESS_EQUAL_INT for less than or equal (≤)
+ * @hideinitializer
  */
 #define GMP_GREATER_EQUAL_INT(i, j) GMP_IF_THEN_ELSE(GMP_EQUAL_INT_INDEPENDENT(i, j), 1, GMP_GREATER_INT(i, j))
 
@@ -4671,6 +4737,7 @@
  * @param i Minuend (non-negative integer)
  * @param j Subtrahend (non-negative integer) 
  * @return i - j (can be negative)
+ * @hideinitializer
  */
 #define GMP_SUB_INT(i, j) GMP_IDENTITY(_GMP_SUB_INT_IMPL GMP_CMP(i, j))
 #define _GMP_SUB_INT_IMPL(i, j) GMP_IF_THEN_ELSE(GMP_BOOL(i), i, GMP_IF_THEN_ELSE(GMP_NOT(GMP_BOOL(j)), j, -j))
@@ -4682,6 +4749,7 @@
  * functionalities, such as delayed expansion or conditional compilation.
  *
  * \return This macro does not return any value or generate any output.
+ * \hideinitializer
  */
 #define GMP_EMPTY(...)
 
@@ -4701,9 +4769,18 @@
  * Bar() // Expands to: 1
  * GMP_DEFER(Bar)() // Expands to: Bar()
  * \endcode
+ * \hideinitializer
  */
 #define GMP_DEFER(id) id GMP_EMPTY()
 
+/**
+ * @def GMP_EVAL(...)
+ * @brief Repeatedly rescan macro output to force deeper recursive expansion.
+ *
+ * @param ... The macro expression to rescan.
+ * @return The fully rescanned macro expansion result.
+ * @hideinitializer
+ */
 #define GMP_EVAL(...) GMP_EVAL_1(GMP_EVAL_1(GMP_EVAL_1(__VA_ARGS__)))
 #define GMP_EVAL_1(...) GMP_EVAL_2(GMP_EVAL_2(GMP_EVAL_2(__VA_ARGS__)))
 #define GMP_EVAL_2(...) GMP_EVAL_3(GMP_EVAL_3(GMP_EVAL_3(__VA_ARGS__)))
@@ -4723,6 +4800,7 @@
  * \return A sequence of numbers from \a begin to \a end.
  *
  * \note The \a end value should not be greater than \ref GMP_MAX_INT.
+ * \hideinitializer
  */
 #define GMP_RANGE(begin, end) GMP_IF_THEN_ELSE(GMP_EQUAL_INT_INDEPENDENT(begin, end), _GMP_RANGE_NULL, _GMP_RANGE_NOT_NULL)(begin, end)
 #define _GMP_RANGE_NULL(...)
@@ -4763,6 +4841,7 @@
  * 
  * @see GMP_CHECK_INDEX for index validation
  * @see GMP_EVAL for expression evaluation
+ * @hideinitializer
  */
 #define GMP_REPEAT(call, count, ...) GMP_OVERLOAD_INVOKE(_GMP_REPEAT_PRECHECK, GMP_CHECK_INDEX_BOOL(count))(call, count, __VA_ARGS__)
 #define _GMP_REPEAT_PRECHECK_1(call, count, ...) GMP_EVAL( _GMP_REPEAT_IMPL(call, count, __VA_ARGS__) )
@@ -4789,6 +4868,7 @@
  *   } } }
  * 
  * @param ... Variable list of namespace names to create nested hierarchy
+ * @hideinitializer
  */
 #define GMP_GENERATE_NAMESPACES_BEGIN(...) GMP_FOR_EACH(_GMP_START_NAMESPACES, __VA_ARGS__)
 #define GMP_GENERATE_NAMESPACES_END(...) GMP_FOR_EACH(_GMP_END_NAMESPACES, __VA_ARGS__)
@@ -4810,6 +4890,7 @@
  * @param y Second token to concatenate  
  * @param ... Additional tokens to concatenate (optional)
  * @return A single token formed by concatenating all input tokens
+ * @hideinitializer
  * 
  * @note The macro requires at least 2 arguments. For single-token
  *       "concatenation", use GMP_IDENTITY or simply pass the token directly.
@@ -4872,23 +4953,53 @@
  * 
  * @param ... Variadic arguments (may include a trailing comma)
  * @return Arguments without trailing comma, wrapped in parentheses
+ * @hideinitializer
  */
 #define GMP_REMOVE_TRAILING_COMMA(...) GMP_OVERLOAD_INVOKE(_GMP_REMOVE_TRAILING_COMMA_WHEN, GMP_BOOL(GMP_SIZE_OF_VAARGS(__VA_ARGS__)))(__VA_ARGS__)
 #define _GMP_REMOVE_TRAILING_COMMA_WHEN_0(...)
 #define _GMP_REMOVE_TRAILING_COMMA_WHEN_1(...) _GMP_REMOVE_TRAILING_COMMA_IMPL((__VA_ARGS__))
 #define _GMP_REMOVE_TRAILING_COMMA_IMPL(args) GMP_REMOVE_PARENS(GMP_TUPLE_TAKE(GMP_DEC(GMP_TUPLE_SIZE(args)), args))
 
+/**
+ * @def GMP_IDENTIFIERS
+ * @brief Expand to a comma-separated sequence of placeholder identifiers.
+ *
+ * This macro is primarily used to build large preprocessor parameter lists.
+ * @hideinitializer
+ */
 #if GMP_STANDARD_PREPROCESSOR
 #define GMP_IDENTIFIERS _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, _64, _65, _66, _67, _68, _69, _70, _71, _72, _73, _74, _75, _76, _77, _78, _79, _80, _81, _82, _83, _84, _85, _86, _87, _88, _89, _90, _91, _92, _93, _94, _95, _96, _97, _98, _99, _100, _101, _102, _103, _104, _105, _106, _107, _108, _109, _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _123, _124, _125, _126, _127, _128, _129, _130, _131, _132, _133, _134, _135, _136, _137, _138, _139, _140, _141, _142, _143, _144, _145, _146, _147, _148, _149, _150, _151, _152, _153, _154, _155, _156, _157, _158, _159, _160, _161, _162, _163, _164, _165, _166, _167, _168, _169, _170, _171, _172, _173, _174, _175, _176, _177, _178, _179, _180, _181, _182, _183, _184, _185, _186, _187, _188, _189, _190, _191, _192, _193, _194, _195, _196, _197, _198, _199, _200, _201, _202, _203, _204, _205, _206, _207, _208, _209, _210, _211, _212, _213, _214, _215, _216, _217, _218, _219, _220, _221, _222, _223, _224, _225, _226, _227, _228, _229, _230, _231, _232, _233, _234, _235, _236, _237, _238, _239, _240, _241, _242, _243, _244, _245, _246, _247, _248, _249, _250, _251, _252, _253, _254, _255
 #else
 #define GMP_IDENTIFIERS _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, _64, _65, _66, _67, _68, _69, _70, _71, _72, _73, _74, _75, _76, _77, _78, _79, _80, _81, _82, _83, _84, _85, _86, _87, _88, _89, _90, _91, _92, _93, _94, _95, _96, _97, _98, _99, _100, _101, _102, _103, _104, _105, _106, _107, _108, _109, _110, _111, _112, _113, _114, _115, _116, _117, _118, _119, _120, _121, _122, _123, _124, _125
 #endif // GMP_STANDARD_PREPROCESSOR
 
-/**
- * @brief C++ standard version detection
- * 
- * These macros detect the C++ standard version being used.
- * Values correspond to the actual __cplusplus macro values.
+/** @def GMP_CPP_STD98
+ * @brief Numeric `__cplusplus` value corresponding to C++98.
+ * @hideinitializer
+ */
+/** @def GMP_CPP_STD11
+ * @brief Numeric `__cplusplus` value corresponding to C++11.
+ * @hideinitializer
+ */
+/** @def GMP_CPP_STD14
+ * @brief Numeric `__cplusplus` value corresponding to C++14.
+ * @hideinitializer
+ */
+/** @def GMP_CPP_STD17
+ * @brief Numeric `__cplusplus` value corresponding to C++17.
+ * @hideinitializer
+ */
+/** @def GMP_CPP_STD20
+ * @brief Numeric `__cplusplus` value corresponding to C++20.
+ * @hideinitializer
+ */
+/** @def GMP_CPP_STD23
+ * @brief Numeric `__cplusplus` value corresponding to C++23.
+ * @hideinitializer
+ */
+/** @def GMP_CPP_STD26
+ * @brief Numeric `__cplusplus` value reserved for C++26 support checks.
+ * @hideinitializer
  */
 #define GMP_CPP_STD98   199711L
 #define GMP_CPP_STD11   201103L
@@ -4908,6 +5019,7 @@
  *   GMP_CPP_AT_LEAST(20)  // true if C++20 or newer
  * 
  * @param version The C++ standard version year (98, 11, 14, 17, 20, 23, 26)
+ * @hideinitializer
  */
 #define GMP_CPP_AT_LEAST(version) (__cplusplus >= GMP_CONCAT(GMP_CPP_STD, version))
 
@@ -4920,6 +5032,7 @@
  *   GMP_CPP_EXACTLY(17)  // true only for C++17
  * 
  * @param version The C++ standard version year
+ * @hideinitializer
  */
 #define GMP_CPP_EXACTLY(version) (__cplusplus == GMP_CONCAT(GMP_CPP_STD, version))
 
@@ -4932,6 +5045,7 @@
  *   GMP_CPP_NEWER_THAN(17)  // true for C++20, C++23, etc.
  * 
  * @param version The C++ standard version year
+ * @hideinitializer
  */
 #define GMP_CPP_NEWER_THAN(version) (__cplusplus > GMP_CONCAT(GMP_CPP_STD, version))
 
@@ -4944,9 +5058,15 @@
  *   GMP_CPP_OLDER_THAN(17)  // true for C++14, C++11, etc.
  * 
  * @param version The C++ standard version year
+ * @hideinitializer
  */
 #define GMP_CPP_OLDER_THAN(version) (__cplusplus < GMP_CONCAT(GMP_CPP_STD, version))
 
+/**
+ * @def GMP_INLINE
+ * @brief Expand to `inline` when inline variables are supported, otherwise expand to nothing.
+ * @hideinitializer
+ */
 #if defined(__cpp_inline_variables)
 #define GMP_INLINE inline
 #else
