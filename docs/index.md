@@ -1,5 +1,7 @@
 # GMP Documentation
 
+Language: English | [简体中文](zh/index.html)
+
 **GMP** is a header-only C++ metaprogramming library for compile-time programming and code generation.
 
 It provides four complementary layers:
@@ -11,11 +13,11 @@ It provides four complementary layers:
 
 ## Quick Links
 
-- [Getting Started](getting-started.md)
-- [Macro Metaprogramming](macro-metaprogramming.md)
-- [Reflection Metaprogramming](reflection.md)
-- [Named Operators](named-operators.md)
-- [Generic Design Patterns](design-patterns.md)
+- [Getting Started](getting-started.html)
+- [Macro Metaprogramming](macro-metaprogramming.html)
+- [Reflection Metaprogramming](reflection.html)
+- [Named Operators](named-operators.html)
+- [Generic Design Patterns](design-patterns.html)
 - [API Reference](api/)
 
 ## Feature Overview
@@ -50,6 +52,12 @@ If you want to know where a feature lives in the source tree:
 
 The current documentation is organized by capability rather than by file. Each page explains what a module is for, what language level it needs, and which APIs to look at first.
 
+## Languages
+
+- English is the primary documentation language
+- A Simplified Chinese guide set is available under [zh/](zh/index.html)
+- The [API Reference](api/) is currently available in English only
+
 ## Next Steps
 
-Start with [Getting Started](getting-started.md), then jump to the module you want to explore in depth.
+Start with [Getting Started](getting-started.html), then jump to the module you want to explore in depth.

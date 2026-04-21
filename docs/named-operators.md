@@ -1,5 +1,7 @@
 # Named Operators
 
+Language: English | [简体中文](zh/named-operators.html)
+
 The named operator layer lets you build custom infix-style syntax by wrapping callables in lightweight operator tokens.
 
 This module requires **C++20**.
@@ -64,6 +66,6 @@ int main() {
 
 ## Related Pages
 
-- [Reflection Metaprogramming](reflection.md)
-- [Generic Design Patterns](design-patterns.md)
+- [Reflection Metaprogramming](reflection.html)
+- [Generic Design Patterns](design-patterns.html)
 - [API Reference](api/)

@@ -1,5 +1,7 @@
 # Generic Design Patterns
 
+Language: English | [简体中文](zh/design-patterns.html)
+
 The generic design patterns layer provides reusable infrastructure helpers such as a spin lock, a CRTP singleton, and a runtime object factory.
 
 This module is available in **C++11**, with some conveniences improving under newer standards.
@@ -74,6 +76,6 @@ int main() {
 
 ## Related Pages
 
-- [Getting Started](getting-started.md)
-- [Named Operators](named-operators.md)
+- [Getting Started](getting-started.html)
+- [Named Operators](named-operators.html)
 - [API Reference](api/)

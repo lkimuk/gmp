@@ -1,5 +1,7 @@
 # API Guide
 
+Language: English | [简体中文](../zh/index.html)
+
 This section explains how the generated API reference is integrated into the documentation site.
 
 ## Browse the Generated Reference
@@ -32,9 +34,14 @@ The generated HTML is written to `docs/api/reference/`.
 
 ## Related Guides
 
-- [Documentation home](../index.md)
-- [Getting Started](../getting-started.md)
-- [Macro Metaprogramming](../macro-metaprogramming.md)
-- [Reflection Metaprogramming](../reflection.md)
-- [Named Operators](../named-operators.md)
-- [Generic Design Patterns](../design-patterns.md)
+- [Documentation home](../index.html)
+- [Getting Started](../getting-started.html)
+- [Macro Metaprogramming](../macro-metaprogramming.html)
+- [Reflection Metaprogramming](../reflection.html)
+- [Named Operators](../named-operators.html)
+- [Generic Design Patterns](../design-patterns.html)
+
+## Language Policy
+
+- Guides are being maintained in English and Simplified Chinese
+- The generated API reference is currently English-only

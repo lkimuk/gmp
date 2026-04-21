@@ -1,5 +1,7 @@
 # Macro Metaprogramming
 
+Language: English | [简体中文](zh/macro-metaprogramming.html)
+
 The macro metaprogramming layer provides C++ preprocessor utilities for boolean logic, arithmetic, tuple manipulation, iteration, overload dispatch, and namespace generation.
 
 This module is available in **C++11**.
@@ -102,6 +104,6 @@ MYLIB_NAMESPACE_END
 
 ## Related Pages
 
-- [Getting Started](getting-started.md)
-- [Reflection Metaprogramming](reflection.md)
+- [Getting Started](getting-started.html)
+- [Reflection Metaprogramming](reflection.html)
 - [API Reference](api/)

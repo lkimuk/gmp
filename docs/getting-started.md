@@ -1,5 +1,7 @@
 # Getting Started
 
+Language: English | [简体中文](zh/getting-started.html)
+
 This page covers compiler requirements, installation options, and the quickest way to start using GMP.
 
 ## What GMP Includes
@@ -125,15 +127,19 @@ cmake --build ./build
 
 ## Choosing a Starting Point
 
-- Start with [Macro Metaprogramming](macro-metaprogramming.md) if you want preprocessor utilities or code generation helpers
-- Start with [Reflection Metaprogramming](reflection.md) if you want type names, enum reflection, or aggregate inspection
-- Start with [Named Operators](named-operators.md) if you want custom infix syntax
-- Start with [Generic Design Patterns](design-patterns.md) if you want singleton or object-factory utilities
+- Start with [Macro Metaprogramming](macro-metaprogramming.html) if you want preprocessor utilities or code generation helpers
+- Start with [Reflection Metaprogramming](reflection.html) if you want type names, enum reflection, or aggregate inspection
+- Start with [Named Operators](named-operators.html) if you want custom infix syntax
+- Start with [Generic Design Patterns](design-patterns.html) if you want singleton or object-factory utilities
 
 ## Where to Go Next
 
-- [Macro Metaprogramming](macro-metaprogramming.md)
-- [Reflection Metaprogramming](reflection.md)
-- [Named Operators](named-operators.md)
-- [Generic Design Patterns](design-patterns.md)
+- [Macro Metaprogramming](macro-metaprogramming.html)
+- [Reflection Metaprogramming](reflection.html)
+- [Named Operators](named-operators.html)
+- [Generic Design Patterns](design-patterns.html)
 - [API Reference](api/)
+
+## Language Note
+
+The hand-written guides are available in English and Simplified Chinese. The [API Reference](api/) remains English-only for now.

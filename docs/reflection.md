@@ -1,5 +1,7 @@
 # Reflection Metaprogramming
 
+Language: English | [简体中文](zh/reflection.html)
+
 The reflection metaprogramming layer provides compile-time utilities for fixed strings, type names, enum reflection, and aggregate member introspection.
 
 This module requires **C++20**.
@@ -113,6 +115,6 @@ int main() {
 
 ## Related Pages
 
-- [Getting Started](getting-started.md)
-- [Named Operators](named-operators.md)
+- [Getting Started](getting-started.html)
+- [Named Operators](named-operators.html)
 - [API Reference](api/)
