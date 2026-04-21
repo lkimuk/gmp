@@ -20,6 +20,17 @@
 
 namespace gmp {
 
+/**
+ * @brief Customize the reflection range or explicit values for an enumeration.
+ * 
+ * `enum_traits<E>` provides customization points used by the compile-time enum
+ * reflection utilities. By default, enumerator scanning uses the range
+ * `[-128, 127]`. Users can specialize this trait directly or use
+ * `GMP_ENUM_RANGE` / `GMP_ENUM_VALUES` to define a narrower scan range or an
+ * explicit enumerator list.
+ * 
+ * @tparam E The enumeration type being customized.
+ */
 template<typename E>
 struct enum_traits {
     static constexpr int min = -128;
@@ -28,6 +39,17 @@ struct enum_traits {
     // static constexpr bool allow_alias = false;
 };
 
+/**
+ * @def GMP_ENUM_RANGE(Enum, Min, Max)
+ * @brief Specialize `gmp::enum_traits` with an explicit scan range.
+ * 
+ * This macro defines `enum_traits<Enum>::min` and `enum_traits<Enum>::max`,
+ * allowing enum reflection to scan a narrower or wider range than the default.
+ * 
+ * @param Enum The enumeration type to customize.
+ * @param Min The minimum integer value to scan.
+ * @param Max The maximum integer value to scan.
+ */
 #define GMP_ENUM_RANGE(Enum, Min, Max) \
     template<>                             \
     struct gmp::enum_traits<Enum> {             \
@@ -35,15 +57,35 @@ struct enum_traits {
         static constexpr int max = Max;    \
     }
 
+/**
+ * @def GMP_ENUM_VALUES(Enum, ...)
+ * @brief Specialize `gmp::enum_traits` with an explicit enumerator list.
+ * 
+ * This macro bypasses range scanning by providing the exact set of enumerator
+ * values to use for reflection.
+ * 
+ * @param Enum The enumeration type to customize.
+ * @param ... The explicit enumerator values of `Enum`.
+ */
 #define GMP_ENUM_VALUES(Enum, ...) \
     template<>                             \
     struct gmp::enum_traits<Enum> {             \
         static constexpr auto values = std::to_array({__VA_ARGS__}); \
     }
 
+/**
+ * @brief The minimum reflection scan value for enumeration type `E`.
+ * 
+ * @tparam E The enumeration type.
+ */
 template<typename E>
 inline constexpr int enum_min_v = enum_traits<E>::min;
 
+/**
+ * @brief The maximum reflection scan value for enumeration type `E`.
+ * 
+ * @tparam E The enumeration type.
+ */
 template<typename E>
 inline constexpr int enum_max_v = enum_traits<E>::max;
 
@@ -85,6 +127,20 @@ consteval auto enum_values_scan(std::index_sequence<I...>) {
 
 } // namespace detail
 
+/**
+ * @brief Get all enumerator values of an enumeration type at compile-time.
+ * 
+ * This function returns the full reflected enumerator set for `E`. If
+ * `enum_traits<E>::values` is provided, that explicit list is used. Otherwise,
+ * the function scans the integer range defined by `enum_traits<E>::min` and
+ * `enum_traits<E>::max`.
+ * 
+ * @tparam E The enumeration type to inspect.
+ * @tparam P The expected enumerator-name prefix used during range scanning.
+ * @return A `std::array` containing all reflected enumerator values.
+ * 
+ * @note This function is consteval and evaluated entirely at compile-time.
+ */
 template<typename E, fixed_string P = type_name<E>() + fixed_string("::")>
 consteval auto enum_values() {
     static_assert(std::is_enum_v<E>, "enum_values<E>() requires E to be an enum type");
@@ -239,6 +295,13 @@ consteval auto enum_names() {
 
 /**
  * @brief Get all enumerator entries (value, name) of an enumeration type at compile-time.
+ * 
+ * This function returns a compile-time array of `(value, name)` pairs for all
+ * reflected enumerators of `E`.
+ * 
+ * @tparam E The enumeration type to inspect.
+ * @return A `std::array<std::pair<E, std::string_view>, N>` containing all
+ *         reflected enumerators in declaration order.
  */
 template<typename E>
 consteval auto enum_entries() {
@@ -260,6 +323,9 @@ consteval auto enum_entries() {
 /**
  * @brief Get the index of an enumerator value in enum_values<E>().
  *
+ * @tparam E The enumeration type of the value being searched.
+ * @param value The enumerator value to locate.
+ *
  * @return std::optional<std::size_t> containing the index if found, otherwise std::nullopt.
  */
 template<typename E>
@@ -275,6 +341,9 @@ constexpr auto enum_index(E value) -> std::optional<std::size_t> {
 
 /**
  * @brief Cast an enumerator name to its corresponding enumerator value.
+ *
+ * @tparam E The enumeration type to cast into.
+ * @param name The enumerator name to search for.
  *
  * @return std::optional<E> containing the enumerator if found, otherwise std::nullopt.
  */
@@ -538,6 +607,18 @@ constexpr auto member_type_names() {
     return detail::member_type_names_holder<T>::views;
 }
 
+/**
+ * @brief Get a reference to the I-th member of an aggregate object.
+ * 
+ * This function returns the selected member while preserving the value category
+ * of the aggregate object passed in.
+ * 
+ * @tparam I The zero-based member index.
+ * @tparam T The aggregate object type.
+ * @tparam UnqualifiedT The cvref-stripped aggregate type.
+ * @param value The aggregate object whose member is requested.
+ * @return A reference to the I-th member.
+ */
 template<std::size_t I, typename T, typename UnqualifiedT = std::remove_cvref_t<T>>
     requires std::is_aggregate_v<UnqualifiedT>
         && (I < member_count<UnqualifiedT>())
@@ -578,6 +659,18 @@ namespace detail {
 
 } // namespace detail
 
+/**
+ * @brief Visit each member of an aggregate object together with its member name.
+ * 
+ * `func` is invoked once per member in declaration order. Each invocation
+ * receives the member name as `std::string_view` and the corresponding member
+ * reference.
+ * 
+ * @tparam T The aggregate object type.
+ * @tparam F The callable visitor type.
+ * @param value The aggregate object to inspect.
+ * @param func The visitor invoked for each member.
+ */
 template<typename T, typename F>
     requires std::is_aggregate_v<std::remove_cvref_t<T>>
 void for_each_member(T&& value, F&& func) noexcept {

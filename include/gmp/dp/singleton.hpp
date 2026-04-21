@@ -23,22 +23,53 @@
 
 namespace gmp {
 
-/*!
-@brief a class template to implement singleton pattern
-@tparam T type for singleton class
-@tparam LongLifeTime type is a bool value that false is not supported dead-reference and true is on
-the contrary.
-
-@subclass Any subclass should use CRTP to become a singleton type.
-For example, class Log : public gmp::singleton<T> {}; // non-dead-reference version
-       class Log : public gmp::singleton<T, true> {}; // dead-reference version
-
-@since version 1.2.0
-*/
+/**
+ * @brief CRTP-based singleton helper with optional dead-reference recovery.
+ *
+ * Derive a type `T` from `singleton<T>` to obtain a process-wide `instance()`
+ * accessor. The default specialization uses a function-local static object and
+ * provides the simplest singleton lifetime model. The `LongLifeTime = true`
+ * specialization keeps additional state so it can recreate the singleton after
+ * destruction if `instance()` is accessed again.
+ *
+ * @tparam T The derived singleton type.
+ * @tparam LongLifeTime When `false`, use a function-local static instance.
+ * When `true`, enable dead-reference handling and recreation support.
+ *
+ * @par Example
+ * @code
+ * struct logger : gmp::singleton<logger> {
+ *   GMP_DISABLE_CONSTRUCTION(logger)
+ * };
+ *
+ * auto& log = logger::instance();
+ * @endcode
+ *
+ * @since version 1.2.0
+ */
 template <typename T, bool LongLifeTime = false> class singleton;
 
+/**
+ * @brief Default singleton specialization using a function-local static object.
+ *
+ * This specialization is the usual zero-overhead singleton form. The first call
+ * to `instance()` constructs the object, and subsequent calls return the same
+ * instance for the lifetime of the program.
+ *
+ * @tparam T The derived singleton type.
+ */
 template <typename T> class singleton<T, false> {
 public:
+  /**
+   * @brief Get the singleton instance.
+   *
+   * The first call constructs the object using the provided arguments. Later
+   * calls ignore constructor arguments and return the same instance.
+   *
+   * @tparam Args Constructor argument types.
+   * @param args Constructor arguments used on first initialization.
+   * @return A reference to the singleton instance.
+   */
   template <typename... Args> static T& instance(Args&&... args) {
     static T obj(std::forward<Args>(args)...);
     return obj;
@@ -55,8 +86,23 @@ private:
   singleton& operator=(singleton&&) = delete;
 };
 
+/**
+ * @brief Singleton specialization with dead-reference recovery support.
+ *
+ * This specialization keeps explicit state about the singleton lifetime and can
+ * recreate the singleton if `instance()` is called after destruction.
+ *
+ * @tparam T The derived singleton type.
+ */
 template <typename T> class singleton<T, true> {
 public:
+  /**
+   * @brief Get the singleton instance, recreating it if necessary.
+   *
+   * @tparam Args Constructor argument types.
+   * @param args Constructor arguments used during creation or recreation.
+   * @return A reference to the singleton instance.
+   */
   template <typename... Args> static T& instance(Args&&... args) {
     if (!pInstance_) {
       // DCL
@@ -112,6 +158,22 @@ template<typename T> T* singleton<T, true>::pInstance_ = nullptr;
 template<typename T> bool singleton<T, true>::destroyed_ = false;
 template<typename T> dp::spin_lock singleton<T, true>::lock_;
 
+/**
+ * @def GMP_DISABLE_CONSTRUCTION(Class)
+ * @brief Prevent direct public construction of a singleton-derived type.
+ *
+ * This macro grants `gmp::singleton<Class>` friendship and makes the default
+ * constructor private, which is a common pattern for CRTP singleton types.
+ *
+ * @param Class The singleton-derived class type.
+ *
+ * @par Example
+ * @code
+ * struct logger : gmp::singleton<logger> {
+ *   GMP_DISABLE_CONSTRUCTION(logger)
+ * };
+ * @endcode
+ */
 #define GMP_DISABLE_CONSTRUCTION(Class) \
 private:                                \
     friend class gmp::singleton<Class>; \

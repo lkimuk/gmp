@@ -58,29 +58,79 @@ consteval auto type_name() {
 }
 
 template<typename T>
+/**
+ * @brief Format a type name for documentation-friendly display.
+ * 
+ * The primary template forwards to `type_name<T>()`. Selected standard library
+ * types may provide specializations with shorter or more conventional names.
+ * 
+ * @tparam T The type to format.
+ */
 struct pretty_type_name {
+    /**
+     * @brief Get the formatted type name.
+     * 
+     * @return A compile-time string representing `T`.
+     */
     consteval auto operator()() { return type_name<T>(); }
 };
 
 template<>
+/**
+ * @brief Formatter specialization for `std::string`.
+ */
 struct pretty_type_name<std::string> {
+    /**
+     * @brief Get the formatted type name.
+     * 
+     * @return The string `"std::string"`.
+     */
     consteval auto operator()() { return fixed_string("std::string"); }
 };
 
 template<>
+/**
+ * @brief Formatter specialization for `std::string_view`.
+ */
 struct pretty_type_name<std::string_view> {
+    /**
+     * @brief Get the formatted type name.
+     * 
+     * @return The string `"std::string_view"`.
+     */
     consteval auto operator()() { return fixed_string("std::string_view"); }
 };
 
 template<typename T>
+/**
+ * @brief Formatter specialization for `std::vector<T>`.
+ * 
+ * @tparam T The vector element type.
+ */
 struct pretty_type_name<std::vector<T>> {
+    /**
+     * @brief Get the formatted type name.
+     * 
+     * @return A compile-time string in the form `std::vector<...>`.
+     */
     consteval auto operator()() {
         return "std::vector<"_fs + pretty_type_name<T>()() + ">"_fs;
     }
 };
 
 template<typename T, std::size_t N>
+/**
+ * @brief Formatter specialization for `std::array<T, N>`.
+ * 
+ * @tparam T The array element type.
+ * @tparam N The number of elements.
+ */
 struct pretty_type_name<std::array<T, N>> {
+    /**
+     * @brief Get the formatted type name.
+     * 
+     * @return A compile-time string in the form `std::array<..., N>`.
+     */
     consteval auto operator()() {
         return "std::array<"_fs + pretty_type_name<T>()() +
             ", "_fs + to_fixed_string_v<N> + ">"_fs;

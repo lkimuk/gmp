@@ -20,21 +20,33 @@
 
 namespace gmp::dp {
 
-/*!
-@brief add lock via memory model
-
-@since version 1.0.0
-*/
+/**
+ * @brief A minimal spin lock built on `std::atomic_flag`.
+ *
+ * `spin_lock` provides a tiny mutual-exclusion primitive for short critical
+ * sections. It repeatedly attempts to acquire the lock until it succeeds.
+ *
+ * @warning Because this lock busy-waits, it should only be used for brief
+ * low-contention regions. It is not a replacement for heavier blocking mutexes
+ * when waiting may be prolonged.
+ *
+ * @since version 1.0.0
+ */
 class spin_lock {
 private:
   std::atomic_flag flag_ = ATOMIC_FLAG_INIT;
 
 public:
-
+  /**
+   * @brief Acquire the lock by spinning until it becomes available.
+   */
   void lock() {
     while (flag_.test_and_set(std::memory_order_acquire));
   }
 
+  /**
+   * @brief Release the lock.
+   */
   void unlock() {
     flag_.clear(std::memory_order_release);
   }

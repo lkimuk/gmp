@@ -31,59 +31,112 @@
 
 namespace gmp {
 
-/*!
-@brief Automatically register type into factory and yield them by identifier "key".
-
-This class template is inherited from gmp::singleton and it can hence be used as a "singleton
-class".
-
-@tparam AbstractProduct The abstract base class of the products, all registered types are its
-subclass.
-
-@since version 1.0.0
-*/
+/**
+ * @brief A singleton-backed runtime factory that creates products by string key.
+ *
+ * `object_factory` stores a mapping from textual identifiers to constructor
+ * callbacks for concrete types derived from `AbstractProduct`. Product types are
+ * typically registered through `register_type` or the
+ * `GMP_FACTORY_REGISTER(...)` helper macro, and can later be instantiated by
+ * calling `create`, `create_shared`, or `create_unique`.
+ *
+ * The factory itself is a singleton so registrations and lookups operate on a
+ * single process-wide registry for a given `<AbstractProduct, ConstructorArgs...>`
+ * specialization.
+ *
+ * @tparam AbstractProduct The abstract base type returned by the factory.
+ * @tparam ConstructorArgs The constructor argument types forwarded to concrete products.
+ *
+ * @since version 1.0.0
+ */
 template <typename AbstractProduct, typename... ConstructorArgs>
 class object_factory : public singleton<object_factory<AbstractProduct, ConstructorArgs...>> {
   using this_type = object_factory<AbstractProduct, ConstructorArgs...>;
 
 public:
-  /*!
-  @brief register type into map using functor.
-
-  @tparam T the creating type.
-  */
+  /**
+   * @brief Register a concrete product type under a string key.
+   *
+   * Constructing an instance of this helper inserts a constructor callback into
+   * the owning factory specialization. The callback creates `T` with the
+   * `ConstructorArgs...` supplied later at lookup time.
+   *
+   * @tparam T The concrete product type to register.
+   */
   template <typename T>
 #if GMP_CPP_AT_LEAST(20)
     requires std::derived_from<T, AbstractProduct>
 #endif
   struct register_type {
     // Registers T into object factory
+    /**
+     * @brief Register `T` with the specified lookup key.
+     *
+     * @param key The textual identifier used to create objects of type `T`.
+     */
     register_type(const std::string& key) {
       this_type::instance().map_.emplace(key,
         [](const ConstructorArgs&... args) { return new T(args...); });
     }
   };
 
-  // removes object
+  /**
+   * @brief Remove a previously registered product key from the factory.
+   *
+   * Removing a key only affects future lookups. It does not modify or destroy
+   * any objects that were already created.
+   *
+   * @param key The registered lookup key to erase.
+   */
   void unregister_type(const std::string& key) {
     this_type::instance().map_.erase(key);
   }
 
-  /// return concrete object by invoking new operator
-  /// !!!note!!! if use this method user should delete it to avoid memory leaks.
+  /**
+   * @brief Create a concrete product with raw `new` semantics.
+   *
+   * This function looks up `key`, invokes the registered constructor callback,
+   * and returns the resulting object as a raw pointer.
+   *
+   * @param key The registered lookup key of the desired concrete type.
+   * @param args The constructor arguments forwarded to the concrete product.
+   * @return A raw pointer to the newly created product.
+   *
+   * @throws std::invalid_argument If `key` is not registered.
+   *
+   * @warning The caller owns the returned pointer and must delete it to avoid
+   * memory leaks. Prefer `create_shared()` or `create_unique()` when ownership
+   * should be explicit.
+   */
   AbstractProduct* create(const std::string& key, const ConstructorArgs&... args) {
     if (this_type::instance().map_.find(key) == this_type::instance().map_.end())
       throw std::invalid_argument("Unknown object type passed to factory!");
     return this_type::instance().map_[key](args...);
   }
 
-  /// return concrete object by invoking shared ptr
+  /**
+   * @brief Create a concrete product and return it as `std::shared_ptr`.
+   *
+   * @param key The registered lookup key of the desired concrete type.
+   * @param args The constructor arguments forwarded to the concrete product.
+   * @return A shared pointer owning the newly created product.
+   *
+   * @throws std::invalid_argument If `key` is not registered.
+   */
   std::shared_ptr<AbstractProduct> create_shared(
     const std::string& key, const ConstructorArgs&... args) {
     return std::shared_ptr<AbstractProduct>(create(key, args...));
   }
 
-  /// return concrete object by invoking unique ptr
+  /**
+   * @brief Create a concrete product and return it as `std::unique_ptr`.
+   *
+   * @param key The registered lookup key of the desired concrete type.
+   * @param args The constructor arguments forwarded to the concrete product.
+   * @return A unique pointer owning the newly created product.
+   *
+   * @throws std::invalid_argument If `key` is not registered.
+   */
   std::unique_ptr<AbstractProduct> create_unique(
     const std::string& key, const ConstructorArgs&... args) {
     return std::unique_ptr<AbstractProduct>(create(key, args...));
@@ -107,11 +160,26 @@ private:
         _GMP_OBJECT_FACTORY_REGISTER_NAME(AbstractProduct, ConcreteProduct)(GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConcreteProduct), GMP_STRINGIFY(GMP_GET_TUPLE(0, ConcreteProduct)), GMP_STRINGIFY(ConcreteProduct)));
 
 /**
- * @brief 
- * 
- * @example
- * GMP_FACTORY_REGISTER(base_class, constructor_arg_type, (name1, derived_class1), (name2, derived_class2))
- * GMP_FACTORY_REGISTER(base_class, (constructor_arg1_type, arg2_type), derived_class1, class2)
+ * @def GMP_FACTORY_REGISTER(AbstractProduct, ConstructorArgs, ...)
+ * @brief Register one or more concrete product types with an object factory.
+ *
+ * This macro creates static registration objects for
+ * `gmp::object_factory<AbstractProduct, ...>`. It supports both single
+ * constructor-argument forms and tuple forms, and it also supports explicit
+ * `(key, type)` registration pairs.
+ *
+ * @param AbstractProduct The abstract product base type managed by the factory.
+ * @param ConstructorArgs Either a single constructor argument type or a tuple of types.
+ * @param ... Concrete product registrations. Each item can be:
+ *   - a concrete type name, using that type name as the registration key
+ *   - a tuple `(key, ConcreteType)` for an explicit string key
+ *
+ * @par Example
+ * @code
+ * GMP_FACTORY_REGISTER(shape, (), circle, square)
+ * GMP_FACTORY_REGISTER(shape, (), ("round", circle), ("box", square))
+ * GMP_FACTORY_REGISTER(widget, (int, std::string), basic_widget, fancy_widget)
+ * @endcode
  */
 #define GMP_FACTORY_REGISTER(AbstractProduct, ConstructorArgs, ...) \
   GMP_EVAL( _GMP_FACTORY_REGISTER_IMPL(AbstractProduct, ConstructorArgs, __VA_ARGS__) )

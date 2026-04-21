@@ -14,14 +14,33 @@
 
 namespace gmp {
 
+/**
+ * @brief Wrap a compile-time value as a distinct function argument type.
+ * 
+ * `constant_arg_t<V>` is used to pass non-type template parameter values
+ * through overload sets while preserving them as part of the type.
+ * 
+ * @tparam The compile-time value being wrapped.
+ */
 template<auto>
 struct constant_arg_t {
     explicit constant_arg_t() = default;
 };
 
+/**
+ * @brief A ready-to-use `constant_arg_t<V>` object for a compile-time value.
+ * 
+ * @tparam V The wrapped compile-time value.
+ */
 template<auto V>
 inline constexpr constant_arg_t<V> constant_arg{};
 
+/**
+ * @brief A placeholder type implicitly convertible to any type.
+ * 
+ * `any` is primarily used in compile-time aggregate probing and other
+ * metaprogramming contexts where a value of arbitrary type is required.
+ */
 struct any { template<typename T> operator T() const; };
 
 namespace detail {
@@ -42,6 +61,12 @@ const wrapper<T> wrapper<T>::long_lifetime_obj{};
 
 } // namespace detail
 
+/**
+ * @brief Expose a default-constructed value of type `T` as a compile-time reference.
+ * 
+ * @tparam T The type whose static compile-time value should be returned.
+ * @return A reference to a long-lived default-constructed `T`.
+ */
 template<typename T>
 consteval const T& as_value() noexcept {
     return detail::wrapper<T>::long_lifetime_obj.value;

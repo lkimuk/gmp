@@ -32,7 +32,11 @@ namespace gmp
 template<typename...> struct type_list {};
 
 
-/// class type_list_size
+/**
+ * @brief Compute the number of types stored in a type list.
+ *
+ * @tparam T A `type_list` specialization.
+ */
 template<typename> struct type_list_size;
 
 template<typename... Types>
@@ -43,7 +47,12 @@ template<typename T>
 inline constexpr std::size_t type_list_size_v = type_list_size<T>::value;
 
 
-/// class type_list_element
+/**
+ * @brief Select the type at a given index within a type list.
+ *
+ * @tparam Idx The zero-based index of the requested element.
+ * @tparam T A `type_list` specialization.
+ */
 template<std::size_t Idx, typename T>
 requires (Idx < type_list_size_v<T>)
 struct type_list_element;
@@ -86,11 +95,20 @@ concept type_list_like
 template<type_list_like T>
 using type_list_head = type_list_element_t<0, T>;
 
+/**
+ * @brief Alias for the last element type in a type list.
+ *
+ * @tparam T A non-empty type list.
+ */
 template<type_list_like T>
 using type_list_last = type_list_element_t<type_list_size_v<T> - 1, T>;
 
 
-/// class type_list_tail
+/**
+ * @brief Remove the first element from a type list.
+ *
+ * @tparam T A non-empty type list.
+ */
 template<typename T>
 requires type_list_like<T> && (type_list_size_v<T> > 0)
 struct type_list_tail {};
@@ -104,7 +122,13 @@ template<typename T>
 using type_list_tail_t = type_list_tail<T>::type;
 
 
-/// class type_list_concat
+/**
+ * @brief Concatenate multiple type lists into a single type list.
+ *
+ * @tparam TypeList1 The first type list.
+ * @tparam TypeList2 The second type list.
+ * @tparam RestTypeLists Optional additional type lists to append.
+ */
 template<type_list_like TypeList1, type_list_like TypeList2, type_list_like... RestTypeLists>
 struct type_list_concat
     : std::type_identity<
@@ -123,7 +147,12 @@ template<type_list_like... TypeLists>
 using type_list_concat_t = type_list_concat<TypeLists...>::type;
 
 
-/// class type_list_remove
+/**
+ * @brief Remove the type at a given index from a type list.
+ *
+ * @tparam Idx The zero-based index to erase.
+ * @tparam T A type list.
+ */
 template<std::size_t Idx, type_list_like T>
 requires (Idx < type_list_size_v<T>)
 struct type_list_remove;
@@ -138,7 +167,12 @@ template<type_list_like T>
 using type_list_pop_back = type_list_remove_t<type_list_size_v<T> - 1, T>;
 
 
-/// contains
+/**
+ * @brief Test whether a type list contains a specific type.
+ *
+ * @tparam U The queried type.
+ * @tparam T A type list.
+ */
 template<typename, type_list_like>
 struct type_list_contains;
 
@@ -162,7 +196,7 @@ inline constexpr bool type_list_contains_v = type_list_contains<U, T>::value;
 namespace detail
 {
 
-/// remove impl
+/// @cond INTERNAL
 template<std::size_t, type_list_like, type_list_like>
 struct type_list_remove_impl;
 
@@ -272,12 +306,18 @@ template<template<typename> class Pred, typename CompType, typename... Heads, ty
 struct type_list_filter_impl<0, type_list<Heads...>, type_list<Types...>, Pred, CompType, false>
     : std::type_identity<type_list<Heads..., Types...>>
 {};
+/// @endcond
 
 } // namespace detail
 
 
 
-/// class type_list_remove
+/**
+ * @brief Public implementation of type-list element removal.
+ *
+ * @tparam Idx The zero-based index to erase.
+ * @tparam T A type list.
+ */
 template<std::size_t Idx, typename Head, typename... Types>
 struct type_list_remove<Idx, type_list<Head, Types...>>
     : std::type_identity<typename detail::type_list_remove_impl<Idx-1, type_list<Types...>, type_list<Head>>::type>
@@ -289,7 +329,13 @@ struct type_list_remove<0, type_list<Head, Types...>>
 {};
 
 
-/// insert
+/**
+ * @brief Insert a new type at a given position in a type list.
+ *
+ * @tparam Idx The insertion index.
+ * @tparam NewType The type to insert.
+ * @tparam T A type list.
+ */
 template<std::size_t Idx, typename, type_list_like T>
 requires (Idx <= type_list_size_v<T>)
 struct type_list_insert;
@@ -315,12 +361,18 @@ template<typename NewType, type_list_like T>
 using type_list_push_back = type_list_insert_t<type_list_size_v<T>, NewType, T>;
 
 
-/// filter
+/**
+ * @brief Internal placeholder used during type-list filtering machinery.
+ */
 template<typename T, typename>
 struct filter {};
 
 
-/// reverse
+/**
+ * @brief Reverse the order of types in a type list.
+ *
+ * @tparam T A type list.
+ */
 template<type_list_like> struct type_list_reverse;
 
 template<typename... Types>
@@ -340,7 +392,11 @@ template<type_list_like T>
 using type_list_reverse_t = type_list_reverse<T>::type;
 
 
-/// unique
+/**
+ * @brief Remove duplicate types while preserving first occurrence order.
+ *
+ * @tparam T A type list.
+ */
 template<type_list_like> struct type_list_unique;
 
 template<typename Head, typename... Types>
@@ -359,7 +415,15 @@ template<typename T>
 using type_list_unique_t = type_list_unique<T>::type;
 
 
-/// filter
+/**
+ * @brief Filter a type list by a unary type predicate.
+ *
+ * `Pred<T>::value` must be convertible to `bool`. All types for which the
+ * predicate evaluates to `true` are preserved in order.
+ *
+ * @tparam T A type list.
+ * @tparam Pred A unary type trait-style predicate.
+ */
 template<type_list_like, template<typename> class Pred>
 requires std::same_as<std::remove_const_t<decltype(Pred<void>::value)>, bool>
 struct type_list_filter;
