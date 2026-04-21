@@ -145,6 +145,7 @@ if(BUILD_DOCS)
     )
 
     add_custom_target(docs
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${GMP_DOXYGEN_OUTPUT_DIRECTORY}"
         COMMAND ${DOXYGEN_EXECUTABLE} "${GMP_DOXYGEN_CONFIG_FILE}"
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         COMMENT "Generating API documentation with Doxygen"
