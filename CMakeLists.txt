@@ -133,6 +133,8 @@ if(BUILD_DOCS)
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
         "${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/mainpage.md"
     )
+    list(TRANSFORM GMP_DOXYGEN_INPUT PREPEND "\"")
+    list(TRANSFORM GMP_DOXYGEN_INPUT APPEND "\"")
     string(REPLACE ";" " \\\n    " GMP_DOXYGEN_INPUT "${GMP_DOXYGEN_INPUT}")
 
     set(GMP_DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/docs/static/api/reference")
