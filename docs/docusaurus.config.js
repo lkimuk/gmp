@@ -4,7 +4,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 const config = {
   title: 'GMP',
   tagline: 'Generative Metaprogramming library for C++',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.png',
   future: {
     v4: true,
   },
@@ -53,7 +53,12 @@ const config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'GMP',
+      logo: {
+        alt: 'GMP Logo',
+        src: 'img/logo-primary.svg',
+        srcDark: 'img/logo-primary-dark.svg',
+        href: '/',
+      },
       items: [
         {
           type: 'docSidebar',
@@ -107,7 +112,7 @@ const config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Gaoxing Li. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Miles Li. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,
