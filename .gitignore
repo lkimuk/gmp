@@ -35,6 +35,7 @@
 build/
 docs/build-docs/
 docs/build/
+docs/static/api/
 docs/node_modules/
 docs/.docusaurus/
 

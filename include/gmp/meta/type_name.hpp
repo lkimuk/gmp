@@ -41,7 +41,6 @@ namespace gmp {
  *       entirely at compile-time. The returned string is suitable for 
  *       compile-time string manipulation and comparison.
  * 
- * @example
  * @code
  * auto int_name = type_name<int>();     // "int" on all compilers
  * auto vec_name = type_name<std::vector<int>>(); // Compiler-specific representation

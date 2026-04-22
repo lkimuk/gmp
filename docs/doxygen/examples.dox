@@ -1,0 +1,44 @@
+/**
+ * @page examples_overview Examples Overview
+ *
+ * The files in this section are standalone examples that demonstrate core GMP
+ * features. They are intended to be compiled as regular programs from the
+ * `examples/` directory.
+ *
+ * - `reflection_enum.cpp`: Enumerate values and names with GMP reflection helpers.
+ * - `aggregate_reflection.cpp`: Inspect aggregate members by name, count, and reference.
+ * - `named_operator.cpp`: Build and use custom infix-style operators.
+ * - `type_name_and_size.cpp`: Query compile-time type names and aggregate payload sizes.
+ */
+
+/**
+ * @example reflection_enum.cpp
+ *
+ * @details Enumerate values and names with GMP reflection helpers. Demonstrates
+ * compile-time enumeration counting, name lookup, and
+ * retrieval of the full enumerator value list.
+ */
+
+/**
+ * @example aggregate_reflection.cpp
+ *
+ * @details Inspect aggregate members by name, count, and reference.
+ * Demonstrates member counting, compile-time member-name lookup, mutable
+ * member access, and aggregate traversal with `for_each_member`.
+ */
+
+/**
+ * @example named_operator.cpp
+ *
+ * @details Build and use custom infix-style operators. Demonstrates how
+ * `make_named_operator` can wrap callables and
+ * expose them through the custom infix syntax supported by GMP.
+ */
+
+/**
+ * @example type_name_and_size.cpp
+ *
+ * @details Query compile-time type names and aggregate payload sizes.
+ * Demonstrates compile-time type-name retrieval and payload-size
+ * estimation for simple aggregate types.
+ */

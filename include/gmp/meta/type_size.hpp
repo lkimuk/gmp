@@ -67,7 +67,6 @@ consteval std::size_t type_size_impl() {
  * @tparam T The type to calculate.
  * @return The payload size of T, excluding aggregate padding.
  *
- * @example
  * @code
  * struct Packet {
  *     char tag;

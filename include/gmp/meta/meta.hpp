@@ -179,7 +179,6 @@ consteval auto enum_values() {
  * 
  * @note This function is consteval and evaluated entirely at compile-time.
  * 
- * @example
  * @code
  * enum class Color { Red, Green, Blue, Yellow };
  * enum class Empty {};
@@ -213,7 +212,6 @@ consteval auto enum_count() {
  * @tparam P The prefix string to remove from the full name (defaults to type name + "::").
  * @return A fixed_string containing the enumerator name, or "<unnamed>" if not found.
  * 
- * @example
  * @code
  * enum class Status { Ok = 200, NotFound = 404, Error = 500 };
  * enum { A, B, C };  // Unscoped enumeration
@@ -260,7 +258,6 @@ consteval auto enum_name() {
  * @return A std::array of std::string_view containing all enumerator names.
  *         Returns an empty array if the enumeration has no enumerators.
  * 
- * @example
  * @code
  * enum class Permission { Read, Write, Execute };
  * 
@@ -382,7 +379,6 @@ constexpr auto enum_cast(std::string_view name) -> std::optional<E> {
  * @note This function is consteval and only works with aggregate types.
  * @note Requires std::is_aggregate_v<T> to be true.
  * 
- * @example
  * @code
  * struct Point { int x; int y; };
  * struct Empty {};
@@ -427,7 +423,6 @@ consteval int member_count() {
  * 
  * @throws Compile-time error if any of the above requirements are not met.
  * 
- * @example
  * @code
  * struct Person {
  *     std::string name;
@@ -494,7 +489,6 @@ consteval auto member_name() noexcept {
  * @return A std::array of std::string_view containing all member names.
  *         Returns an empty array if the aggregate has no members.
  * 
- * @example
  * @code
  * struct Vector3 { float x; float y; float z; };
  * struct Empty {};
@@ -564,7 +558,6 @@ consteval auto member_names() {
  *
  * @note The resulting type is stripped of const, volatile, and reference qualifiers.
  *
- * @example
  * @code
  * struct Point { int x; float y; };
  * using XType = member_type_t<0, Point>;  // int
@@ -613,7 +606,7 @@ struct member_type_names_holder {
  * @note The returned string_views remain valid for the entire program lifetime
  * @note Requires T to be an aggregate type with known member count at compile time
  * 
- * @example
+ * @code
  * struct Person {
  *     int age;
  *     std::string name;
@@ -624,6 +617,7 @@ struct member_type_names_holder {
  * // names[0] == "int"
  * // names[1] == "std::string" (or "std::basic_string<char>")
  * // names[2] == "double"
+ * @endcode
  * 
  * @see member_type_t, member_count
  */

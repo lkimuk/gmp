@@ -161,7 +161,6 @@ GMP_GENERATE_NAMED_OPERATOR_IDENTICAL_PAIRS(+, ^, *, -, /, %, &, |)
  * @param f The callable object used by the named operator.
  * @return An internal token object that participates in named-operator syntax.
  *
- * @example
  * @code
  * auto plus = gmp::make_named_operator([](int x, int y) {
  *     return x + y;

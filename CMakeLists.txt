@@ -24,6 +24,7 @@ project(
 )
 
 option(BUILD_TESTS "Build the tests" OFF)
+option(BUILD_EXAMPLES "Build the examples" OFF)
 option(BUILD_DOCS "Build the API documentation with Doxygen" OFF)
 
 # Display project welcome message and version information
@@ -122,6 +123,10 @@ if(BUILD_TESTS)
     add_subdirectory(tests)
 endif()
 
+if(BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()
+
 # ---------------------------------------------------------------------------------------
 # Documentation configuration
 # ---------------------------------------------------------------------------------------
@@ -132,6 +137,7 @@ if(BUILD_DOCS)
         "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
         "${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/mainpage.md"
+        "${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/examples.dox"
     )
     list(TRANSFORM GMP_DOXYGEN_INPUT PREPEND "\"")
     list(TRANSFORM GMP_DOXYGEN_INPUT APPEND "\"")
