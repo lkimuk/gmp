@@ -21,7 +21,7 @@
 
 namespace gmp {
 
-/** @addtogroup type_utilities
+/** @addtogroup reflection_metaprogramming
  * @{
  */
 

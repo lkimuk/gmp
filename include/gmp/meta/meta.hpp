@@ -556,20 +556,20 @@ consteval auto member_names() {
 }
 
 /**
- * @brief Extract the type of the I-th member (field) from a struct/class T
- * 
- * @tparam I - Index of the member to extract (0-based)
- * @tparam T - The struct/class type to introspect
- * 
- * @returns The type of the I-th member, stripped of const, volatile, and reference qualifiers
- * 
- * @note Requires that T is an aggregate type (struct/class with public members)
- * @note The member count must be known at compile time
- * 
+ * @typedef gmp::member_type_t
+ * @brief Alias for the type of the I-th member of an aggregate type.
+ *
+ * @tparam I Zero-based member index.
+ * @tparam T The aggregate type to introspect.
+ *
+ * @note The resulting type is stripped of const, volatile, and reference qualifiers.
+ *
  * @example
+ * @code
  * struct Point { int x; float y; };
  * using XType = member_type_t<0, Point>;  // int
  * using YType = member_type_t<1, Point>;  // float
+ * @endcode
  */
 template<std::size_t I, typename T>
 using member_type_t = std::remove_cvref_t<

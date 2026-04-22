@@ -19,7 +19,7 @@
 
 /**
  * @defgroup reflection_metaprogramming Reflection Metaprogramming
- * @brief Compile-time enum and aggregate reflection utilities.
+ * @brief Compile-time enum, aggregate, type-name, and payload-size reflection utilities.
  */
 
 /**
@@ -29,7 +29,7 @@
 
 /**
  * @defgroup type_utilities Type Utilities
- * @brief Type-level containers, naming helpers, and compile-time utility primitives.
+ * @brief Type-level containers and compile-time utility primitives.
  */
 
 /**

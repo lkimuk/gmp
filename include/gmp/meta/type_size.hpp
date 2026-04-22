@@ -52,7 +52,7 @@ consteval std::size_t type_size_impl() {
 
 } // namespace detail
 
-/** @addtogroup type_utilities
+/** @addtogroup reflection_metaprogramming
  * @{
  */
 
