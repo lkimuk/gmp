@@ -74,7 +74,7 @@ SHOW_USED_FILES        = YES
 SHOW_FILES             = YES
 SHOW_NAMESPACES        = YES
 FILE_VERSION_FILTER    =
-LAYOUT_FILE            =
+LAYOUT_FILE            = "@CMAKE_CURRENT_SOURCE_DIR@/cmake/DoxygenLayout.xml"
 CITE_BIB_FILES         =
 
 QUIET                  = NO

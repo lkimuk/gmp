@@ -134,7 +134,6 @@ if(BUILD_DOCS)
     find_package(Doxygen REQUIRED)
 
     set(GMP_DOXYGEN_INPUT
-        "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
         "${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/mainpage.md"
         "${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/examples.dox"
