@@ -1,11 +1,18 @@
 <p align="center">
-<h1 align="center">GMP (Generative Metaprogramming)</h1>
-<h6 align="center">A C++ metaprogramming library tailored for code generation at compile time</h6>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/static/img/banner-dark.png">
+    <img src="docs/static/img/banner-light.png" alt="GMP banner" width="920">
+  </picture>
 </p>
 
-[![License](https://img.shields.io/github/license/lkimuk/gmp.svg)](https://img.shields.io/github/license/lkimuk/gmp)
-![Language](https://img.shields.io/github/languages/top/lkimuk/gmp.svg)
-![Last commit](https://img.shields.io/github/last-commit/lkimuk/gmp.svg)
+<p align="center">
+  <a href="https://img.shields.io/github/license/lkimuk/gmp">
+    <img src="https://img.shields.io/github/license/lkimuk/gmp.svg" alt="License">
+  </a>
+  <img src="https://img.shields.io/github/languages/top/lkimuk/gmp.svg" alt="Language">
+  <img src="https://img.shields.io/github/last-commit/lkimuk/gmp.svg" alt="Last commit">
+</p>
 
 - [Overview](#overview)
 - [Compiler Support](#compiler-support)
