@@ -50,7 +50,7 @@ const config = {
   ],
   themeConfig: {
     colorMode: {
-      respectPrefersColorScheme: true,
+      respectPrefersColorScheme: false,
     },
     navbar: {
       logo: {
