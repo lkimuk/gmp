@@ -34,6 +34,7 @@
 # Build
 build/
 docs/build-docs/
+docs/build-docs-check/
 docs/build/
 docs/static/api/
 docs/node_modules/

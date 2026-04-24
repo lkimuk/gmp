@@ -3,7 +3,7 @@
 // | (_ | |\/| |  _/ version 0.2.0
 //  \___|_|  |_|_|   https://github.com/lkimuk/gmp
 //
-// SPDX-FileCopyrightText: 2023-2026 Gaoxing Li <https://www.cppmore.com/>
+// SPDX-FileCopyrightText: 2023-2026 Miles Li <https://www.cppmore.com/>
 // SPDX-License-Identifier: MIT
 //
 // Compile-time tests for GMP library using static_assert

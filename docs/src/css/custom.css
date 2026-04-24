@@ -8,7 +8,7 @@
   --ifm-color-primary-lightest: #179f93;
   --ifm-code-font-size: 95%;
   --ifm-navbar-shadow: 0 6px 24px rgba(15, 23, 42, 0.08);
-  --ifm-footer-background-color: #0f172a;
+  --ifm-footer-background-color: #eef4fb;
   --docusaurus-highlighted-code-line-bg: rgba(15, 118, 110, 0.12);
 }
 
@@ -22,6 +22,7 @@
   --ifm-color-primary-lightest: #78e3d6;
   --ifm-background-color: #0b1220;
   --ifm-background-surface-color: #111827;
+  --ifm-footer-background-color: #0f172a;
   --docusaurus-highlighted-code-line-bg: rgba(45, 212, 191, 0.16);
 }
 
@@ -31,5 +32,180 @@
 }
 
 .footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  margin: 2rem 0 0;
+  width: 100%;
+  max-width: none;
+  border: 1px solid rgba(190, 208, 238, 0.92);
+  border-radius: 0;
+  background:
+    linear-gradient(180deg, rgba(246, 250, 255, 0.98), rgba(239, 245, 253, 0.98));
+  box-shadow: 0 10px 30px rgba(142, 167, 206, 0.08);
+  overflow: hidden;
+}
+
+.footer :global(.container),
+.footer :global(.container-fluid) {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+}
+
+.footer,
+.footer__copyright {
+  color: #38516d;
+}
+
+.footer__links {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(2rem, 5vw, 5rem);
+  padding: clamp(2rem, 3.8vw, 2.8rem) clamp(2rem, 5vw, 3rem) clamp(1.7rem, 3vw, 2.2rem);
+}
+
+.footer__links::before {
+  content: '';
+  position: absolute;
+  left: 1.6rem;
+  top: 2.2rem;
+  width: 10rem;
+  height: 10rem;
+  background-image: radial-gradient(circle, rgba(163, 189, 233, 0.62) 1.35px, transparent 1.5px);
+  background-size: 1rem 1rem;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.footer__links::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(130deg, transparent 75%, rgba(188, 209, 243, 0.42) 75.2%, transparent 75.6%) right bottom / 32% 70% no-repeat,
+    linear-gradient(152deg, transparent 78%, rgba(188, 209, 243, 0.34) 78.2%, transparent 78.5%) right bottom / 26% 72% no-repeat,
+    linear-gradient(114deg, transparent 86%, rgba(188, 209, 243, 0.26) 86.2%, transparent 86.5%) right bottom / 18% 48% no-repeat;
+  pointer-events: none;
+}
+
+.footer__col {
+  position: relative;
+  z-index: 1;
+}
+
+.footer__title {
+  margin-bottom: 1.15rem;
+  color: #183250;
+  font-size: clamp(1.1rem, 1.7vw, 1.45rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.footer__link-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #31506f;
+  font-size: clamp(1rem, 1.3vw, 1.2rem);
+  line-height: 1.45;
+}
+
+.footer__link-item:hover {
+  color: #0f766e;
+  text-decoration: none;
+}
+
+.footer__items {
+  display: grid;
+  gap: 1rem;
+}
+
+.footer__bottom {
+  position: relative;
+  display: block;
+  left: 50%;
+  width: 100vw !important;
+  max-width: none !important;
+  margin: 0 0 0 -50vw !important;
+  flex: 0 0 100%;
+  padding: 1.1rem 2rem 1.2rem;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.footer__bottom::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  border-top: 1px solid rgba(190, 208, 238, 0.92);
+}
+
+[data-theme='dark'] .footer {
+  border-color: rgba(87, 108, 145, 0.48);
+  background: #374151;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.32);
+}
+
+[data-theme='dark'] .footer,
+[data-theme='dark'] .footer__copyright {
+  color: #d5dfef;
+}
+
+[data-theme='dark'] .footer__links::before {
+  display: none;
+}
+
+[data-theme='dark'] .footer__links::after {
+  display: none;
+}
+
+[data-theme='dark'] .footer__title,
+[data-theme='dark'] .footer__link-item {
+  color: #f8fbff;
+}
+
+[data-theme='dark'] .footer__link-item:hover {
+  color: #78e3d6;
+}
+
+[data-theme='dark'] .footer__bottom {
+  border-top-color: transparent;
+}
+
+[data-theme='dark'] .footer__bottom::before {
+  border-top-color: rgba(87, 108, 145, 0.48);
+}
+
+@media (max-width: 996px) {
+  .footer__links {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 1.5rem 1.4rem 1.45rem;
+  }
+
+  .footer__links::before {
+    left: 1rem;
+    top: 1.2rem;
+    width: 7rem;
+    height: 7rem;
+  }
+
+  .footer__links::after {
+    opacity: 0.7;
+    background-size: 48% 46%, 42% 48%, 30% 34%;
+  }
+
+  .footer__title {
+    margin-bottom: 0.8rem;
+  }
+
+  .footer__items {
+    gap: 0.8rem;
+  }
+
+  .footer__bottom {
+    padding: 1rem 1.2rem 1.1rem;
+  }
 }

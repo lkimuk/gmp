@@ -37,14 +37,38 @@ const config = {
       'classic',
       {
         docs: {
-          path: './content',
-          sidebarPath: './sidebars.js',
+          id: 'default',
+          path: './content/docs',
+          routeBasePath: 'docs',
+          sidebarPath: './sidebarsDocs.js',
           editUrl: 'https://github.com/lkimuk/gmp/tree/main/docs/',
         },
         blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },
+      },
+    ],
+  ],
+  plugins: [
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'guides',
+        path: './content/guides',
+        routeBasePath: 'guides',
+        sidebarPath: './sidebarsGuides.js',
+        editUrl: 'https://github.com/lkimuk/gmp/tree/main/docs/',
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'examples',
+        path: './content/examples',
+        routeBasePath: 'examples',
+        sidebarPath: './sidebarsExamples.js',
+        editUrl: 'https://github.com/lkimuk/gmp/tree/main/docs/',
       },
     ],
   ],
@@ -62,13 +86,28 @@ const config = {
       items: [
         {
           type: 'docSidebar',
-          sidebarId: 'guideSidebar',
+          sidebarId: 'docsSidebar',
+          docsPluginId: 'default',
           position: 'left',
           label: 'Docs',
         },
         {
+          type: 'docSidebar',
+          sidebarId: 'guidesSidebar',
+          docsPluginId: 'guides',
+          position: 'left',
+          label: 'Guides',
+        },
+        {
           to: '/api/',
           label: 'API',
+          position: 'left',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'examplesSidebar',
+          docsPluginId: 'examples',
+          label: 'Examples',
           position: 'left',
         },
         {
@@ -83,18 +122,17 @@ const config = {
       ],
     },
     footer: {
-      style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Contribute',
           items: [
             {
-              label: 'Documentation',
-              to: '/docs/',
+              label: 'Issues',
+              href: 'https://github.com/lkimuk/gmp/issues',
             },
             {
-              label: 'API Reference',
-              to: '/api/',
+              label: 'Pull Requests',
+              href: 'https://github.com/lkimuk/gmp/pulls',
             },
           ],
         },
@@ -102,12 +140,29 @@ const config = {
           title: 'Community',
           items: [
             {
-              label: 'GitHub',
-              href: 'https://github.com/lkimuk/gmp',
+              label: 'Releases',
+              href: 'https://github.com/lkimuk/gmp/releases',
             },
             {
-              label: 'Issues',
-              href: 'https://github.com/lkimuk/gmp/issues',
+              label: 'Changelog',
+              href: 'https://github.com/lkimuk/gmp/commits/main',
+            },
+            {
+              label: 'CppMore',
+              href: 'https://www.cppmore.com',
+            },
+          ],
+        },
+        {
+          title: 'Contact',
+          items: [
+            {
+              label: 'lkimuk@cppmore.com',
+              href: 'mailto:lkimuk@cppmore.com',
+            },
+            {
+              label: 'cppmore.com',
+              href: 'https://www.cppmore.com',
             },
           ],
         },
@@ -115,7 +170,7 @@ const config = {
       copyright: `Copyright © ${new Date().getFullYear()} Miles Li. Built with Docusaurus.`,
     },
     prism: {
-      theme: prismThemes.github,
+      theme: prismThemes.oneLight,
       darkTheme: prismThemes.dracula,
     },
   },
