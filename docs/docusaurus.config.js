@@ -28,7 +28,6 @@ const config = {
       },
       'zh-Hans': {
         label: '简体中文',
-        htmlLang: 'zh-CN',
       },
     },
   },
@@ -51,16 +50,6 @@ const config = {
     ],
   ],
   plugins: [
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'guides',
-        path: './content/guides',
-        routeBasePath: 'guides',
-        sidebarPath: './sidebarsGuides.js',
-        editUrl: 'https://github.com/lkimuk/gmp/tree/main/docs/',
-      },
-    ],
     [
       '@docusaurus/plugin-content-docs',
       {
@@ -90,13 +79,6 @@ const config = {
           docsPluginId: 'default',
           position: 'left',
           label: 'Docs',
-        },
-        {
-          type: 'docSidebar',
-          sidebarId: 'guidesSidebar',
-          docsPluginId: 'guides',
-          position: 'left',
-          label: 'Guides',
         },
         {
           to: '/api/',
@@ -146,10 +128,6 @@ const config = {
             {
               label: 'Changelog',
               href: 'https://github.com/lkimuk/gmp/commits/main',
-            },
-            {
-              label: 'CppMore',
-              href: 'https://www.cppmore.com',
             },
           ],
         },

@@ -1,0 +1,42 @@
+{
+  "link.title.Contribute": {
+    "message": "贡献",
+    "description": "The title of the footer links column with title=Contribute in the footer"
+  },
+  "link.title.Community": {
+    "message": "社区",
+    "description": "The title of the footer links column with title=Community in the footer"
+  },
+  "link.title.Contact": {
+    "message": "联系",
+    "description": "The title of the footer links column with title=Contact in the footer"
+  },
+  "link.item.label.Issues": {
+    "message": "Issues",
+    "description": "The label of footer link with label=Issues linking to https://github.com/lkimuk/gmp/issues"
+  },
+  "link.item.label.Pull Requests": {
+    "message": "Pull Requests",
+    "description": "The label of footer link with label=Pull Requests linking to https://github.com/lkimuk/gmp/pulls"
+  },
+  "link.item.label.Releases": {
+    "message": "版本发布",
+    "description": "The label of footer link with label=Releases linking to https://github.com/lkimuk/gmp/releases"
+  },
+  "link.item.label.Changelog": {
+    "message": "更新日志",
+    "description": "The label of footer link with label=Changelog linking to https://github.com/lkimuk/gmp/commits/main"
+  },
+  "link.item.label.lkimuk@cppmore.com": {
+    "message": "lkimuk@cppmore.com",
+    "description": "The label of footer link with label=lkimuk@cppmore.com linking to mailto:lkimuk@cppmore.com"
+  },
+  "link.item.label.cppmore.com": {
+    "message": "cppmore.com",
+    "description": "The label of footer link with label=cppmore.com linking to https://www.cppmore.com"
+  },
+  "copyright": {
+    "message": "Copyright © 2026 里缪。由 Docusaurus 构建。",
+    "description": "The footer copyright"
+  }
+}

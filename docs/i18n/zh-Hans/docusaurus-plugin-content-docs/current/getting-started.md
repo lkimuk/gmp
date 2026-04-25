@@ -1,84 +1,49 @@
 ---
 title: 快速开始
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 # 快速开始
 
-本页介绍 GMP 的编译器要求、安装方式以及最短上手路径。
-
-## GMP 包含什么
-
-GMP 主要分为四部分：
-
-- 宏元编程：用于预处理阶段的组合与代码生成
-- 反射元编程：用于编译期类型与聚合类型检查
-- 命名操作符：用于自定义中缀表达式风格语法
-- 通用设计模式：提供轻量级运行时基础设施工具
-
-## 编译器支持
-
-GMP 的不同模块对语言标准要求不同。
-
-### C++11 及以上
-
-以下模块可在 **C++11** 及更高版本中使用：
-
-- 宏元编程
-- 通用设计模式
-
-### C++20 及以上
-
-以下模块需要 **C++20**：
-
-- 反射元编程
-- 命名操作符
-
-建议的最低编译器版本：
-
-| 编译器 | 最低版本 |
-|--------|----------|
-| MSVC | 19.37+ |
-| GCC | 11.1+ |
-| Clang | 18.1.0+ |
-
-## 在线快速试用
-
-- [Compiler Explorer Demo](https://godbolt.org/z/W156818n5)
-
-## 头文件方式使用
-
-下载发布的头文件后，直接包含 `gmp/gmp.hpp`：
-
-- [Download include.zip](https://github.com/lkimuk/gmp/releases/download/v0.3.0/include.zip)
+把 GMP 放到 include path 后，可以先从聚合头文件开始：
 
 ```cpp
 #include <gmp/gmp.hpp>
 ```
 
-## CMake 集成
+探索库功能时，聚合头文件最方便。在更大的项目里，也可以只包含实际使用的模块头文件。
 
-先克隆、构建并安装 GMP：
+## 试一个小例子
 
-```bash
-git clone https://github.com/lkimuk/gmp.git
-cd gmp
-cmake -B ./build
-cmake --build ./build
-cmake --install ./build
-```
+如果想先不配置本地项目，可以直接打开在线示例：
 
-然后在你的工程中这样使用：
+[Compiler Explorer Demo](https://godbolt.org/z/W156818n5)
+
+本地 CMake 项目在安装后链接导入 target：
 
 ```cmake
 find_package(gmp 0.3.0 REQUIRED)
 target_link_libraries(your_target PRIVATE gmp::gmp)
 ```
 
-## 推荐阅读顺序
+然后按所使用模块需要的 C++ 标准编译你的 target。宏元编程和设计模式工具支持 C++11；反射和命名操作符需要 C++20。
 
-- [宏元编程](./macro-metaprogramming.md)
-- [反射元编程](./reflection.md)
-- [命名操作符](./named-operators.md)
-- [通用设计模式](./design-patterns.md)
-- [API Reference (English)](https://lkimuk.github.io/gmp/api/)
+## 选择合适的模块
+
+根据问题形态选择入口：
+
+- 需要预处理期重复、token 操作或生成声明时，使用 **宏元编程**。
+- 需要在编译期获得枚举名、类型名、聚合成员名、成员类型或成员引用时，使用 **反射元编程**。
+- 希望 callable 像操作符一样放在两个操作数之间时，使用 **命名操作符**。
+- 需要可复用 singleton 服务或字符串 key 对象工厂时，使用 **泛型设计模式**。
+
+## 构建测试
+
+如果你在修改 GMP 本身，可以启用并构建测试：
+
+```bash
+cmake -B ./build -DBUILD_TESTS=ON
+cmake --build ./build
+```
+
+多数测试以编译期验证为主，因此成功构建本身就是有意义的验证。

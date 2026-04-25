@@ -77,10 +77,11 @@ target_link_libraries(your_target PRIVATE gmp::gmp)
 
 ## Recommended Reading
 
-Start with the hand-written guides for concepts and walkthroughs:
+Start with the hand-written docs for concepts and walkthroughs:
 
 - [Documentation home](../../)
 - [Docs overview](../../docs/)
+- [Installation](../../docs/installation)
 - [Getting Started](../../docs/getting-started)
 - [Macro Metaprogramming](../../docs/macro-metaprogramming)
 - [Reflection Metaprogramming](../../docs/reflection)

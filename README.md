@@ -14,6 +14,11 @@
   <img src="https://img.shields.io/github/last-commit/lkimuk/gmp.svg" alt="Last commit">
 </p>
 
+<p align="center">
+  <strong>Documentation:</strong>
+  <a href="https://lkimuk.github.io/gmp/">https://lkimuk.github.io/gmp/</a>
+</p>
+
 - [Overview](#overview)
 - [Compiler Support](#compiler-support)
 - [Install](#install)
@@ -365,7 +370,6 @@ int main() {
 ## Generic Design Patterns
 
 ### Features
-- `spin_lock`: A lightweight synchronization primitive based on `std::atomic_flag`
 - `singleton<T, LongLifeTime>`: A CRTP-based singleton utility with optional long-lifetime support
 - `object_factory<AbstractProduct, ConstructorArgs...>`: A singleton-based object factory for runtime registration and creation
 - `GMP_DISABLE_CONSTRUCTION(Class)`: Disables direct construction for `singleton`-derived types

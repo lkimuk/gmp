@@ -78,8 +78,8 @@ function homeContent(locale) {
         icon: 'spark',
         title: zh ? '通用设计模式' : 'Generic Design Patterns',
         text: zh
-          ? '包含单例、spin lock 与对象工厂等轻量基础设施组件。'
-          : 'Lightweight infrastructure helpers including singleton, spin lock, and object factory utilities.',
+          ? '包含单例与对象工厂等轻量基础设施组件。'
+          : 'Lightweight infrastructure helpers including singleton and object factory utilities.',
       },
     ],
     examplesTitle: zh ? '实践代码' : 'Code in Practice',
@@ -149,8 +149,8 @@ function homeContent(locale) {
     ],
     ctaTitle: zh ? '为什么选择 GMP？' : 'Why GMP?',
     ctaText: zh
-      ? 'Header-only、零运行时开销，并且为现代 C++ 项目里的编译期表达力而设计。'
-      : 'Header-only, zero-runtime overhead, and designed for modern C++.',
+      ? 'Header-only、零运行时开销，可在编译期生成成千上万行代码。'
+      : 'Header-only, zero runtime overhead, capable of generating thousands of lines of code at compile time.',
     ctaPrimary: zh ? '快速开始' : 'Get Started',
     ctaSecondary: zh ? '在 GitHub 查看' : 'View on GitHub',
   };

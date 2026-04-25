@@ -2,11 +2,12 @@
 const sidebars = {
   docsSidebar: [
     'index',
+    'installation',
+    'getting-started',
     'macro-metaprogramming',
     'reflection',
     'named-operators',
     'design-patterns',
-    'api-guide',
   ],
 };
 

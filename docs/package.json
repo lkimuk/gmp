@@ -4,9 +4,12 @@
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
-    "start": "docusaurus start",
+    "start": "npm run preview",
+    "dev": "docusaurus start",
+    "dev:zh": "docusaurus start --locale zh-Hans",
     "build": "docusaurus build",
-    "serve": "docusaurus serve build",
+    "serve": "docusaurus serve --dir build",
+    "preview": "docusaurus serve --build --dir build",
     "clear": "docusaurus clear",
     "write-translations": "docusaurus write-translations"
   },

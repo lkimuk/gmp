@@ -2,7 +2,6 @@
 const sidebars = {
   examplesSidebar: [
     'index',
-    'repository-examples',
   ],
 };
 
