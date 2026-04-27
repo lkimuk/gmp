@@ -106,13 +106,13 @@ constexpr decltype(auto) invoke_named_operator(value_holder<Lhs, Func>&& holder,
 #define GMP_DEFINE_NAMED_OPERATOR_PAIR(pair)                                       \
     template<typename Lhs, typename Func>                                           \
         requires std::movable<Func>                                                 \
-    constexpr auto operator GMP_GET_TUPLE(0, pair) (Lhs&& lhs, ::gmp::detail::value_holder<Func> holder) { \
+    constexpr auto operator GMP_TUPLE_GET(0, pair) (Lhs&& lhs, ::gmp::detail::value_holder<Func> holder) { \
         return ::gmp::detail::bind_named_operator(std::forward<Lhs>(lhs), std::move(holder)); \
     }                                                                               \
                                                                                     \
     template<typename Lhs, typename Func, typename Rhs>                             \
         requires std::invocable<Func&&, Lhs, Rhs&&>                                 \
-    constexpr decltype(auto) operator GMP_GET_TUPLE(1, pair) (                                         \
+    constexpr decltype(auto) operator GMP_TUPLE_GET(1, pair) (                                         \
         ::gmp::detail::value_holder<Lhs, Func>&& holder, Rhs&& rhs) {               \
         return ::gmp::detail::invoke_named_operator(std::move(holder), std::forward<Rhs>(rhs)); \
     }

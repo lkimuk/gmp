@@ -168,7 +168,7 @@ GMP_TUPLE_SKIP(2, (a, b, c, d, e))    // expands to: (c, d, e)
 GMP_TUPLE_APPEND((a, b, c), d)        // expands to: (a, b, c, d)
 GMP_TUPLE_PREPEND((b, c, d), a)       // expands to: (a, b, c, d)
 GMP_TUPLE_CONCAT((a, b), (c, d))      // expands to: (a, b, c, d)
-GMP_GET_TUPLE(1, (42, "hello", 3.14)) // expands to: "hello"
+GMP_TUPLE_GET(1, (42, "hello", 3.14)) // expands to: "hello"
 ```
 
 #### Advanced Features

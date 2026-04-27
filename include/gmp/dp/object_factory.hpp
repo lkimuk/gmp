@@ -154,10 +154,10 @@ private:
 #define _GMP_GET_CONSTRUCTOR_TYPES(ConstructorArgs) GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConstructorArgs), GMP_REMOVE_PARENS, ConstructorArgs)GMP_IF(GMP_IS_TUPLE(ConstructorArgs), (ConstructorArgs))
 #define GMP_FACTORY_REGISTER_WITH_ARGS(AbstractProduct, ConstructorArgs, ConcreteProduct) \
   static gmp::object_factory<AbstractProduct, _GMP_GET_CONSTRUCTOR_TYPES(ConstructorArgs)>::register_type<_GMP_GET_CONCRETE_PRODUCT_CLASS(ConcreteProduct)> \
-        GMP_CONCATS(gmp_reg_, AbstractProduct, _, _GMP_GET_CONCRETE_PRODUCT_CLASS(ConcreteProduct))(GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConcreteProduct), GMP_STRINGIFY(GMP_GET_TUPLE(0, ConcreteProduct)), GMP_STRINGIFY(ConcreteProduct)));
+        GMP_CONCATS(gmp_reg_, AbstractProduct, _, _GMP_GET_CONCRETE_PRODUCT_CLASS(ConcreteProduct))(GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConcreteProduct), GMP_STRINGIFY(GMP_TUPLE_GET(0, ConcreteProduct)), GMP_STRINGIFY(ConcreteProduct)));
 #define GMP_FACTORY_REGISTER_NO_ARGS(AbstractProduct, ConcreteProduct) \
     static gmp::object_factory<AbstractProduct>::register_type<_GMP_GET_CONCRETE_PRODUCT_CLASS(ConcreteProduct)> \
-        GMP_CONCATS(gmp_reg_, AbstractProduct, _, _GMP_GET_CONCRETE_PRODUCT_CLASS(ConcreteProduct))(GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConcreteProduct), GMP_STRINGIFY(GMP_GET_TUPLE(0, ConcreteProduct)), GMP_STRINGIFY(ConcreteProduct)));
+        GMP_CONCATS(gmp_reg_, AbstractProduct, _, _GMP_GET_CONCRETE_PRODUCT_CLASS(ConcreteProduct))(GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConcreteProduct), GMP_STRINGIFY(GMP_TUPLE_GET(0, ConcreteProduct)), GMP_STRINGIFY(ConcreteProduct)));
 
 /**
  * @def GMP_FACTORY_REGISTER(AbstractProduct, ConstructorArgs, ...)
