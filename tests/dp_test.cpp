@@ -24,9 +24,7 @@ struct square : shape {
     const char* name() const override { return "square"; }
 };
 
-#define EMPTY_TUPLE ()
-
-GMP_FACTORY_REGISTER(shape, EMPTY_TUPLE, circle, square)
+GMP_FACTORY_REGISTER(shape, (), circle, square)
 using shape_factory = gmp::object_factory<shape>;
 
 int main() {
