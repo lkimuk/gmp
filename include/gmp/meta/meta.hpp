@@ -704,7 +704,7 @@ void for_each_member(T&& value, F&& func) noexcept {
 
 /** @cond INTERNAL */
 template<typename T, typename F>
-void for_each_member(T&& value, F&& func) noexcept {
+void for_each_member(T&&, F&&) noexcept {
     static_assert(std::is_aggregate_v<std::remove_cvref_t<T>>,
         "for_each_member() can only be used with aggregate types.");
 }
