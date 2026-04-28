@@ -12,10 +12,10 @@
 // // Expands to: std::cout << 1 << " "; std::cout << 2 << " "; std::cout << 3 << " ";
 // GMP_FOR_EACH(PRINT, 1, 2, 3)
 
-// #define COND(args) GMP_BOOL(GMP_GET_TUPLE(0, args))
-// #define OP(args) (GMP_DEC(GMP_GET_TUPLE(0, args)), GMP_CONCAT(GMP_GET_TUPLE(0, args), GMP_GET_TUPLE(1, args)))
-// // #define OP(args) OP_COMPAT_MSVC(args, GMP_ADD(GMP_GET_TUPLE(0, args), GMP_GET_TUPLE(1, args))) // (GMP_DEC(GMP_GET_TUPLE(0, tup)), GMP_ADD(GMP_GET_TUPLE(0, tup), GMP_GET_TUPLE(1, tup)))
-// // #define OP_COMPAT_MSVC(args, res) (GMP_DEC(GMP_GET_TUPLE(0, args)), res)
+// #define COND(args) GMP_BOOL(GMP_TUPLE_GET(0, args))
+// #define OP(args) (GMP_DEC(GMP_TUPLE_GET(0, args)), GMP_CONCAT(GMP_TUPLE_GET(0, args), GMP_TUPLE_GET(1, args)))
+// // #define OP(args) OP_COMPAT_MSVC(args, GMP_ADD(GMP_TUPLE_GET(0, args), GMP_TUPLE_GET(1, args))) // (GMP_DEC(GMP_TUPLE_GET(0, tup)), GMP_ADD(GMP_TUPLE_GET(0, tup), GMP_TUPLE_GET(1, tup)))
+// // #define OP_COMPAT_MSVC(args, res) (GMP_DEC(GMP_TUPLE_GET(0, args)), res)
 
 // GMP_WHILE(COND, OP, (2, 0))
 

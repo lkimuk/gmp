@@ -49,7 +49,7 @@ GMP_SIZE_OF_VAARGS(a, b, c)      // 3
 GMP_GET_N(1, a, b, c)            // b
 
 GMP_TUPLE_SIZE((x, y, z))        // 3
-GMP_GET_TUPLE(1, (x, y, z))      // y
+GMP_TUPLE_GET(1, (x, y, z))      // y
 GMP_TUPLE_APPEND((x, y), z)      // (x, y, z)
 GMP_TUPLE_TAKE(2, (x, y, z, w))  // (x, y)
 ```

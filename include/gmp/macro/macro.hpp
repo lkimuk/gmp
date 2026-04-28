@@ -974,8 +974,32 @@
  * 
  * @note The tuple must contain at least (idx + 1) elements.
  *       If idx is out of bounds, the behavior is undefined.
+ * 
+ * @deprecated This macro is deprecated and will be removed in version 0.4.0.
+ *             Use GMP_TUPLE_GET instead, which is available from version 0.3.1 onward.
  */
 #define GMP_GET_TUPLE(idx, tup) GMP_GET_N(idx, GMP_REMOVE_PARENS(tup))
+
+/**
+ * @brief Get the nth element from a tuple/parameter list
+ * 
+ * This macro extracts the element at the specified index from a parenthesized
+ * tuple or parameter list. It is the recommended replacement for the deprecated
+ * GMP_GET_TUPLE macro.
+ * 
+ * Example:
+ *   GMP_TUPLE_GET(0, (int, float, char))  // Expands to: int
+ *   GMP_TUPLE_GET(1, (42, "hello", 3.14)) // Expands to: "hello"
+ * 
+ * @param idx Zero-based index of the element to retrieve
+ * @param tup Parenthesized tuple containing the elements
+ * @hideinitializer
+ * @since 0.3.1
+ * 
+ * @note The tuple must contain at least (idx + 1) elements.
+ *       If idx is out of bounds, the behavior is undefined.
+ */
+#define GMP_TUPLE_GET(idx, tup) GMP_GET_N(idx, GMP_REMOVE_PARENS(tup))
 
 /**
  * @brief Tests whether a preprocessor argument is a non-empty tuple
@@ -1194,16 +1218,16 @@
 #define _GMP_TUPLE_SKIP_ERROR(count, tup, res) res
 #define _GMP_TUPLE_SKIP_IMPL(count, tup, res) GMP_OVERLOAD_INVOKE(_GMP_TUPLE_SKIP_WHEN, GMP_NOT(GMP_EQUAL_INT_INDEPENDENT(count, GMP_TUPLE_SIZE(tup))))(count, tup, res)
 #define _GMP_TUPLE_SKIP_WHEN_0(count, tup, res) res
-#define _GMP_TUPLE_SKIP_WHEN_1(count, tup, res) _GMP_TUPLE_SKIP_WHEN_1_COMPAT_MSVC(count, tup, GMP_TUPLE_APPEND(res, GMP_GET_TUPLE(count, tup)))
+#define _GMP_TUPLE_SKIP_WHEN_1(count, tup, res) _GMP_TUPLE_SKIP_WHEN_1_COMPAT_MSVC(count, tup, GMP_TUPLE_APPEND(res, GMP_TUPLE_GET(count, tup)))
 #define _GMP_TUPLE_SKIP_WHEN_1_COMPAT_MSVC(count, tup, res) GMP_DEFER(_GMP_TUPLE_SKIP_INDIRECT)()(GMP_INC(count), tup, res)
 #define _GMP_TUPLE_SKIP_INDIRECT() _GMP_TUPLE_SKIP_IMPL
 
 // #define GMP_TUPLE_SKIP(count, tup) GMP_IF_THEN_ELSE(GMP_GREATER_INT(count, GMP_TUPLE_SIZE(tup)), _GMP_TUPLE_SKIP_ERROR, _GMP_TUPLE_SKIP_IMPL)(count, tup)
 // #define _GMP_TUPLE_SKIP_ERROR(count, tup) ()
-// #define _GMP_TUPLE_SKIP_IMPL(count, tup) GMP_GET_TUPLE(2, GMP_WHILE(_GMP_TUPLE_SKIP_COND, _GMP_TUPLE_SKIP_OP, (count, tup, ())))
-// #define _GMP_TUPLE_SKIP_COND(args) GMP_NOT(GMP_EQUAL_INT_INDEPENDENT(GMP_GET_TUPLE(0, args), GMP_TUPLE_SIZE(GMP_GET_TUPLE(1, args))))
-// #define _GMP_TUPLE_SKIP_OP(args) _GMP_TUPLE_SKIP_OP_COMPAT_MSVC(args, GMP_TUPLE_APPEND(GMP_GET_TUPLE(2, args), GMP_GET_TUPLE(GMP_GET_TUPLE(0, args), GMP_GET_TUPLE(1, args))))
-// #define _GMP_TUPLE_SKIP_OP_COMPAT_MSVC(args, res) (GMP_INC(GMP_GET_TUPLE(0, args)), GMP_GET_TUPLE(1, args), res)
+// #define _GMP_TUPLE_SKIP_IMPL(count, tup) GMP_TUPLE_GET(2, GMP_WHILE(_GMP_TUPLE_SKIP_COND, _GMP_TUPLE_SKIP_OP, (count, tup, ())))
+// #define _GMP_TUPLE_SKIP_COND(args) GMP_NOT(GMP_EQUAL_INT_INDEPENDENT(GMP_TUPLE_GET(0, args), GMP_TUPLE_SIZE(GMP_TUPLE_GET(1, args))))
+// #define _GMP_TUPLE_SKIP_OP(args) _GMP_TUPLE_SKIP_OP_COMPAT_MSVC(args, GMP_TUPLE_APPEND(GMP_TUPLE_GET(2, args), GMP_TUPLE_GET(GMP_TUPLE_GET(0, args), GMP_TUPLE_GET(1, args))))
+// #define _GMP_TUPLE_SKIP_OP_COMPAT_MSVC(args, res) (GMP_INC(GMP_TUPLE_GET(0, args)), GMP_TUPLE_GET(1, args), res)
 
 /**
  * @def GMP_TUPLE_TAKE(count, tup)
@@ -1259,15 +1283,15 @@
 #define _GMP_TUPLE_TAKE_ERROR(count, tup, res) tup
 #define _GMP_TUPLE_TAKE_IMPL(count, tup, res) GMP_OVERLOAD_INVOKE(_GMP_TUPLE_TAKE_WHEN, GMP_BOOL(count))(count, tup, res)
 #define _GMP_TUPLE_TAKE_WHEN_0(count, tup, res) res
-#define _GMP_TUPLE_TAKE_WHEN_1(count, tup, res) _GMP_TUPLE_TAKE_WHEN_1_COMPAT_MSVC(count, tup, GMP_TUPLE_PREPEND(res, GMP_GET_TUPLE(GMP_DEC(count), tup)))
+#define _GMP_TUPLE_TAKE_WHEN_1(count, tup, res) _GMP_TUPLE_TAKE_WHEN_1_COMPAT_MSVC(count, tup, GMP_TUPLE_PREPEND(res, GMP_TUPLE_GET(GMP_DEC(count), tup)))
 #define _GMP_TUPLE_TAKE_WHEN_1_COMPAT_MSVC(count, tup, res) GMP_DEFER(_GMP_TUPLE_TAKE_INDIRECT)()(GMP_DEC(count), tup, res)
 #define _GMP_TUPLE_TAKE_INDIRECT() _GMP_TUPLE_TAKE_IMPL
 // #define GMP_TUPLE_TAKE(count, tup) GMP_IF_THEN_ELSE(GMP_GREATER_INT(count, GMP_TUPLE_SIZE(tup)), _GMP_TUPLE_TAKE_ERROR, _GMP_TUPLE_TAKE_IMPL)(count, tup)
 // #define _GMP_TUPLE_TAKE_ERROR(count, tup) tup
-// #define _GMP_TUPLE_TAKE_IMPL(count, tup) GMP_GET_TUPLE(2, GMP_WHILE(_GMP_TUPLE_TAKE_COND, _GMP_TUPLE_TAKE_OP, (count, tup, ())))
-// #define _GMP_TUPLE_TAKE_COND(args) GMP_NOT(GMP_EQUAL_INT_INDEPENDENT(GMP_GET_TUPLE(0, args), 0))
-// #define _GMP_TUPLE_TAKE_OP(args) _GMP_TUPLE_TAKE_OP_COMPAT_MSVC(args, GMP_TUPLE_PREPEND(GMP_GET_TUPLE(2, args), GMP_GET_TUPLE(GMP_DEC(GMP_GET_TUPLE(0, args)), GMP_GET_TUPLE(1, args))))
-// #define _GMP_TUPLE_TAKE_OP_COMPAT_MSVC(args, res) (GMP_DEC(GMP_GET_TUPLE(0, args)), GMP_GET_TUPLE(1, args), res)
+// #define _GMP_TUPLE_TAKE_IMPL(count, tup) GMP_TUPLE_GET(2, GMP_WHILE(_GMP_TUPLE_TAKE_COND, _GMP_TUPLE_TAKE_OP, (count, tup, ())))
+// #define _GMP_TUPLE_TAKE_COND(args) GMP_NOT(GMP_EQUAL_INT_INDEPENDENT(GMP_TUPLE_GET(0, args), 0))
+// #define _GMP_TUPLE_TAKE_OP(args) _GMP_TUPLE_TAKE_OP_COMPAT_MSVC(args, GMP_TUPLE_PREPEND(GMP_TUPLE_GET(2, args), GMP_TUPLE_GET(GMP_DEC(GMP_TUPLE_GET(0, args)), GMP_TUPLE_GET(1, args))))
+// #define _GMP_TUPLE_TAKE_OP_COMPAT_MSVC(args, res) (GMP_DEC(GMP_TUPLE_GET(0, args)), GMP_TUPLE_GET(1, args), res)
 
 /**
  * \def GMP_FOR_EACH(call, ...)
@@ -1870,8 +1894,8 @@
  * @hideinitializer
  */
 #define GMP_CMP(x, y) GMP_WHILE(_GMP_CMP_COND, _GMP_CMP_OP, (x, y))
-#define _GMP_CMP_COND(args) GMP_AND(GMP_BOOL(GMP_GET_TUPLE(0, args)), GMP_BOOL(GMP_GET_TUPLE(1, args)))
-#define _GMP_CMP_OP(args) (GMP_DEC(GMP_GET_TUPLE(0, args)), GMP_DEC(GMP_GET_TUPLE(1, args)))
+#define _GMP_CMP_COND(args) GMP_AND(GMP_BOOL(GMP_TUPLE_GET(0, args)), GMP_BOOL(GMP_TUPLE_GET(1, args)))
+#define _GMP_CMP_OP(args) (GMP_DEC(GMP_TUPLE_GET(0, args)), GMP_DEC(GMP_TUPLE_GET(1, args)))
 
 /**
  * \def GMP_INC(value)
@@ -3442,9 +3466,9 @@
  * @hideinitializer
  */
 #define GMP_ADD(a, b) _GMP_ADD_IMPL(GMP_MINMAX(a, b))
-#define _GMP_ADD_IMPL(pair) GMP_GET_TUPLE(1, GMP_WHILE(_GMP_ADD_IMPL_COND, _GMP_ADD_IMPL_OP, pair))
-#define _GMP_ADD_IMPL_COND(args) GMP_BOOL(GMP_GET_TUPLE(0, args))
-#define _GMP_ADD_IMPL_OP(args) (GMP_DEC(GMP_GET_TUPLE(0, args)), GMP_INC(GMP_GET_TUPLE(1, args)))
+#define _GMP_ADD_IMPL(pair) GMP_TUPLE_GET(1, GMP_WHILE(_GMP_ADD_IMPL_COND, _GMP_ADD_IMPL_OP, pair))
+#define _GMP_ADD_IMPL_COND(args) GMP_BOOL(GMP_TUPLE_GET(0, args))
+#define _GMP_ADD_IMPL_OP(args) (GMP_DEC(GMP_TUPLE_GET(0, args)), GMP_INC(GMP_TUPLE_GET(1, args)))
 
 /**
  * @def GMP_SUB(a, b)
@@ -3470,9 +3494,9 @@
  */
 #define GMP_SUB(a, b) _GMP_SUB(GMP_LESS_INT(a, b), a, b)
 #define _GMP_SUB(sym, a, b) GMP_CONCAT(_GMP_SUB_RESULT_, sym) (_GMP_SUB_IMPL(GMP_MINMAX(a, b)))
-#define _GMP_SUB_IMPL(pair) GMP_GET_TUPLE(1, GMP_WHILE(_GMP_SUB_IMPL_COND, _GMP_SUB_IMPL_OP, pair))
-#define _GMP_SUB_IMPL_COND(args) GMP_BOOL(GMP_GET_TUPLE(0, args))
-#define _GMP_SUB_IMPL_OP(args) (GMP_DEC(GMP_GET_TUPLE(0, args)), GMP_DEC(GMP_GET_TUPLE(1, args)))
+#define _GMP_SUB_IMPL(pair) GMP_TUPLE_GET(1, GMP_WHILE(_GMP_SUB_IMPL_COND, _GMP_SUB_IMPL_OP, pair))
+#define _GMP_SUB_IMPL_COND(args) GMP_BOOL(GMP_TUPLE_GET(0, args))
+#define _GMP_SUB_IMPL_OP(args) (GMP_DEC(GMP_TUPLE_GET(0, args)), GMP_DEC(GMP_TUPLE_GET(1, args)))
 #define _GMP_SUB_RESULT_0(res) res
 #define _GMP_SUB_RESULT_1(res) -res
 
