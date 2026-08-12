@@ -112,7 +112,7 @@ public:
    * memory leaks. Prefer `create_shared()` or `create_unique()` when ownership
    * should be explicit.
    */
-  AbstractProduct* create(const std::string& key, const ConstructorArgs&... args) {
+  AbstractProduct* create(const std::string& key, const ConstructorArgs&... args) const {
     if (this_type::instance().map_.find(key) == this_type::instance().map_.end())
       throw std::invalid_argument("Unknown object type passed to factory!");
     return this_type::instance().map_[key](args...);
@@ -128,7 +128,7 @@ public:
    * @throws std::invalid_argument If `key` is not registered.
    */
   std::shared_ptr<AbstractProduct> create_shared(
-    const std::string& key, const ConstructorArgs&... args) {
+    const std::string& key, const ConstructorArgs&... args) const {
     return std::shared_ptr<AbstractProduct>(create(key, args...));
   }
 
@@ -142,7 +142,7 @@ public:
    * @throws std::invalid_argument If `key` is not registered.
    */
   std::unique_ptr<AbstractProduct> create_unique(
-    const std::string& key, const ConstructorArgs&... args) {
+    const std::string& key, const ConstructorArgs&... args) const {
     return std::unique_ptr<AbstractProduct>(create(key, args...));
   }
 
@@ -154,10 +154,10 @@ private:
 #define _GMP_GET_CONSTRUCTOR_TYPES(ConstructorArgs) GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConstructorArgs), GMP_REMOVE_PARENS, ConstructorArgs)GMP_IF(GMP_IS_TUPLE(ConstructorArgs), (ConstructorArgs))
 #define GMP_FACTORY_REGISTER_WITH_ARGS(AbstractProduct, ConstructorArgs, ConcreteProduct) \
   static gmp::object_factory<AbstractProduct, _GMP_GET_CONSTRUCTOR_TYPES(ConstructorArgs)>::register_type<_GMP_GET_CONCRETE_PRODUCT_CLASS(ConcreteProduct)> \
-        GMP_CONCAT(gmp_reg_, __COUNTER__)(GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConcreteProduct), GMP_STRINGIFY(GMP_TUPLE_GET(0, ConcreteProduct)), GMP_STRINGIFY(ConcreteProduct)));
+        GMP_CONCAT(gmp_reg_, __COUNTER__)(GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConcreteProduct), GMP_TUPLE_GET(0, ConcreteProduct), GMP_STRINGIFY(ConcreteProduct)));
 #define GMP_FACTORY_REGISTER_NO_ARGS(AbstractProduct, ConcreteProduct) \
     static gmp::object_factory<AbstractProduct>::register_type<_GMP_GET_CONCRETE_PRODUCT_CLASS(ConcreteProduct)> \
-        GMP_CONCAT(gmp_reg_, __COUNTER__)(GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConcreteProduct), GMP_STRINGIFY(GMP_TUPLE_GET(0, ConcreteProduct)), GMP_STRINGIFY(ConcreteProduct)));
+        GMP_CONCAT(gmp_reg_, __COUNTER__)(GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConcreteProduct), GMP_TUPLE_GET(0, ConcreteProduct), GMP_STRINGIFY(ConcreteProduct)));
 
 /**
  * @def GMP_FACTORY_REGISTER(AbstractProduct, ConstructorArgs, ...)
@@ -172,7 +172,7 @@ private:
  * @param ConstructorArgs Either a single constructor argument type or a tuple of types.
  * @param ... Concrete product registrations. Each item can be:
  *   - a concrete type name, using that type name as the registration key
- *   - a tuple `(key, ConcreteType)` for an explicit string key
+ *   - a tuple `("key", ConcreteType)` for an explicit string key
  *
  * @par Example
  * @code

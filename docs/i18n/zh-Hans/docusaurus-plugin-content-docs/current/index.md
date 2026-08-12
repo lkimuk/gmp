@@ -95,11 +95,11 @@ auto classify(const std::string& request) {
 
 ```cpp
 GMP_FACTORY_REGISTER(llm_client, llm_config,
-  (OpenAI, openai_llm_client),
-  (Anthropic, anthropic_llm_client),
-  (Google, google_llm_client),
-  (OpenRouter, openrouter_llm_client),
-  (DeepSeek, deepseek_llm_client)
+  ("OpenAI", openai_llm_client),
+  ("Anthropic", anthropic_llm_client),
+  ("Google", google_llm_client),
+  ("OpenRouter", openrouter_llm_client),
+  ("DeepSeek", deepseek_llm_client)
 )
 
 using llm_client_factory = gmp::object_factory<llm_client, llm_config>;
