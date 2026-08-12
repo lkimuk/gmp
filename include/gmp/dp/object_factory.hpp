@@ -154,10 +154,10 @@ private:
 #define _GMP_GET_CONSTRUCTOR_TYPES(ConstructorArgs) GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConstructorArgs), GMP_REMOVE_PARENS, ConstructorArgs)GMP_IF(GMP_IS_TUPLE(ConstructorArgs), (ConstructorArgs))
 #define GMP_FACTORY_REGISTER_WITH_ARGS(AbstractProduct, ConstructorArgs, ConcreteProduct) \
   static gmp::object_factory<AbstractProduct, _GMP_GET_CONSTRUCTOR_TYPES(ConstructorArgs)>::register_type<_GMP_GET_CONCRETE_PRODUCT_CLASS(ConcreteProduct)> \
-        GMP_CONCAT(gmp_reg_, GMP_CONCAT(AbstractProduct, GMP_CONCAT(_, _GMP_GET_CONCRETE_PRODUCT_CLASS(ConcreteProduct))))(GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConcreteProduct), GMP_STRINGIFY(GMP_TUPLE_GET(0, ConcreteProduct)), GMP_STRINGIFY(ConcreteProduct)));
+        GMP_CONCAT(gmp_reg_, __COUNTER__)(GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConcreteProduct), GMP_STRINGIFY(GMP_TUPLE_GET(0, ConcreteProduct)), GMP_STRINGIFY(ConcreteProduct)));
 #define GMP_FACTORY_REGISTER_NO_ARGS(AbstractProduct, ConcreteProduct) \
     static gmp::object_factory<AbstractProduct>::register_type<_GMP_GET_CONCRETE_PRODUCT_CLASS(ConcreteProduct)> \
-        GMP_CONCAT(gmp_reg_, GMP_CONCAT(AbstractProduct, GMP_CONCAT(_, _GMP_GET_CONCRETE_PRODUCT_CLASS(ConcreteProduct))))(GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConcreteProduct), GMP_STRINGIFY(GMP_TUPLE_GET(0, ConcreteProduct)), GMP_STRINGIFY(ConcreteProduct)));
+        GMP_CONCAT(gmp_reg_, __COUNTER__)(GMP_IF_THEN_ELSE(GMP_IS_TUPLE(ConcreteProduct), GMP_STRINGIFY(GMP_TUPLE_GET(0, ConcreteProduct)), GMP_STRINGIFY(ConcreteProduct)));
 
 /**
  * @def GMP_FACTORY_REGISTER(AbstractProduct, ConstructorArgs, ...)
@@ -185,8 +185,13 @@ private:
   GMP_EVAL( _GMP_FACTORY_REGISTER_IMPL(AbstractProduct, ConstructorArgs, __VA_ARGS__) )
 #define _GMP_FACTORY_REGISTER_IMPL(AbstractProduct, ConstructorArgs, ...) \
   _GMP_FACTORY_REGISTER_IMPL_COMPAT_MSVC(AbstractProduct, ConstructorArgs, GMP_IS_EMPTY(__VA_ARGS__), GMP_TUPLE_EMPTY(ConstructorArgs), __VA_ARGS__)
+#if GMP_STANDARD_PREPROCESSOR
+#define _GMP_FACTORY_REGISTER_IMPL_COMPAT_MSVC(AbstractProduct, ConstructorArgs, _0, _1, ...) \
+  GMP_OVERLOAD_INVOKE(_GMP_FACTORY_REGISTER_WHEN, _0, _1)(AbstractProduct, ConstructorArgs, __VA_ARGS__)
+#else
 #define _GMP_FACTORY_REGISTER_IMPL_COMPAT_MSVC(AbstractProduct, ConstructorArgs, _0, _1, ...) \
   GMP_EXPAND( GMP_OVERLOAD_INVOKE(_GMP_FACTORY_REGISTER_WHEN, _0, _1)(AbstractProduct, ConstructorArgs, __VA_ARGS__) )
+#endif
 #define _GMP_FACTORY_REGISTER_WHEN_1(...)
 #define _GMP_FACTORY_REGISTER_WHEN_0_1(AbstractProduct, ConstructorArgs, ConcreteProduct, ...) \
   GMP_FACTORY_REGISTER_NO_ARGS(AbstractProduct, ConcreteProduct) \
