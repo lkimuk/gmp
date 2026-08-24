@@ -15,6 +15,7 @@
 #include <optional>
 #include <source_location>
 
+#include <gmp/meta/config.hpp>
 #include <gmp/meta/type_name.hpp>
 #include <gmp/meta/detail/member_ref.hpp>
 
@@ -668,13 +669,7 @@ namespace detail {
       [&](auto&&... member) { (f(mem_names[index++], std::forward<decltype(member)>(member)), ...); }, members); \
   }
 
-#if GMP_STANDARD_PREPROCESSOR
-    // Standard preprocessor supports 256 arguments
-    GMP_FOR_EACH(GMP_FOR_EACH_MEMBER_DEFINE, GMP_RANGE(1, 256))
-#else
-    // MSVC traditional preprocessor: MAX 199 due to nesting depth limit (fatal error C1009)
-    GMP_FOR_EACH(GMP_FOR_EACH_MEMBER_DEFINE, GMP_RANGE(1, 119))
-#endif
+GMP_FOR_EACH(GMP_FOR_EACH_MEMBER_DEFINE, GMP_RANGE(1, GMP_INC(GMP_MAX_SUPPORTED_FIELDS)))
 
 #undef GMP_FOR_EACH_MEMBER_DEFINE
 

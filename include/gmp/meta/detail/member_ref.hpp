@@ -15,6 +15,7 @@
 #include <tuple>
 
 #include <gmp/macro/macro.hpp>
+#include <gmp/meta/config.hpp>
 #include <gmp/meta/utility.hpp>
 
 namespace gmp::detail {
@@ -26,13 +27,8 @@ namespace gmp::detail {
     return std::get<I>(std::forward_as_tuple(GMP_GET_FIRST_N(N, GMP_IDENTIFIERS))); \
   }
 
-#if GMP_STANDARD_PREPROCESSOR
-    // Standard preprocessor supports 256 arguments
-    GMP_FOR_EACH(GMP_GET_MEMBER_REF_DEFINE, GMP_RANGE(1, 256))
-#else
-    // MSVC traditional preprocessor: MAX 199 due to nesting depth limit (fatal error C1009)
-    GMP_FOR_EACH(GMP_GET_MEMBER_REF_DEFINE, GMP_RANGE(1, 119))
-#endif
+
+GMP_FOR_EACH(GMP_GET_MEMBER_REF_DEFINE, GMP_RANGE(1, GMP_INC(GMP_MAX_SUPPORTED_FIELDS)))
 
 #undef GMP_GET_MEMBER_REF_DEFINE
 

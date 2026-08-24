@@ -20,7 +20,7 @@ if(MSVC)
     # set(OUTPUT_OPTION "/Fe${CMAKE_CURRENT_BINARY_DIR}/macro_test.i")
 else()
     set(PREPROCESS_FLAGS "")
-    # set(OUTPUT_OPTION "-o ${CMAKE_CURRENT_BINARY_DIR}/macro_test.i")
+    set(OUTPUT_OPTION > "${CMAKE_CURRENT_BINARY_DIR}/macro_test.i")
 endif()
 
 add_custom_target(preprocess

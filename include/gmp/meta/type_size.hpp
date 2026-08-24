@@ -16,6 +16,7 @@
 #include <type_traits>
 #include <utility>
 
+#include <gmp/meta/config.hpp>
 #include <gmp/meta/meta.hpp>
 
 namespace gmp {

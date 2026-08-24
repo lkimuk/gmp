@@ -16,6 +16,7 @@
 #include <tuple>
 
 #include <gmp/macro/macro.hpp>
+#include <gmp/meta/config.hpp>
 #include <gmp/meta/utility.hpp>
 
 namespace gmp::detail {
@@ -85,15 +86,8 @@ consteval auto member_name_of() {
         return get_ptr(GMP_GET_FIRST_N(i, GMP_IDENTIFIERS)); \
     }
 
-#if GMP_STANDARD_PREPROCESSOR
-    #define GMP_MAX_SUPPORTED_FIELDS 255
-    // Standard preprocessor supports 256 arguments
-    GMP_FOR_EACH(GMP_FIELD_GETTER_DEFINE, GMP_RANGE(1, 256))
-#else
-    #define GMP_MAX_SUPPORTED_FIELDS 118
-    // MSVC traditional preprocessor: MAX 199 due to nesting depth limit (fatal error C1009)
-    GMP_FOR_EACH(GMP_FIELD_GETTER_DEFINE, GMP_RANGE(1, 119))
-#endif
+
+GMP_FOR_EACH(GMP_FIELD_GETTER_DEFINE, GMP_RANGE(1, GMP_INC(GMP_MAX_SUPPORTED_FIELDS)))
 
 #undef GMP_FIELD_GETTER_DEFINE
 

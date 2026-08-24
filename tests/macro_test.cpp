@@ -1,5 +1,21 @@
 ﻿// #include <gmp/gmp.hpp>
 
+// GMP_FACTORY_REGISTER(shape, (), circle, square)
+
+// GMP_FACTORY_REGISTER(
+//     llm_client,
+//     llm_config,
+//     ("OpenAI", openai_llm_client),
+//     ("OpenAICompatible", openai_compatible_llm_client),
+//     ("OpenRouter", openrouter_llm_client),
+//     ("Anthropic", anthropic_llm_client),
+//     ("Gemini", gemini_llm_client),
+//     ("Ollama", ollama_llm_client),
+//     ("DeepSeek", deepseek_llm_client),
+//     ("DashScope", dashscope_llm_client),
+//     ("Qwen", qwen_llm_client),
+//     ("Zhipu", zhipu_llm_client))
+
 // void bar(int arg1, const char* arg2) {
 //     printf("bar %d, %s\n", arg1, arg2);
 // }
