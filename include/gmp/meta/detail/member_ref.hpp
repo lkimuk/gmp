@@ -13,6 +13,8 @@
 #define GMP_DETAIL_MEMBER_REF_HPP_
 
 #include <tuple>
+#include <type_traits>
+#include <utility>
 
 #include <gmp/macro/macro.hpp>
 #include <gmp/meta/config.hpp>
@@ -22,9 +24,14 @@ namespace gmp::detail {
 
 #define GMP_GET_MEMBER_REF_DEFINE(N) \
   template<std::size_t I, typename T> \
-  decltype(auto) member_ref(T&& value, constant_arg_t<N>) { \
-    auto&& [GMP_GET_FIRST_N(N, GMP_IDENTIFIERS)] = value; \
-    return std::get<I>(std::forward_as_tuple(GMP_GET_FIRST_N(N, GMP_IDENTIFIERS))); \
+  decltype(auto) member_ref(T&& value, constant_arg_t<N>) noexcept { \
+    auto&& [GMP_GET_FIRST_N(N, GMP_IDENTIFIERS)] = std::forward<T>(value); \
+    auto members = std::forward_as_tuple(GMP_GET_FIRST_N(N, GMP_IDENTIFIERS)); \
+    if constexpr (std::is_lvalue_reference_v<T&&>) { \
+      return std::get<I>(members); \
+    } else { \
+      return std::move(std::get<I>(members)); \
+    } \
   }
 
 
