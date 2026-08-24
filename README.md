@@ -81,7 +81,7 @@ Compiler Explorer: [https://godbolt.org/z/W156818n5](https://godbolt.org/z/W1568
 
 **Header-only version**
 
-Copy the [include](https://github.com/lkimuk/gmp/releases/download/v0.3.0/include.zip) folder to your build tree and include `gmp/gmp.hpp`.
+Copy the [include](https://github.com/lkimuk/gmp/releases/download/v0.4.0/include.zip) folder to your build tree and include `gmp/gmp.hpp`.
 
 **CMake integration**
 
@@ -95,7 +95,7 @@ $ cmake --install ./build # sudo on Linux/macOS
 ```
 
 ```cpp
-find_package(gmp 0.3.0 REQUIRED)
+find_package(gmp 0.4.0 REQUIRED)
 target_link_libraries(your_target PRIVATE gmp::gmp)
 ```
 
@@ -216,17 +216,26 @@ MYLIB_NAMESPACE_END
 - `enum_entries<E>()`: Returns all enumerator `(value, name)` pairs at compile time
 - `enum_index(value)`: Returns the index of an enumerator within `enum_values<E>()`
 - `enum_cast<E>(name)`: Converts an enumerator name to `std::optional<E>`
+- `enum_underlying(value)`: Returns the underlying integer value of an enumerator
+- `enum_contains(value)`: Tests whether an enumerator is reflected
 - `GMP_ENUM_RANGE(Enum, Min, Max)`: Customizes the scanned range for enum reflection
 - `GMP_ENUM_VALUES(Enum, ...)`: Supplies explicit enumerator values for enum reflection
 
 #### Aggregate Introspection
 - `member_count<T>()`: Returns the number of members in an aggregate type at compile time
+- `member_count_v<T>`: Inline constant containing the number of members
+- `reflectable<T>`: Basic constraint for reflection candidates; reference helpers require aggregates without base classes or bit-fields
 - `member_name<I, T>()`: Returns the name of the `I`-th member of a type at compile time
 - `member_names<T>()`: Returns the names of all members of a type at compile time
+- `member_index<T>(name)`: Finds a member index by name
+- `has_member<T>(name)`: Tests whether a member name exists
 - `member_type_t<I, T>`: Returns the type of the `I`-th member of an aggregate type
 - `member_type_names<T>()`: Returns readable member type names of an aggregate type
 - `member_ref<I>(obj)`: Returns a reference to the `I`-th member of an aggregate object
+- `tie_members(obj)`: Returns a tuple of references to all aggregate members
+- `apply_members(obj, fn)`: Calls a function with all aggregate members
 - `for_each_member(obj, fn)`: Visits each member of an aggregate object together with its name
+- `visit_member(obj, name, fn)`: Visits one member selected by name
 - `type_size<T>()`: Returns the aggregate payload size excluding padding
 
 ### Examples
@@ -372,6 +381,10 @@ int main() {
 ### Features
 - `singleton<T, LongLifeTime>`: A CRTP-based singleton utility with optional long-lifetime support
 - `object_factory<AbstractProduct, ConstructorArgs...>`: A singleton-based object factory for runtime registration and creation
+- `object_factory::contains(key)`: Tests whether a product key is registered
+- `object_factory::registered_keys()`: Returns registered product keys
+- `object_factory::try_create_unique(key, args...)`: Creates a product without throwing for an unknown key
+- `object_factory::try_create_shared(key, args...)`: Shared-pointer counterpart to `try_create_unique`
 - `GMP_DISABLE_CONSTRUCTION(Class)`: Disables direct construction for `singleton`-derived types
 - `GMP_FACTORY_REGISTER(...)`: Registers product types with `object_factory`
 
@@ -419,6 +432,7 @@ The library includes compile-time-oriented tests using `static_assert` and build
 ```bash
 cmake -B ./build -DBUILD_TESTS=ON
 cmake --build ./build
+ctest --test-dir ./build --output-on-failure
 ```
 
 ## Acknowledgments
