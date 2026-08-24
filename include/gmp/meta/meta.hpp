@@ -12,8 +12,14 @@
 #ifndef GMP_META_HPP_
 #define GMP_META_HPP_
 
+#include <array>
+#include <functional>
 #include <optional>
 #include <source_location>
+#include <string_view>
+#include <tuple>
+#include <type_traits>
+#include <utility>
 
 #include <gmp/meta/config.hpp>
 #include <gmp/meta/type_name.hpp>
@@ -405,9 +411,29 @@ consteval int member_count() {
     if constexpr (requires { value_type{Args{}...}; }) {
         return member_count<value_type, Args..., gmp::any>();
     } else {
-        return sizeof...(Args) - 1;
+        return static_cast<int>(sizeof...(Args)) - 1;
     }
 }
+
+/**
+ * @brief Number of members in an aggregate type as an inline constant.
+ */
+template<typename T>
+inline constexpr auto member_count_v = member_count<T>();
+
+/**
+ * @brief Constraint for aggregate types supported by the reflection helpers.
+ *
+ * @note C++20 cannot portably detect aggregate base classes or bit-fields.
+ * Types containing either may satisfy this concept, but reference-based
+ * helpers such as member_ref() and tie_members() do not support them.
+ */
+template<typename T>
+concept reflectable =
+    std::is_class_v<std::remove_cvref_t<T>> &&
+    std::is_aggregate_v<std::remove_cvref_t<T>> &&
+    (member_count<std::remove_cvref_t<T>>() >= 0) &&
+    (member_count<std::remove_cvref_t<T>>() <= GMP_MAX_SUPPORTED_FIELDS);
 
 /**
  * @fn consteval auto gmp::member_name() noexcept
@@ -551,6 +577,30 @@ consteval auto member_names() {
 }
 
 /**
+ * @brief Find a reflected member by name.
+ */
+template<typename T>
+    requires reflectable<T>
+constexpr auto member_index(std::string_view name) -> std::optional<std::size_t> {
+    constexpr auto names = member_names<std::remove_cvref_t<T>>();
+    for (std::size_t i = 0; i < names.size(); ++i) {
+        if (names[i] == name) {
+            return i;
+        }
+    }
+    return std::nullopt;
+}
+
+/**
+ * @brief Test whether an aggregate has a reflected member with the given name.
+ */
+template<typename T>
+    requires reflectable<T>
+constexpr bool has_member(std::string_view name) {
+    return member_index<T>(name).has_value();
+}
+
+/**
  * @typedef gmp::member_type_t
  * @brief Alias for the type of the I-th member of an aggregate type.
  *
@@ -644,7 +694,10 @@ template<std::size_t I, typename T, typename UnqualifiedT = std::remove_cvref_t<
         && (I < member_count<UnqualifiedT>())
         && (member_count<UnqualifiedT>() <= GMP_MAX_SUPPORTED_FIELDS)
 decltype(auto) member_ref(T&& value) noexcept {
-    return detail::member_ref<I, T>(value, constant_arg<member_count<UnqualifiedT>()>);
+    return detail::member_ref<I>(
+        std::forward<T>(value),
+        constant_arg<member_count<UnqualifiedT>()>
+    );
 }
 
 /** @cond INTERNAL */
@@ -656,22 +709,52 @@ decltype(auto) member_ref(T&&) noexcept {
 }
 /** @endcond */
 
+/**
+ * @brief Return a tuple of references to all members of an aggregate.
+ */
+template<typename T>
+    requires reflectable<T>
+constexpr auto tie_members(T& value) noexcept {
+    constexpr auto size = member_count_v<T>;
+    return [&]<std::size_t... Is>(std::index_sequence<Is...>) noexcept {
+        return std::forward_as_tuple(
+            member_ref<Is>(value)...
+        );
+    }(std::make_index_sequence<size>{});
+}
+
+/**
+ * @brief Invoke a callable with all aggregate members as separate arguments.
+ */
+template<typename T, typename F>
+    requires reflectable<T>
+constexpr decltype(auto) apply_members(T& value, F&& func)
+    noexcept(noexcept(std::apply(
+        std::forward<F>(func),
+        tie_members(value)
+    ))) {
+    return std::apply(
+        std::forward<F>(func),
+        tie_members(value)
+    );
+}
+
 namespace detail {
 
-#define GMP_FOR_EACH_MEMBER_DEFINE(N) \
-  template<typename T, typename F> \
-  void for_each_member_impl(T&& value, F&& f, constant_arg_t<N>) noexcept { \
-    auto&& [GMP_GET_FIRST_N(N, GMP_IDENTIFIERS)] = value; \
-    auto members = std::forward_as_tuple(GMP_GET_FIRST_N(N, GMP_IDENTIFIERS)); \
-    constexpr auto mem_names = gmp::member_names<T>(); \
-    std::size_t index = 0; \
-    std::apply( \
-      [&](auto&&... member) { (f(mem_names[index++], std::forward<decltype(member)>(member)), ...); }, members); \
-  }
-
-GMP_FOR_EACH(GMP_FOR_EACH_MEMBER_DEFINE, GMP_RANGE(1, GMP_INC(GMP_MAX_SUPPORTED_FIELDS)))
-
-#undef GMP_FOR_EACH_MEMBER_DEFINE
+template<typename T, typename F, std::size_t... Is>
+constexpr void for_each_member_impl(T&& value, F&& func, std::index_sequence<Is...>)
+    noexcept((std::is_nothrow_invocable_v<
+        F&,
+        std::string_view,
+        decltype(gmp::member_ref<Is>(std::forward<T>(value)))
+    > && ...)) {
+    constexpr auto names = member_names<std::remove_cvref_t<T>>();
+    (std::invoke(
+        func,
+        names[Is],
+        gmp::member_ref<Is>(std::forward<T>(value))
+    ), ...);
+}
 
 } // namespace detail
 
@@ -688,22 +771,59 @@ GMP_FOR_EACH(GMP_FOR_EACH_MEMBER_DEFINE, GMP_RANGE(1, GMP_INC(GMP_MAX_SUPPORTED_
  * @param func The visitor invoked for each member.
  */
 template<typename T, typename F>
-    requires std::is_aggregate_v<std::remove_cvref_t<T>>
-void for_each_member(T&& value, F&& func) noexcept {
+    requires reflectable<T>
+constexpr void for_each_member(T&& value, F&& func)
+    noexcept(noexcept(detail::for_each_member_impl(
+        std::forward<T>(value),
+        std::forward<F>(func),
+        std::make_index_sequence<member_count_v<std::remove_cvref_t<T>>>{}
+    ))) {
     detail::for_each_member_impl(
         std::forward<T>(value),
         std::forward<F>(func),
-        constant_arg<member_count<T>()>
+        std::make_index_sequence<member_count_v<std::remove_cvref_t<T>>>{}
     );
 }
 
 /** @cond INTERNAL */
 template<typename T, typename F>
 void for_each_member(T&&, F&&) noexcept {
-    static_assert(std::is_aggregate_v<std::remove_cvref_t<T>>,
+    using value_type = std::remove_cvref_t<T>;
+    static_assert(std::is_aggregate_v<value_type>,
         "for_each_member() can only be used with aggregate types.");
+    if constexpr (std::is_aggregate_v<value_type>) {
+        static_assert(std::is_class_v<value_type>,
+            "for_each_member() does not support arrays or unions.");
+        static_assert(reflectable<value_type>,
+            "for_each_member() does not support this aggregate type.");
+    }
 }
 /** @endcond */
+
+/**
+ * @brief Visit a member selected by name.
+ *
+ * The callable must accept every possible member type of `T`. It is invoked
+ * once when `name` matches a reflected member.
+ */
+template<typename T, typename F>
+    requires reflectable<T>
+constexpr bool visit_member(T&& value, std::string_view name, F&& func) {
+    bool visited = false;
+    for_each_member(
+        std::forward<T>(value),
+        [&](std::string_view current_name, auto&& member) {
+            if (!visited && current_name == name) {
+                std::invoke(
+                    func,
+                    std::forward<decltype(member)>(member)
+                );
+                visited = true;
+            }
+        }
+    );
+    return visited;
+}
 
 /** @} */
 
