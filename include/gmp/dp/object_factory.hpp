@@ -21,6 +21,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include <gmp/dp/singleton.hpp>
 #include <gmp/macro/macro.hpp>
@@ -97,6 +98,25 @@ public:
   }
 
   /**
+   * @brief Test whether a product key is registered.
+   */
+  bool contains(const std::string& key) const {
+    return this_type::instance().map_.find(key) != this_type::instance().map_.end();
+  }
+
+  /**
+   * @brief Return all registered product keys.
+   */
+  std::vector<std::string> registered_keys() const {
+    std::vector<std::string> keys;
+    keys.reserve(this_type::instance().map_.size());
+    for (const auto& entry : this_type::instance().map_) {
+      keys.push_back(entry.first);
+    }
+    return keys;
+  }
+
+  /**
    * @brief Create a concrete product with raw `new` semantics.
    *
    * This function looks up `key`, invokes the registered constructor callback,
@@ -113,9 +133,10 @@ public:
    * should be explicit.
    */
   AbstractProduct* create(const std::string& key, const ConstructorArgs&... args) const {
-    if (this_type::instance().map_.find(key) == this_type::instance().map_.end())
+    auto product = try_create_unique(key, args...);
+    if (!product)
       throw std::invalid_argument("Unknown object type passed to factory!");
-    return this_type::instance().map_[key](args...);
+    return product.release();
   }
 
   /**
@@ -144,6 +165,27 @@ public:
   std::unique_ptr<AbstractProduct> create_unique(
     const std::string& key, const ConstructorArgs&... args) const {
     return std::unique_ptr<AbstractProduct>(create(key, args...));
+  }
+
+  /**
+   * @brief Try to create a product, returning an empty pointer for an unknown key.
+   */
+  std::unique_ptr<AbstractProduct> try_create_unique(
+    const std::string& key, const ConstructorArgs&... args) const {
+    const auto& map = this_type::instance().map_;
+    const auto found = map.find(key);
+    if (found == map.end()) {
+      return {};
+    }
+    return std::unique_ptr<AbstractProduct>(found->second(args...));
+  }
+
+  /**
+   * @brief Try to create a shared product, returning an empty pointer for an unknown key.
+   */
+  std::shared_ptr<AbstractProduct> try_create_shared(
+    const std::string& key, const ConstructorArgs&... args) const {
+    return std::shared_ptr<AbstractProduct>(try_create_unique(key, args...));
   }
 
 private:
