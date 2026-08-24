@@ -376,6 +376,39 @@ constexpr auto enum_cast(std::string_view name) -> std::optional<E> {
 }
 
 /**
+ * @brief Return the underlying integer value of an enumerator.
+ */
+template<typename E>
+    requires std::is_enum_v<E>
+constexpr auto enum_underlying(E value) noexcept -> std::underlying_type_t<E> {
+    return static_cast<std::underlying_type_t<E>>(value);
+}
+
+/**
+ * @brief Test whether an enumerator is present in the reflected set.
+ */
+template<typename E>
+    requires std::is_enum_v<E>
+constexpr bool enum_contains(E value) {
+    return enum_index(value).has_value();
+}
+
+/**
+ * @brief Test whether an underlying integer value is a reflected enumerator.
+ */
+template<typename E, typename U>
+    requires std::is_enum_v<E> && std::is_integral_v<U>
+constexpr bool enum_contains(U value) {
+    constexpr auto values = enum_values<E>();
+    for (const auto enumerator : values) {
+        if (enum_underlying(enumerator) == value) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * @fn consteval int gmp::member_count()
  * @brief Count the number of members in an aggregate type at compile-time.
  *
