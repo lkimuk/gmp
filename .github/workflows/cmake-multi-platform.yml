@@ -55,3 +55,23 @@ jobs:
 
     - name: Build
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+
+    - name: Test
+      run: ctest --test-dir ${{ steps.strings.outputs.build-output-dir }} --build-config ${{ matrix.build_type }} --output-on-failure
+
+    - name: Configure MSVC standard preprocessor
+      if: runner.os == 'Windows'
+      run: >
+        cmake -B ${{ github.workspace }}/build-standard
+        -DCMAKE_CXX_COMPILER=cl
+        -DCMAKE_CXX_FLAGS_INIT="/Zc:preprocessor /DGMP_MAX_SUPPORTED_FIELDS=16"
+        -DBUILD_TESTS=ON
+        -S ${{ github.workspace }}
+
+    - name: Build with MSVC standard preprocessor
+      if: runner.os == 'Windows'
+      run: cmake --build ${{ github.workspace }}/build-standard --config ${{ matrix.build_type }}
+
+    - name: Test with MSVC standard preprocessor
+      if: runner.os == 'Windows'
+      run: ctest --test-dir ${{ github.workspace }}/build-standard --build-config ${{ matrix.build_type }} --output-on-failure

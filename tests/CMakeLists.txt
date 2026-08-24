@@ -11,6 +11,7 @@ foreach(source_file ${SOURCE_FILES})
     add_executable(${name} "${name}.cpp")
     target_link_libraries(${name} PRIVATE gmp)
     target_compile_options(${name} PRIVATE)
+    add_test(NAME ${name} COMMAND ${name})
 endforeach()
 
 if(MSVC)
