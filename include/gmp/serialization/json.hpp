@@ -1,6 +1,6 @@
 //   ___ __  __ ___
 //  / __|  \/  | _ \\ GMP(Generative Metaprogramming)
-// | (_ | |\/| |  _/  version 0.5.0
+// | (_ | |\/| |  _/  version 0.4.0
 //  \___|_|  |_|_|    https://github.com/lkimuk/gmp
 //
 // SPDX-License-Identifier: MIT
