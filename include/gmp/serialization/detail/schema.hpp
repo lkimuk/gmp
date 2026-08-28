@@ -11,6 +11,7 @@
 
 #ifndef GMP_SERIALIZATION_DETAIL_SCHEMA_HPP_
 #define GMP_SERIALIZATION_DETAIL_SCHEMA_HPP_
+
 #include <gmp/meta/meta.hpp>
 #include <gmp/serialization/traits.hpp>
 #include <tuple>

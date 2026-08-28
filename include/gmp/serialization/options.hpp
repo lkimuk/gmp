@@ -11,6 +11,7 @@
 
 #ifndef GMP_SERIALIZATION_OPTIONS_HPP_
 #define GMP_SERIALIZATION_OPTIONS_HPP_
+
 #include <cstddef>
 namespace gmp {
 enum class unknown_field_policy { reject, ignore };

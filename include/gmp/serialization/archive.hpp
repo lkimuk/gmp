@@ -11,6 +11,7 @@
 
 #ifndef GMP_SERIALIZATION_ARCHIVE_HPP_
 #define GMP_SERIALIZATION_ARCHIVE_HPP_
+
 #include <concepts>
 #include <cstddef>
 #include <cstdint>

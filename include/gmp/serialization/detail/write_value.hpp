@@ -11,6 +11,7 @@
 
 #ifndef GMP_SERIALIZATION_DETAIL_WRITE_VALUE_HPP_
 #define GMP_SERIALIZATION_DETAIL_WRITE_VALUE_HPP_
+
 #include <concepts>
 #include <type_traits>
 #include <variant>

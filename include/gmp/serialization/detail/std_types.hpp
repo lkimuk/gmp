@@ -11,6 +11,7 @@
 
 #ifndef GMP_SERIALIZATION_DETAIL_STD_TYPES_HPP_
 #define GMP_SERIALIZATION_DETAIL_STD_TYPES_HPP_
+
 #include <array>
 #include <concepts>
 #include <deque>

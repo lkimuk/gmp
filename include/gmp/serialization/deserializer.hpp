@@ -11,6 +11,7 @@
 
 #ifndef GMP_SERIALIZATION_DESERIALIZER_HPP_
 #define GMP_SERIALIZATION_DESERIALIZER_HPP_
+
 #include <gmp/meta/meta.hpp>
 #include <gmp/serialization/archive.hpp>
 #include <gmp/serialization/detail/schema.hpp>

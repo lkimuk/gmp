@@ -11,6 +11,7 @@
 
 #ifndef GMP_SERIALIZATION_DETAIL_TEXT_HPP_
 #define GMP_SERIALIZATION_DETAIL_TEXT_HPP_
+
 #include <cstddef>
 #include <cstdint>
 #include <string>

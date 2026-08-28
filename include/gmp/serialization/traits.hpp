@@ -11,6 +11,7 @@
 
 #ifndef GMP_SERIALIZATION_TRAITS_HPP_
 #define GMP_SERIALIZATION_TRAITS_HPP_
+
 #include <concepts>
 #include <gmp/meta/fixed_string.hpp>
 #include <array>

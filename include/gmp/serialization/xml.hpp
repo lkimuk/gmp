@@ -11,6 +11,7 @@
 
 #ifndef GMP_SERIALIZATION_XML_HPP_
 #define GMP_SERIALIZATION_XML_HPP_
+
 #include <charconv>
 #include <cmath>
 #include <cstdint>

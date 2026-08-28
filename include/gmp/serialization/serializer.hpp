@@ -11,6 +11,7 @@
 
 #ifndef GMP_SERIALIZATION_SERIALIZER_HPP_
 #define GMP_SERIALIZATION_SERIALIZER_HPP_
+
 #include <cmath>
 #include <concepts>
 #include <gmp/meta/meta.hpp>

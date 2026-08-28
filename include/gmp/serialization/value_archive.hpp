@@ -11,6 +11,7 @@
 
 #ifndef GMP_SERIALIZATION_VALUE_ARCHIVE_HPP_
 #define GMP_SERIALIZATION_VALUE_ARCHIVE_HPP_
+
 #include <cstdint>
 #include <gmp/serialization/archive.hpp>
 #include <gmp/serialization/value.hpp>
