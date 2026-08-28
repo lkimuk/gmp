@@ -525,7 +525,10 @@ template<std::size_t I, typename T>
         (I < member_count<T>()) &&
         (member_count<T>() <= GMP_MAX_SUPPORTED_FIELDS)
 consteval auto member_name() noexcept {
-    constexpr auto name = detail::member_name_of<detail::field_getter<I, T>(constant_arg<member_count<T>()>)>();
+    constexpr auto name = detail::member_name_of<
+        T,
+        detail::field_getter<I, T>(constant_arg<member_count<T>()>)
+    >();
     return name;
 }
 

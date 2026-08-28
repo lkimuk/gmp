@@ -48,7 +48,7 @@ consteval auto type_name_of() {
     return name.substr(start, end - start);
 }
 
-template<auto V>
+template<typename T, auto V>
 consteval auto member_name_of() {
     const auto name = std::string_view(std::source_location::current().function_name());
 

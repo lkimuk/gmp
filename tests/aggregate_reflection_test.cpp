@@ -15,6 +15,16 @@ struct person {
 
 struct empty {};
 
+struct coordinate {
+    int x;
+    int y;
+};
+
+struct dimensions {
+    int width;
+    int height;
+};
+
 union reflected_union {
     int integer;
     float floating;
@@ -32,6 +42,10 @@ static_assert(!gmp::reflectable<reflected_union>);
 static_assert(!gmp::reflectable<reference_member>);
 static_assert(gmp::member_count_v<person> == 2);
 static_assert(gmp::member_count_v<empty> == 0);
+static_assert(gmp::member_name<0, coordinate>() == "x");
+static_assert(gmp::member_name<1, coordinate>() == "y");
+static_assert(gmp::member_name<0, dimensions>() == "width");
+static_assert(gmp::member_name<1, dimensions>() == "height");
 
 static_assert(gmp::has_member<person>("name"));
 static_assert(gmp::has_member<person>("age"));
