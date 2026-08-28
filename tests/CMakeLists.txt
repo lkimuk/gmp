@@ -1,5 +1,13 @@
 file(GLOB SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
+# Assertions are part of these executable tests and must remain active in
+# optimized configurations.  Remove the generator-provided definition in this
+# directory only; optimization and all other configuration flags are retained.
+foreach(config RELEASE RELWITHDEBINFO MINSIZEREL)
+    string(REPLACE "/DNDEBUG" "" CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
+    string(REPLACE "-DNDEBUG" "" CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
+endforeach()
+
 list(LENGTH SOURCE_FILES SRC_FILES_SIZE)
 message(STATUS "Found ${SRC_FILES_SIZE} source files")
 foreach(source_file ${SOURCE_FILES})
@@ -10,7 +18,6 @@ foreach(source_file ${SOURCE_FILES})
     message(STATUS " ${name}")
     add_executable(${name} "${name}.cpp")
     target_link_libraries(${name} PRIVATE gmp)
-    target_compile_options(${name} PRIVATE)
     add_test(NAME ${name} COMMAND ${name})
 endforeach()
 
