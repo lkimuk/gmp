@@ -28,6 +28,7 @@
 - [Reflection Metaprogramming](#reflection-metaprogramming)
   - [Features](#features-1)
   - [Examples](#examples-1)
+- [Serialization](#serialization)
 - [Named Operators](#named-operators)
   - [Features](#features-2)
   - [Examples](#examples-2)
@@ -38,10 +39,11 @@
 - [Acknowledgments](#acknowledgments)
 
 ## Overview
-GMP is a header-only C++ metaprogramming library for compile-time programming and code generation. It provides four complementary layers:
+GMP is a header-only C++ metaprogramming library for compile-time programming and code generation. It provides five complementary layers:
 
 - **Macro metaprogramming**: Preprocessor utilities for boolean logic, arithmetic, tuple manipulation, loops, overload selection, and code generation. This layer is available in **C++11**.
 - **Reflection metaprogramming**: Compile-time utilities for fixed strings, type names, enum reflection, and aggregate member introspection. This layer requires **C++20**.
+- **Serialization**: Reflection-driven JSON and XML serialization and deserialization with structured errors and explicit customization escape hatches.
 - **Named operators**: Utilities for turning callables into custom infix operators with value-category-aware operand binding. This layer requires **C++20**.
 - **Generic design patterns**: Lightweight synchronization, singleton, and object-factory helpers for reusable generic infrastructure. This layer is available in **C++11**, with some conveniences improving under **C++20**.
 
@@ -50,11 +52,11 @@ GMP is a header-only C++ metaprogramming library for compile-time programming an
 - **Header-only design**: Zero compilation required, just include and use
 - **Two-tier language support**:
   - Macro metaprogramming and generic design-pattern utilities require **C++11**
-  - Reflection metaprogramming and named-operator utilities require **C++20**
+  - Reflection, serialization, and named-operator utilities require **C++20**
 - **Cross-platform**: Compatible with GCC, Clang, and MSVC
 - **Zero dependencies**: Pure standard C++, with no external dependencies
 - **Compile-time focused**: Designed for compile-time evaluation and code generation
-- **Broad coverage**: Includes macros, reflection utilities, named operators, and reusable design-pattern components
+- **Broad coverage**: Includes macros, reflection, serialization, named operators, and reusable design-pattern components
 
 ## Compiler Support
 
@@ -64,9 +66,9 @@ GMP provides feature sets with different compiler requirements:
 
 The macro metaprogramming utilities and the core design-pattern components should work correctly with **C++11** compilers and later.
 
-**Reflection Metaprogramming and Named Operators**
+**Reflection Metaprogramming, Serialization, and Named Operators**
 
-The reflection metaprogramming and named-operator utilities require **C++20** and the following compiler versions or newer:
+The reflection, serialization, and named-operator utilities require **C++20** and the following compiler versions or newer:
 
 | Compiler | Minimum Version |
 |----------|-----------------|
@@ -81,7 +83,7 @@ Compiler Explorer: [https://godbolt.org/z/W156818n5](https://godbolt.org/z/W1568
 
 **Header-only version**
 
-Copy the [include](https://github.com/lkimuk/gmp/releases/download/v0.4.0/include.zip) folder to your build tree and include `gmp/gmp.hpp`.
+Copy the [include](https://github.com/lkimuk/gmp/releases/download/v0.5.0/include.zip) folder to your build tree and include `gmp/gmp.hpp`.
 
 **CMake integration**
 
@@ -95,7 +97,7 @@ $ cmake --install ./build # sudo on Linux/macOS
 ```
 
 ```cpp
-find_package(gmp 0.4.0 REQUIRED)
+find_package(gmp 0.5.0 REQUIRED)
 target_link_libraries(your_target PRIVATE gmp::gmp)
 ```
 
@@ -325,6 +327,30 @@ scores: [95, 88, 91]
 updated_age       : 29
 enum_cast_success : true
 ```
+
+## Serialization
+
+Reflected aggregates serialize recursively without registration or member tables:
+
+```cpp
+struct person {
+    std::string name;
+    int age;
+    std::optional<std::string> nickname;
+};
+
+person value{"Miles", 28, std::nullopt};
+
+auto json = gmp::to_json(value);
+auto decoded = gmp::from_json<person>(*json);
+
+auto xml = gmp::to_xml(value);
+auto xml_decoded = gmp::from_xml<person>(*xml);
+```
+
+The archive-driven serialization layer also supports enums, strings, standard sequences and sets, arbitrary-key maps, tuples, variants, nested aggregates, structured errors, strict input/output limits, declarative `serialization_schema<T>` field rules, and format-independent `serialization_traits<T>` customization. JSON and XML output stream directly without constructing an intermediate DOM; `serialization_value` remains available as an optional value-tree backend.
+
+XML uses a versioned, type-preserving GMP document representation. This avoids guessing scalar types and preserves null values, signed and unsigned integers, empty field names, arbitrary-key maps, and variants. The parser accepts UTF-8 XML declarations and character references, rejects DTDs and external entities, and enforces the same depth, size, schema, and customization policies as JSON.
 
 ## Named Operators
 

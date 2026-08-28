@@ -6,6 +6,7 @@ const sidebars = {
     'getting-started',
     'macro-metaprogramming',
     'reflection',
+    'serialization',
     'named-operators',
     'design-patterns',
   ],
