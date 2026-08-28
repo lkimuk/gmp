@@ -38,6 +38,11 @@
  */
 
 /**
+ * @defgroup serialization Serialization
+ * @brief Reflection-driven serialization, JSON/XML formats, schemas, and type customization.
+ */
+
+/**
  * @defgroup design_patterns Design Patterns
  * @brief Reusable singleton, factory, and locking helpers.
  */
@@ -49,5 +54,7 @@
 #include <gmp/dp/object_factory.hpp>
 #include <gmp/meta/type_size.hpp>
 #include <gmp/meta/named_operator.hpp>
+#include <gmp/serialization/json.hpp>
+#include <gmp/serialization/xml.hpp>
 
 #endif // GMP_HPP_
