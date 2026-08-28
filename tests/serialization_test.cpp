@@ -82,7 +82,10 @@ struct duplicate_schema_alias {
 class opaque_id {
 public:
   explicit opaque_id(std::uint64_t value) : value_(value) {}
-  [[nodiscard]] std::uint64_t value() const noexcept { return value_; }
+
+  [[nodiscard]] std::uint64_t value() const noexcept {
+    return value_;
+  }
 
 private:
   std::uint64_t value_;
@@ -95,10 +98,15 @@ struct wire_record {
 
 class opaque_record {
 public:
-  opaque_record(int code, std::string text)
-      : code_(code), text_(std::move(text)) {}
-  int code() const noexcept { return code_; }
-  const std::string &text() const noexcept { return text_; }
+  opaque_record(int code, std::string text) : code_(code), text_(std::move(text)) {}
+
+  int code() const noexcept {
+    return code_;
+  }
+
+  const std::string &text() const noexcept {
+    return text_;
+  }
 
 private:
   int code_;
@@ -109,17 +117,16 @@ private:
 
 template <> struct gmp::serialization_traits<opaque_id> {
   template <typename Archive>
-  static gmp::serialization_result<void> serialize(Archive &archive,
-                                                   const opaque_id &value) {
+  static gmp::serialization_result<void> serialize(Archive &archive, const opaque_id &value) {
     return archive.write_unsigned(value.value());
   }
 
   template <typename Archive>
-  static gmp::serialization_result<opaque_id>
-  deserialize(Archive &archive, gmp::type_tag<opaque_id>) {
+  static gmp::serialization_result<opaque_id> deserialize(Archive &archive,
+                                                          gmp::type_tag<opaque_id>) {
     if (archive.kind() != gmp::serialization_kind::unsigned_integer) {
-      return gmp::make_serialization_error(
-          gmp::serialization_errc::type_mismatch, "expected opaque id integer");
+      return gmp::make_serialization_error(gmp::serialization_errc::type_mismatch,
+                                           "expected opaque id integer");
     }
     return opaque_id(archive.read_unsigned());
   }
@@ -127,8 +134,7 @@ template <> struct gmp::serialization_traits<opaque_id> {
 
 template <> struct gmp::serialization_traits<opaque_record> {
   template <typename Archive>
-  static gmp::serialization_result<void> serialize(Archive &archive,
-                                                   const opaque_record &value) {
+  static gmp::serialization_result<void> serialize(Archive &archive, const opaque_record &value) {
     return archive.object(2, [&](auto &object) {
       auto status = object.field("code", value.code());
       if (!status) {
@@ -139,8 +145,8 @@ template <> struct gmp::serialization_traits<opaque_record> {
   }
 
   template <typename Archive>
-  static gmp::serialization_result<opaque_record>
-  deserialize(Archive &archive, gmp::type_tag<opaque_record>) {
+  static gmp::serialization_result<opaque_record> deserialize(Archive &archive,
+                                                              gmp::type_tag<opaque_record>) {
     auto value = archive.template decode<wire_record>();
     if (!value) {
       return value.error();
@@ -150,52 +156,46 @@ template <> struct gmp::serialization_traits<opaque_record> {
 };
 
 template <> struct gmp::serialization_schema<account> {
-  static constexpr auto fields = gmp::define_schema(
-      gmp::field<"display_name">.name<"name">().alias<"display_name">());
+  static constexpr auto fields =
+      gmp::define_schema(gmp::field<"display_name">.name<"name">().alias<"display_name">());
 };
 
 template <> struct gmp::serialization_schema<session> {
-  static constexpr auto fields = gmp::define_schema(
-      gmp::field<"cache">.transient(), gmp::field<"version">.defaulted<1>());
+  static constexpr auto fields =
+      gmp::define_schema(gmp::field<"cache">.transient(), gmp::field<"version">.defaulted<1>());
 };
 
 template <> struct gmp::serialization_schema<generated_defaults> {
-  static constexpr auto fields =
-      gmp::define_schema(gmp::field<"label">.default_with<[] {
-        return std::string("generated");
-      }>());
+  static constexpr auto fields = gmp::define_schema(
+      gmp::field<"label">.default_with<[] { return std::string("generated"); }>());
 };
 
 template <> struct gmp::serialization_schema<duplicate_schema_member> {
-  static constexpr auto fields = gmp::define_schema(gmp::field<"first">,
-                                                     gmp::field<"first">);
+  static constexpr auto fields = gmp::define_schema(gmp::field<"first">, gmp::field<"first">);
 };
 
 template <> struct gmp::serialization_schema<duplicate_schema_wire> {
-  static constexpr auto fields = gmp::define_schema(
-      gmp::field<"first">.name<"same">(),
-      gmp::field<"second">.name<"same">());
+  static constexpr auto fields =
+      gmp::define_schema(gmp::field<"first">.name<"same">(), gmp::field<"second">.name<"same">());
 };
 
 template <> struct gmp::serialization_schema<unknown_schema_member> {
-  static constexpr auto fields =
-      gmp::define_schema(gmp::field<"does_not_exist">);
+  static constexpr auto fields = gmp::define_schema(gmp::field<"does_not_exist">);
 };
 
 template <> struct gmp::serialization_schema<transient_schema_collision> {
-  static constexpr auto fields = gmp::define_schema(
-      gmp::field<"hidden">.name<"value">().transient());
+  static constexpr auto fields =
+      gmp::define_schema(gmp::field<"hidden">.name<"value">().transient());
 };
 
 template <> struct gmp::serialization_schema<alias_schema_collision> {
-  static constexpr auto fields = gmp::define_schema(
-      gmp::field<"first">.alias<"legacy">(),
-      gmp::field<"second">.alias<"legacy">());
+  static constexpr auto fields = gmp::define_schema(gmp::field<"first">.alias<"legacy">(),
+                                                    gmp::field<"second">.alias<"legacy">());
 };
 
 template <> struct gmp::serialization_schema<duplicate_schema_alias> {
-  static constexpr auto fields = gmp::define_schema(
-      gmp::field<"value">.alias<"legacy">().alias<"legacy">());
+  static constexpr auto fields =
+      gmp::define_schema(gmp::field<"value">.alias<"legacy">().alias<"legacy">());
 };
 
 static_assert(!gmp::detail::valid_schema<duplicate_schema_member>());
@@ -209,8 +209,7 @@ static_assert(gmp::enum_count<color, "not-a-prefix">() == 0);
 
 int main() {
   const person source{
-      "Miles",      28, std::nullopt, {90, 95, 100}, {"Shanghai", 200000},
-      color::green,
+      "Miles", 28, std::nullopt, {90, 95, 100}, {"Shanghai", 200000}, color::green,
   };
 
   auto encoded = gmp::to_json(source);
@@ -242,8 +241,7 @@ int main() {
   auto pretty_xml_decoded = gmp::from_xml<person>(*pretty_xml);
   assert(pretty_xml_decoded && pretty_xml_decoded->name == source.name);
 
-  auto reordered =
-      gmp::from_json<address>(R"({"postcode":200000,"city":"Shanghai"})");
+  auto reordered = gmp::from_json<address>(R"({"postcode":200000,"city":"Shanghai"})");
   assert(reordered);
   assert(reordered->city == "Shanghai");
 
@@ -252,19 +250,18 @@ int main() {
   assert(missing.error().code == gmp::serialization_errc::missing_field);
   assert(missing.error().path == "postcode");
 
-  auto unknown = gmp::from_json<address>(
-      R"({"city":"Shanghai","postcode":200000,"extra":1})");
+  auto unknown = gmp::from_json<address>(R"({"city":"Shanghai","postcode":200000,"extra":1})");
   assert(!unknown);
   assert(unknown.error().code == gmp::serialization_errc::unknown_field);
 
   gmp::deserialization_options ignore_unknown;
   ignore_unknown.unknown_fields = gmp::unknown_field_policy::ignore;
-  auto ignored = gmp::from_json<address>(
-      R"({"city":"Shanghai","postcode":200000,"extra":1})", ignore_unknown);
+  auto ignored =
+      gmp::from_json<address>(R"({"city":"Shanghai","postcode":200000,"extra":1})", ignore_unknown);
   assert(ignored);
 
-  auto duplicate = gmp::from_json<address>(
-      R"({"city":"Shanghai","city":"Beijing","postcode":200000})");
+  auto duplicate =
+      gmp::from_json<address>(R"({"city":"Shanghai","city":"Beijing","postcode":200000})");
   assert(!duplicate);
   assert(duplicate.error().code == gmp::serialization_errc::duplicate_field);
 
@@ -284,16 +281,13 @@ int main() {
   assert(custom_round_trip && custom_round_trip->value() == 42);
   auto custom_xml = gmp::to_xml(opaque_id(42));
   assert(custom_xml &&
-         *custom_xml ==
-             R"(<gmp version="1"><value kind="unsigned">42</value></gmp>)");
+         *custom_xml == R"(<gmp version="1"><value kind="unsigned">42</value></gmp>)");
   auto custom_xml_round_trip = gmp::from_xml<opaque_id>(*custom_xml);
   assert(custom_xml_round_trip && custom_xml_round_trip->value() == 42);
 
   auto account_json = gmp::to_json(account{"Miles", 3});
-  assert(account_json &&
-         account_json->find("\"name\":\"Miles\"") != std::string::npos);
-  auto legacy_account =
-      gmp::from_json<account>(R"({"display_name":"Miles","level":3})");
+  assert(account_json && account_json->find("\"name\":\"Miles\"") != std::string::npos);
+  auto legacy_account = gmp::from_json<account>(R"({"display_name":"Miles","level":3})");
   assert(legacy_account && legacy_account->display_name == "Miles");
 
   auto session_json = gmp::to_json(session{"Miles", 99, 2});
@@ -327,11 +321,9 @@ int main() {
   auto variant_value = gmp::from_json<variant_type>(*variant_json);
   assert(variant_value);
   assert(std::get<std::string>(*variant_value) == "text");
-  auto bad_variant_index =
-      gmp::from_json<variant_type>(R"({"index":2,"value":0})");
+  auto bad_variant_index = gmp::from_json<variant_type>(R"({"index":2,"value":0})");
   assert(!bad_variant_index);
-  assert(bad_variant_index.error().code ==
-         gmp::serialization_errc::value_out_of_range);
+  assert(bad_variant_index.error().code == gmp::serialization_errc::value_out_of_range);
   assert(bad_variant_index.error().path == "index");
 
   std::map<std::string, int> map{{"one", 1}, {"two", 2}};
@@ -343,11 +335,9 @@ int main() {
   std::map<int, std::string> numeric_map{{1, "one"}, {2, "two"}};
   auto numeric_map_json = gmp::to_json(numeric_map);
   assert(numeric_map_json && *numeric_map_json == R"([[1,"one"],[2,"two"]])");
-  auto numeric_map_value =
-      gmp::from_json<std::map<int, std::string>>(*numeric_map_json);
+  auto numeric_map_value = gmp::from_json<std::map<int, std::string>>(*numeric_map_json);
   assert(numeric_map_value && *numeric_map_value == numeric_map);
-  auto bad_numeric_map_key =
-      gmp::from_json<std::map<int, std::string>>(R"([["bad","value"]])");
+  auto bad_numeric_map_key = gmp::from_json<std::map<int, std::string>>(R"([["bad","value"]])");
   assert(!bad_numeric_map_key);
   assert(bad_numeric_map_key.error().path == "0.0");
 
@@ -355,8 +345,7 @@ int main() {
   auto empty_key_value = gmp::to_serialization_value(empty_key);
   assert(empty_key_value);
   auto empty_key_round_trip =
-      gmp::from_serialization_value<std::map<std::string, int>>(
-          *empty_key_value);
+      gmp::from_serialization_value<std::map<std::string, int>>(*empty_key_value);
   assert(empty_key_round_trip && *empty_key_round_trip == empty_key);
 
   auto generated = gmp::from_json<generated_defaults>(R"({})");
@@ -374,76 +363,64 @@ int main() {
   auto record_xml = gmp::to_xml(opaque_record(9, "nine"));
   assert(record_xml);
   auto record_from_xml = gmp::from_xml<opaque_record>(*record_xml);
-  assert(record_from_xml && record_from_xml->code() == 9 &&
-         record_from_xml->text() == "nine");
+  assert(record_from_xml && record_from_xml->code() == 9 && record_from_xml->text() == "nine");
 
   auto escaped_xml = gmp::to_xml(std::string("<&>\"'"));
   assert(escaped_xml && escaped_xml->find("&lt;&amp;&gt;") != std::string::npos);
   auto escaped_xml_value = gmp::from_xml<std::string>(*escaped_xml);
   assert(escaped_xml_value && *escaped_xml_value == "<&>\"'");
-  auto single_quoted_xml = gmp::from_xml<std::string>(
-      R"(<gmp version='1'><value kind='string'>single</value></gmp>)");
+  auto single_quoted_xml =
+      gmp::from_xml<std::string>(R"(<gmp version='1'><value kind='string'>single</value></gmp>)");
   assert(single_quoted_xml && *single_quoted_xml == "single");
 
   auto empty_key_xml = gmp::to_xml(empty_key);
   assert(empty_key_xml && empty_key_xml->find("name=\"\"") != std::string::npos);
-  auto empty_key_from_xml =
-      gmp::from_xml<std::map<std::string, int>>(*empty_key_xml);
+  auto empty_key_from_xml = gmp::from_xml<std::map<std::string, int>>(*empty_key_xml);
   assert(empty_key_from_xml && *empty_key_from_xml == empty_key);
 
   auto numeric_map_xml = gmp::to_xml(numeric_map);
   assert(numeric_map_xml);
-  auto numeric_map_from_xml =
-      gmp::from_xml<std::map<int, std::string>>(*numeric_map_xml);
+  auto numeric_map_from_xml = gmp::from_xml<std::map<int, std::string>>(*numeric_map_xml);
   assert(numeric_map_from_xml && *numeric_map_from_xml == numeric_map);
 
-  auto malformed_xml =
-      gmp::from_xml<std::string>(
-          R"(<gmp version="1"><value kind="string">&unknown;</value></gmp>)");
+  auto malformed_xml = gmp::from_xml<std::string>(
+      R"(<gmp version="1"><value kind="string">&unknown;</value></gmp>)");
   assert(!malformed_xml);
   assert(malformed_xml.error().code == gmp::serialization_errc::invalid_escape);
-  auto dtd_xml = gmp::parse_xml(
-      "<!DOCTYPE gmp><gmp version=\"1\"><value kind=\"null\"/></gmp>");
+  auto dtd_xml = gmp::parse_xml("<!DOCTYPE gmp><gmp version=\"1\"><value kind=\"null\"/></gmp>");
   assert(!dtd_xml);
   assert(dtd_xml.error().code == gmp::serialization_errc::unsupported_type);
-  auto xml_depth = gmp::parse_xml(
-      "<gmp version=\"1\"><value kind=\"array\"></value></gmp>",
-      {.max_depth = 0});
+  auto xml_depth =
+      gmp::parse_xml("<gmp version=\"1\"><value kind=\"array\"></value></gmp>", {.max_depth = 0});
   assert(!xml_depth);
   assert(xml_depth.error().code == gmp::serialization_errc::depth_limit_exceeded);
   auto declared_xml = gmp::from_xml<std::string>(
       R"(<?xml version="1.0" encoding="UTF-8"?><gmp version="1"><value kind="string">&#x4E2D;</value></gmp>)");
   assert(declared_xml && *declared_xml == "\xE4\xB8\xAD");
-  auto normalized_xml = gmp::from_xml<std::string>(
-      "<gmp version=\"1\"><value kind=\"string\">a\r\nb\r"
-      "c</value></gmp>");
+  auto normalized_xml =
+      gmp::from_xml<std::string>("<gmp version=\"1\"><value kind=\"string\">a\r\nb\r"
+                                 "c</value></gmp>");
   assert(normalized_xml && *normalized_xml == "a\nb\nc");
   auto bad_encoding_xml = gmp::parse_xml(
       R"(<?xml version="1.0" encoding="UTF-16"?><gmp version="1"><value kind="null"/></gmp>)");
   assert(!bad_encoding_xml);
-  assert(bad_encoding_xml.error().code ==
-         gmp::serialization_errc::unsupported_type);
-  auto bad_declaration_xml = gmp::parse_xml(
-      R"(<?xml encoding="UTF-8"?><gmp version="1"><value kind="null"/></gmp>)");
+  assert(bad_encoding_xml.error().code == gmp::serialization_errc::unsupported_type);
+  auto bad_declaration_xml =
+      gmp::parse_xml(R"(<?xml encoding="UTF-8"?><gmp version="1"><value kind="null"/></gmp>)");
   assert(!bad_declaration_xml);
-  assert(bad_declaration_xml.error().code ==
-         gmp::serialization_errc::invalid_syntax);
-  auto unsupported_xml_version =
-      gmp::parse_xml(R"(<gmp version="2"><value kind="null"/></gmp>)");
+  assert(bad_declaration_xml.error().code == gmp::serialization_errc::invalid_syntax);
+  auto unsupported_xml_version = gmp::parse_xml(R"(<gmp version="2"><value kind="null"/></gmp>)");
   assert(!unsupported_xml_version);
-  assert(unsupported_xml_version.error().code ==
-         gmp::serialization_errc::unsupported_type);
+  assert(unsupported_xml_version.error().code == gmp::serialization_errc::unsupported_type);
   std::string forbidden_xml_character("bad\0text", 8);
   auto forbidden_xml = gmp::to_xml(forbidden_xml_character);
   assert(!forbidden_xml);
-  assert(forbidden_xml.error().code ==
-         gmp::serialization_errc::value_out_of_range);
+  assert(forbidden_xml.error().code == gmp::serialization_errc::value_out_of_range);
   gmp::xml_write_options tiny_xml;
   tiny_xml.max_output_size = 8;
   auto xml_output_limit = gmp::to_xml(source, {}, tiny_xml);
   assert(!xml_output_limit);
-  assert(xml_output_limit.error().code ==
-         gmp::serialization_errc::size_limit_exceeded);
+  assert(xml_output_limit.error().code == gmp::serialization_errc::size_limit_exceeded);
 
   auto unicode = gmp::from_json<std::string>(R"("\u4e2d\u6587 \ud83d\ude00")");
   assert(unicode && *unicode == "中文 😀");
@@ -463,16 +440,13 @@ int main() {
   gmp::serialization_value null_literal(static_cast<const char *>(nullptr));
   assert(null_literal.is<gmp::serialization_value::null_t>());
   gmp::serialization_value signed_literal(42);
-  assert(signed_literal.is<std::int64_t>() &&
-         signed_literal.get<std::int64_t>() == 42);
+  assert(signed_literal.is<std::int64_t>() && signed_literal.get<std::int64_t>() == 42);
   gmp::serialization_value unsigned_literal(42u);
-  assert(unsigned_literal.is<std::uint64_t>() &&
-         unsigned_literal.get<std::uint64_t>() == 42);
+  assert(unsigned_literal.is<std::uint64_t>() && unsigned_literal.get<std::uint64_t>() == 42);
   gmp::serialization_value float_literal(0.5f);
   assert(float_literal.is<double>() && float_literal.get<double>() == 0.5);
   gmp::serialization_value view_literal(std::string_view("view"));
-  assert(view_literal.is<std::string>() &&
-         view_literal.get<std::string>() == "view");
+  assert(view_literal.is<std::string>() && view_literal.get<std::string>() == "view");
 
   gmp::detail::json_writer json_writer;
   assert(json_writer.write_null());
@@ -498,8 +472,7 @@ int main() {
   assert(!rejected_numeric_color);
   gmp::deserialization_options allow_numeric_enum;
   allow_numeric_enum.enums = gmp::enum_decoding::name_or_underlying;
-  auto accepted_numeric_color =
-      gmp::from_json<color>(*numeric_color, allow_numeric_enum);
+  auto accepted_numeric_color = gmp::from_json<color>(*numeric_color, allow_numeric_enum);
   assert(accepted_numeric_color && *accepted_numeric_color == color::blue);
 
   auto overflow = gmp::from_json<std::uint8_t>("256");
@@ -517,22 +490,19 @@ int main() {
   shallow.max_depth = 1;
   auto depth_error = gmp::to_json(source, shallow);
   assert(!depth_error);
-  assert(depth_error.error().code ==
-         gmp::serialization_errc::depth_limit_exceeded);
+  assert(depth_error.error().code == gmp::serialization_errc::depth_limit_exceeded);
 
   gmp::json_read_options no_json_containers;
   no_json_containers.max_depth = 0;
   auto empty_depth_error = gmp::parse_json("[]", no_json_containers);
   assert(!empty_depth_error);
-  assert(empty_depth_error.error().code ==
-         gmp::serialization_errc::depth_limit_exceeded);
+  assert(empty_depth_error.error().code == gmp::serialization_errc::depth_limit_exceeded);
 
   gmp::json_write_options limited_output;
   limited_output.max_output_size = 4;
   auto output_error = gmp::to_json(source, {}, limited_output);
   assert(!output_error);
-  assert(output_error.error().code ==
-         gmp::serialization_errc::size_limit_exceeded);
+  assert(output_error.error().code == gmp::serialization_errc::size_limit_exceeded);
 
   gmp::json_write_options bounded_indent;
   bounded_indent.pretty = true;
@@ -540,21 +510,17 @@ int main() {
   bounded_indent.max_output_size = 16;
   auto indent_error = gmp::to_json(source, {}, bounded_indent);
   assert(!indent_error);
-  assert(indent_error.error().code ==
-         gmp::serialization_errc::size_limit_exceeded);
+  assert(indent_error.error().code == gmp::serialization_errc::size_limit_exceeded);
 
   gmp::serialization_options no_members;
   no_members.max_container_size = 0;
   auto aggregate_size_error = gmp::to_json(source, no_members);
   assert(!aggregate_size_error);
-  assert(aggregate_size_error.error().code ==
-         gmp::serialization_errc::size_limit_exceeded);
+  assert(aggregate_size_error.error().code == gmp::serialization_errc::size_limit_exceeded);
 
   gmp::deserialization_options no_variant_members;
   no_variant_members.max_container_size = 1;
-  auto variant_size_error =
-      gmp::from_json<variant_type>(*variant_json, no_variant_members);
+  auto variant_size_error = gmp::from_json<variant_type>(*variant_json, no_variant_members);
   assert(!variant_size_error);
-  assert(variant_size_error.error().code ==
-         gmp::serialization_errc::size_limit_exceeded);
+  assert(variant_size_error.error().code == gmp::serialization_errc::size_limit_exceeded);
 }
