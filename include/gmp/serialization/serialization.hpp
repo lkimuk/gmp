@@ -20,7 +20,9 @@
 #include <gmp/serialization/traits.hpp>
 #include <gmp/serialization/value.hpp>
 #include <gmp/serialization/value_archive.hpp>
+
 namespace gmp {
+
 template <typename T>
 serialization_result<serialization_value>
 to_serialization_value(const T &value, serialization_options options = {}) {
@@ -31,13 +33,15 @@ to_serialization_value(const T &value, serialization_options options = {}) {
     return status.error();
   return writer.finish();
 }
+
 template <typename T>
-serialization_result<T>
-from_serialization_value(const serialization_value &value,
-                         deserialization_options options = {}) {
+serialization_result<T> from_serialization_value(const serialization_value &value,
+                                                 deserialization_options options = {}) {
   value_reader reader(value);
   basic_deserializer archive(reader, options);
   return archive.template decode<T>();
 }
+
 } // namespace gmp
-#endif
+
+#endif // GMP_SERIALIZATION_SERIALIZATION_HPP_

@@ -16,11 +16,11 @@
 #include <cstdint>
 #include <string>
 #include <string_view>
+
 namespace gmp::detail {
+
 inline bool is_valid_utf8(std::string_view text) noexcept {
-  const auto continuation = [](unsigned char c) {
-    return c >= 0x80 && c <= 0xbf;
-  };
+  const auto continuation = [](unsigned char c) { return c >= 0x80 && c <= 0xbf; };
   for (std::size_t i = 0; i < text.size();) {
     const auto first = static_cast<unsigned char>(text[i]);
     if (first <= 0x7f) {
@@ -28,8 +28,7 @@ inline bool is_valid_utf8(std::string_view text) noexcept {
       continue;
     }
     if (first >= 0xc2 && first <= 0xdf) {
-      if (i + 1 >= text.size() ||
-          !continuation(static_cast<unsigned char>(text[i + 1])))
+      if (i + 1 >= text.size() || !continuation(static_cast<unsigned char>(text[i + 1])))
         return false;
       i += 2;
       continue;
@@ -66,6 +65,7 @@ inline bool is_valid_utf8(std::string_view text) noexcept {
   }
   return true;
 }
+
 inline void append_utf8(std::string &output, std::uint32_t code_point) {
   if (code_point <= 0x7f) {
     output.push_back(static_cast<char>(code_point));
@@ -83,5 +83,7 @@ inline void append_utf8(std::string &output, std::uint32_t code_point) {
     output.push_back(static_cast<char>(0x80 | (code_point & 0x3f)));
   }
 }
+
 } // namespace gmp::detail
-#endif
+
+#endif // GMP_SERIALIZATION_DETAIL_TEXT_HPP_

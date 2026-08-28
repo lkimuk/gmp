@@ -14,33 +14,39 @@
 
 #include <cmath>
 #include <concepts>
+#include <limits>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <utility>
+
 #include <gmp/meta/meta.hpp>
 #include <gmp/serialization/archive.hpp>
 #include <gmp/serialization/detail/schema.hpp>
 #include <gmp/serialization/detail/std_types.hpp>
 #include <gmp/serialization/options.hpp>
 #include <gmp/serialization/traits.hpp>
-#include <limits>
-#include <string>
-#include <string_view>
-#include <type_traits>
-#include <utility>
+
 namespace gmp {
+
 template <typename Writer>
   requires serialization_writer<Writer>
 class basic_serializer {
 public:
   basic_serializer(Writer &writer, serialization_options options = {})
       : writer_(writer), options_(options) {}
-  const serialization_options &options() const noexcept { return options_; }
+
+  const serialization_options &options() const noexcept {
+    return options_;
+  }
+
   template <typename T> serialization_result<void> encode(const T &value) {
     return encode_value(value);
   }
 
   class object_archive {
   public:
-    template <typename T>
-    serialization_result<void> field(std::string_view name, const T &value) {
+    template <typename T> serialization_result<void> field(std::string_view name, const T &value) {
       auto status = owner_.write_key(name);
       if (!status)
         return status;
@@ -53,7 +59,9 @@ public:
 
   private:
     friend class basic_serializer;
+
     explicit object_archive(basic_serializer &owner) : owner_(owner) {}
+
     basic_serializer &owner_;
     std::size_t count_ = 0;
   };
@@ -63,25 +71,24 @@ public:
     template <typename T> serialization_result<void> element(const T &value) {
       auto status = owner_.encode_value(value);
       if (!status)
-        return prepend_serialization_path(status.error(),
-                                          std::to_string(count_));
+        return prepend_serialization_path(status.error(), std::to_string(count_));
       ++count_;
       return {};
     }
 
   private:
     friend class basic_serializer;
+
     explicit array_archive(basic_serializer &owner) : owner_(owner) {}
+
     basic_serializer &owner_;
     std::size_t count_ = 0;
   };
 
-  template <typename F>
-  serialization_result<void> object(std::size_t size, F &&write_fields) {
+  template <typename F> serialization_result<void> object(std::size_t size, F &&write_fields) {
     if (size > options_.max_container_size)
-      return make_serialization_error(
-          serialization_errc::size_limit_exceeded,
-          "container size exceeds configured limit");
+      return make_serialization_error(serialization_errc::size_limit_exceeded,
+                                      "container size exceeds configured limit");
     depth_guard depth(*this);
     if (!depth)
       return make_serialization_error(serialization_errc::depth_limit_exceeded,
@@ -95,18 +102,15 @@ public:
     if (!status)
       return status;
     if (archive.count_ != size)
-      return make_serialization_error(
-          serialization_errc::custom_error,
-          "custom object field count does not match declared size");
+      return make_serialization_error(serialization_errc::custom_error,
+                                      "custom object field count does not match declared size");
     return structure.finish();
   }
 
-  template <typename F>
-  serialization_result<void> array(std::size_t size, F &&write_elements) {
+  template <typename F> serialization_result<void> array(std::size_t size, F &&write_elements) {
     if (size > options_.max_container_size)
-      return make_serialization_error(
-          serialization_errc::size_limit_exceeded,
-          "container size exceeds configured limit");
+      return make_serialization_error(serialization_errc::size_limit_exceeded,
+                                      "container size exceeds configured limit");
     depth_guard depth(*this);
     if (!depth)
       return make_serialization_error(serialization_errc::depth_limit_exceeded,
@@ -120,62 +124,81 @@ public:
     if (!status)
       return status;
     if (archive.count_ != size)
-      return make_serialization_error(
-          serialization_errc::custom_error,
-          "custom array element count does not match declared size");
+      return make_serialization_error(serialization_errc::custom_error,
+                                      "custom array element count does not match declared size");
     return structure.finish();
   }
 
-  serialization_result<void> write_null() { return writer_.write_null(); }
+  serialization_result<void> write_null() {
+    return writer_.write_null();
+  }
+
   serialization_result<void> write_bool(bool v) {
     return writer_.write_bool(v);
   }
+
   serialization_result<void> write_signed(std::int64_t v) {
     return writer_.write_signed(v);
   }
+
   serialization_result<void> write_unsigned(std::uint64_t v) {
     return writer_.write_unsigned(v);
   }
+
   serialization_result<void> write_floating(double v) {
     return writer_.write_floating(v);
   }
+
   serialization_result<void> write_string(std::string_view v) {
     return writer_.write_string(v);
   }
+
   serialization_result<void> begin_array(std::size_t n) {
     return writer_.begin_array(n);
   }
-  serialization_result<void> end_array() { return writer_.end_array(); }
+
+  serialization_result<void> end_array() {
+    return writer_.end_array();
+  }
+
   serialization_result<void> begin_object(std::size_t n) {
     return writer_.begin_object(n);
   }
+
   serialization_result<void> write_key(std::string_view v) {
     return writer_.write_key(v);
   }
-  serialization_result<void> end_object() { return writer_.end_object(); }
+
+  serialization_result<void> end_object() {
+    return writer_.end_object();
+  }
 
 private:
   class depth_guard {
   public:
-    explicit depth_guard(basic_serializer &s)
-        : s_(s), ok_(s.depth_ < s.options_.max_depth) {
+    explicit depth_guard(basic_serializer &s) : s_(s), ok_(s.depth_ < s.options_.max_depth) {
       if (ok_)
         ++s_.depth_;
     }
+
     ~depth_guard() {
       if (ok_)
         --s_.depth_;
     }
-    explicit operator bool() const noexcept { return ok_; }
+
+    explicit operator bool() const noexcept {
+      return ok_;
+    }
 
   private:
     basic_serializer &s_;
     bool ok_;
   };
+
   class structure_guard {
   public:
-    structure_guard(basic_serializer &owner, bool object)
-        : owner_(owner), object_(object) {}
+    structure_guard(basic_serializer &owner, bool object) : owner_(owner), object_(object) {}
+
     ~structure_guard() {
       if (active_) {
         if (object_)
@@ -184,6 +207,7 @@ private:
           (void)owner_.end_array();
       }
     }
+
     serialization_result<void> finish() {
       active_ = false;
       return object_ ? owner_.end_object() : owner_.end_array();
@@ -194,8 +218,8 @@ private:
     bool object_;
     bool active_ = true;
   };
-  template <typename T>
-  serialization_result<void> encode_value(const T &value) {
+
+  template <typename T> serialization_result<void> encode_value(const T &value) {
     using U = detail::unqualified_t<T>;
     if constexpr (requires(basic_serializer & a, const U &v) {
                     {
@@ -222,13 +246,9 @@ private:
       return write_string(value);
     else if constexpr (detail::is_char_array_v<T>) {
       constexpr auto extent = std::extent_v<std::remove_reference_t<T>>;
-      const auto size = extent != 0 && value[extent - 1] == '\0'
-                            ? extent - 1
-                            : extent;
+      const auto size = extent != 0 && value[extent - 1] == '\0' ? extent - 1 : extent;
       return write_string(std::string_view(value, size));
-    }
-    else if constexpr (std::same_as<U, const char *> ||
-                       std::same_as<U, char *>) {
+    } else if constexpr (std::same_as<U, const char *> || std::same_as<U, char *>) {
       if (value == nullptr)
         return write_null();
       return write_string(std::string_view(value));
@@ -244,14 +264,12 @@ private:
       return value ? encode_value(*value) : write_null();
     } else if constexpr (detail::is_sequence_v<U> || detail::is_set_v<U>) {
       if (value.size() > options_.max_container_size)
-        return make_serialization_error(
-            serialization_errc::size_limit_exceeded,
-            "container size exceeds configured limit");
+        return make_serialization_error(serialization_errc::size_limit_exceeded,
+                                        "container size exceeds configured limit");
       depth_guard guard(*this);
       if (!guard)
-        return make_serialization_error(
-            serialization_errc::depth_limit_exceeded,
-            "maximum serialization depth exceeded");
+        return make_serialization_error(serialization_errc::depth_limit_exceeded,
+                                        "maximum serialization depth exceeded");
       auto r = begin_array(value.size());
       if (!r)
         return r;
@@ -276,14 +294,12 @@ private:
                          detail::is_tuple_like_v<U>) {
       constexpr auto N = std::tuple_size_v<U>;
       if (N > options_.max_container_size)
-        return make_serialization_error(
-            serialization_errc::size_limit_exceeded,
-            "container size exceeds configured limit");
+        return make_serialization_error(serialization_errc::size_limit_exceeded,
+                                        "container size exceeds configured limit");
       depth_guard guard(*this);
       if (!guard)
-        return make_serialization_error(
-            serialization_errc::depth_limit_exceeded,
-            "maximum serialization depth exceeded");
+        return make_serialization_error(serialization_errc::depth_limit_exceeded,
+                                        "maximum serialization depth exceeded");
       auto r = begin_array(N);
       if (!r)
         return r;
@@ -294,8 +310,7 @@ private:
             return;
           status = encode_value(std::get<J>(value));
           if (!status)
-            status.error() = prepend_serialization_path(
-                status.error(), std::to_string(J));
+            status.error() = prepend_serialization_path(status.error(), std::to_string(J));
         };
         (encode_element.template operator()<I>(), ...);
         return status;
@@ -306,14 +321,12 @@ private:
       return end_array();
     } else if constexpr (detail::is_map_v<U>) {
       if (value.size() > options_.max_container_size)
-        return make_serialization_error(
-            serialization_errc::size_limit_exceeded,
-            "container size exceeds configured limit");
+        return make_serialization_error(serialization_errc::size_limit_exceeded,
+                                        "container size exceeds configured limit");
       depth_guard guard(*this);
       if (!guard)
-        return make_serialization_error(
-            serialization_errc::depth_limit_exceeded,
-            "maximum serialization depth exceeded");
+        return make_serialization_error(serialization_errc::depth_limit_exceeded,
+                                        "maximum serialization depth exceeded");
       using K = typename detail::map_traits<U>::key_type;
       if constexpr (detail::is_string_key_v<K>) {
         auto r = begin_object(value.size());
@@ -334,19 +347,16 @@ private:
         for (const auto &[k, v] : value) {
           depth_guard entry_depth(*this);
           if (!entry_depth)
-            return make_serialization_error(
-                serialization_errc::depth_limit_exceeded,
-                "maximum serialization depth exceeded",
-                std::to_string(index));
+            return make_serialization_error(serialization_errc::depth_limit_exceeded,
+                                            "maximum serialization depth exceeded",
+                                            std::to_string(index));
           auto q = begin_array(2);
           if (!q)
             return q;
           if (!(q = encode_value(k)))
-            return prepend_serialization_path(q.error(),
-                                              std::to_string(index) + ".0");
+            return prepend_serialization_path(q.error(), std::to_string(index) + ".0");
           if (!(q = encode_value(v)))
-            return prepend_serialization_path(q.error(),
-                                              std::to_string(index) + ".1");
+            return prepend_serialization_path(q.error(), std::to_string(index) + ".1");
           if (!(q = end_array()))
             return q;
           ++index;
@@ -355,18 +365,15 @@ private:
       }
     } else if constexpr (detail::is_variant_v<U>) {
       if (value.valueless_by_exception())
-        return make_serialization_error(
-            serialization_errc::value_out_of_range,
-            "valueless variant cannot be serialized");
+        return make_serialization_error(serialization_errc::value_out_of_range,
+                                        "valueless variant cannot be serialized");
       if (std::size_t{2} > options_.max_container_size)
-        return make_serialization_error(
-            serialization_errc::size_limit_exceeded,
-            "container size exceeds configured limit");
+        return make_serialization_error(serialization_errc::size_limit_exceeded,
+                                        "container size exceeds configured limit");
       depth_guard guard(*this);
       if (!guard)
-        return make_serialization_error(
-            serialization_errc::depth_limit_exceeded,
-            "maximum serialization depth exceeded");
+        return make_serialization_error(serialization_errc::depth_limit_exceeded,
+                                        "maximum serialization depth exceeded");
       auto r = begin_object(2);
       if (!r)
         return r;
@@ -387,14 +394,12 @@ private:
       constexpr auto N = member_count_v<U>;
       constexpr auto serialized_size = detail::serialized_member_count<U>();
       if (serialized_size > options_.max_container_size)
-        return make_serialization_error(
-            serialization_errc::size_limit_exceeded,
-            "container size exceeds configured limit");
+        return make_serialization_error(serialization_errc::size_limit_exceeded,
+                                        "container size exceeds configured limit");
       depth_guard guard(*this);
       if (!guard)
-        return make_serialization_error(
-            serialization_errc::depth_limit_exceeded,
-            "maximum serialization depth exceeded");
+        return make_serialization_error(serialization_errc::depth_limit_exceeded,
+                                        "maximum serialization depth exceeded");
       auto r = begin_object(serialized_size);
       if (!r)
         return r;
@@ -410,8 +415,7 @@ private:
                 return;
               status = encode_value(member_ref<J>(value));
               if (!status)
-                status.error() =
-                    prepend_serialization_path(status.error(), name);
+                status.error() = prepend_serialization_path(status.error(), name);
             }
           }
         };
@@ -423,13 +427,15 @@ private:
         return r;
       return end_object();
     } else
-      static_assert(
-          detail::always_false_v<U>,
-          "type is not serializable; specialize serialization_traits<T>");
+      static_assert(detail::always_false_v<U>,
+                    "type is not serializable; specialize serialization_traits<T>");
   }
+
   Writer &writer_;
   serialization_options options_;
   std::size_t depth_ = 0;
 };
+
 } // namespace gmp
-#endif
+
+#endif // GMP_SERIALIZATION_SERIALIZER_HPP_

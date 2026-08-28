@@ -15,12 +15,15 @@
 #include <concepts>
 #include <type_traits>
 #include <variant>
+
 #include <gmp/serialization/archive.hpp>
 #include <gmp/serialization/value.hpp>
+
 namespace gmp::detail {
+
 template <serialization_writer Writer>
-serialization_result<void>
-write_serialization_value(Writer &writer, const serialization_value &value) {
+serialization_result<void> write_serialization_value(Writer &writer,
+                                                     const serialization_value &value) {
   return std::visit(
       [&](const auto &item) -> serialization_result<void> {
         using T = std::remove_cvref_t<decltype(item)>;
@@ -58,5 +61,7 @@ write_serialization_value(Writer &writer, const serialization_value &value) {
       },
       value.data());
 }
+
 } // namespace gmp::detail
-#endif
+
+#endif // GMP_SERIALIZATION_DETAIL_WRITE_VALUE_HPP_

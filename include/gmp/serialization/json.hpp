@@ -23,11 +23,12 @@
 #include <variant>
 #include <vector>
 
-#include <gmp/serialization/serialization.hpp>
 #include <gmp/serialization/detail/text.hpp>
 #include <gmp/serialization/detail/write_value.hpp>
+#include <gmp/serialization/serialization.hpp>
 
 namespace gmp {
+
 namespace detail {
 
 class json_parser {
@@ -54,12 +55,12 @@ private:
   [[nodiscard]] bool at_end() const noexcept {
     return position_ >= input_.size();
   }
+
   [[nodiscard]] char peek() const noexcept {
     return at_end() ? '\0' : input_[position_];
   }
 
-  serialization_error error(serialization_errc code,
-                            std::string message) const {
+  serialization_error error(serialization_errc code, std::string message) const {
     return make_serialization_error(code, std::move(message), {}, position_);
   }
 
@@ -95,26 +96,21 @@ private:
     return value;
   }
 
-  serialization_result<serialization_value>
-  parse_value_impl(std::size_t depth) {
+  serialization_result<serialization_value> parse_value_impl(std::size_t depth) {
     if (depth > options_.max_depth)
-      return error(serialization_errc::depth_limit_exceeded,
-                   "maximum JSON nesting depth exceeded");
+      return error(serialization_errc::depth_limit_exceeded, "maximum JSON nesting depth exceeded");
     switch (peek()) {
     case 'n':
       if (!consume_literal("null"))
-        return error(serialization_errc::invalid_syntax,
-                     "invalid null literal");
+        return error(serialization_errc::invalid_syntax, "invalid null literal");
       return serialization_value(nullptr);
     case 't':
       if (!consume_literal("true"))
-        return error(serialization_errc::invalid_syntax,
-                     "invalid boolean literal");
+        return error(serialization_errc::invalid_syntax, "invalid boolean literal");
       return serialization_value(true);
     case 'f':
       if (!consume_literal("false"))
-        return error(serialization_errc::invalid_syntax,
-                     "invalid boolean literal");
+        return error(serialization_errc::invalid_syntax, "invalid boolean literal");
       return serialization_value(false);
     case '"': {
       auto string = parse_string();
@@ -136,8 +132,7 @@ private:
       if (peek() == '-' || (peek() >= '0' && peek() <= '9'))
         return parse_number();
       if (at_end())
-        return error(serialization_errc::unexpected_end,
-                     "expected a JSON value");
+        return error(serialization_errc::unexpected_end, "expected a JSON value");
       return error(serialization_errc::invalid_syntax, "invalid JSON value");
     }
   }
@@ -160,8 +155,7 @@ private:
       if (consume(']'))
         break;
       if (!consume(','))
-        return error(serialization_errc::invalid_syntax,
-                     "expected ',' or ']' in array");
+        return error(serialization_errc::invalid_syntax, "expected ',' or ']' in array");
       skip_whitespace();
     }
     return serialization_value(std::move(array));
@@ -178,15 +172,13 @@ private:
         return error(serialization_errc::size_limit_exceeded,
                      "JSON object exceeds the configured size limit");
       if (peek() != '"')
-        return error(serialization_errc::invalid_syntax,
-                     "expected a string object key");
+        return error(serialization_errc::invalid_syntax, "expected a string object key");
       auto key = parse_string();
       if (!key)
         return key.error();
       skip_whitespace();
       if (!consume(':'))
-        return error(serialization_errc::invalid_syntax,
-                     "expected ':' after object key");
+        return error(serialization_errc::invalid_syntax, "expected ':' after object key");
       auto value = parse_value(depth);
       if (!value)
         return value.error();
@@ -195,8 +187,7 @@ private:
       if (consume('}'))
         break;
       if (!consume(','))
-        return error(serialization_errc::invalid_syntax,
-                     "expected ',' or '}' in object");
+        return error(serialization_errc::invalid_syntax, "expected ',' or '}' in object");
       skip_whitespace();
     }
     return serialization_value(std::move(object));
@@ -204,8 +195,7 @@ private:
 
   serialization_result<std::uint32_t> parse_hex4() {
     if (input_.size() - position_ < 4)
-      return error(serialization_errc::unexpected_end,
-                   "incomplete Unicode escape");
+      return error(serialization_errc::unexpected_end, "incomplete Unicode escape");
     std::uint32_t value = 0;
     for (unsigned i = 0; i < 4; ++i) {
       const char c = input_[position_++];
@@ -217,8 +207,7 @@ private:
       else if (c >= 'A' && c <= 'F')
         value |= static_cast<std::uint32_t>(c - 'A' + 10);
       else
-        return error(serialization_errc::invalid_escape,
-                     "invalid Unicode escape");
+        return error(serialization_errc::invalid_escape, "invalid Unicode escape");
     }
     return value;
   }
@@ -230,19 +219,16 @@ private:
       const unsigned char c = static_cast<unsigned char>(input_[position_++]);
       if (c == '"') {
         if (!is_valid_utf8(output))
-          return error(serialization_errc::invalid_utf8,
-                       "string is not valid UTF-8");
+          return error(serialization_errc::invalid_utf8, "string is not valid UTF-8");
         return output;
       }
       if (c < 0x20)
-        return error(serialization_errc::invalid_syntax,
-                     "unescaped control character in string");
+        return error(serialization_errc::invalid_syntax, "unescaped control character in string");
       if (c != '\\') {
         output.push_back(static_cast<char>(c));
       } else {
         if (at_end())
-          return error(serialization_errc::unexpected_end,
-                       "incomplete string escape");
+          return error(serialization_errc::unexpected_end, "incomplete string escape");
         switch (input_[position_++]) {
         case '"':
           output.push_back('"');
@@ -275,27 +261,22 @@ private:
           std::uint32_t code_point = *first;
           if (code_point >= 0xd800 && code_point <= 0xdbff) {
             if (!consume('\\') || !consume('u'))
-              return error(
-                  serialization_errc::invalid_escape,
-                  "high surrogate must be followed by a low surrogate");
+              return error(serialization_errc::invalid_escape,
+                           "high surrogate must be followed by a low surrogate");
             auto second = parse_hex4();
             if (!second)
               return second.error();
             if (*second < 0xdc00 || *second > 0xdfff)
-              return error(serialization_errc::invalid_escape,
-                           "invalid low surrogate");
-            code_point =
-                0x10000 + ((code_point - 0xd800) << 10) + (*second - 0xdc00);
+              return error(serialization_errc::invalid_escape, "invalid low surrogate");
+            code_point = 0x10000 + ((code_point - 0xd800) << 10) + (*second - 0xdc00);
           } else if (code_point >= 0xdc00 && code_point <= 0xdfff) {
-            return error(serialization_errc::invalid_escape,
-                         "unexpected low surrogate");
+            return error(serialization_errc::invalid_escape, "unexpected low surrogate");
           }
           append_utf8(output, code_point);
           break;
         }
         default:
-          return error(serialization_errc::invalid_escape,
-                       "invalid string escape");
+          return error(serialization_errc::invalid_escape, "invalid string escape");
         }
       }
       if (output.size() > options_.max_string_size)
@@ -310,8 +291,7 @@ private:
     consume('-');
     if (consume('0')) {
       if (peek() >= '0' && peek() <= '9')
-        return error(serialization_errc::invalid_number,
-                     "leading zero in JSON number");
+        return error(serialization_errc::invalid_number, "leading zero in JSON number");
     } else {
       if (peek() < '1' || peek() > '9')
         return error(serialization_errc::invalid_number, "invalid JSON number");
@@ -322,8 +302,7 @@ private:
     if (consume('.')) {
       floating = true;
       if (peek() < '0' || peek() > '9')
-        return error(serialization_errc::invalid_number,
-                     "fraction requires at least one digit");
+        return error(serialization_errc::invalid_number, "fraction requires at least one digit");
       while (peek() >= '0' && peek() <= '9')
         ++position_;
     }
@@ -333,8 +312,7 @@ private:
       if (peek() == '+' || peek() == '-')
         ++position_;
       if (peek() < '0' || peek() > '9')
-        return error(serialization_errc::invalid_number,
-                     "exponent requires at least one digit");
+        return error(serialization_errc::invalid_number, "exponent requires at least one digit");
       while (peek() >= '0' && peek() <= '9')
         ++position_;
     }
@@ -343,29 +321,23 @@ private:
     if (!floating) {
       if (!token.empty() && token.front() == '-') {
         std::int64_t integer = 0;
-        const auto parsed =
-            std::from_chars(token.data(), token.data() + token.size(), integer);
-        if (parsed.ec == std::errc{} &&
-            parsed.ptr == token.data() + token.size())
+        const auto parsed = std::from_chars(token.data(), token.data() + token.size(), integer);
+        if (parsed.ec == std::errc{} && parsed.ptr == token.data() + token.size())
           return serialization_value(integer);
       } else {
         std::uint64_t integer = 0;
-        const auto parsed =
-            std::from_chars(token.data(), token.data() + token.size(), integer);
-        if (parsed.ec == std::errc{} &&
-            parsed.ptr == token.data() + token.size())
+        const auto parsed = std::from_chars(token.data(), token.data() + token.size(), integer);
+        if (parsed.ec == std::errc{} && parsed.ptr == token.data() + token.size())
           return serialization_value(integer);
       }
     }
 
     double number = 0;
-    const auto parsed =
-        std::from_chars(token.data(), token.data() + token.size(), number,
-                        std::chars_format::general);
+    const auto parsed = std::from_chars(token.data(), token.data() + token.size(), number,
+                                        std::chars_format::general);
     if (parsed.ec != std::errc{} || parsed.ptr != token.data() + token.size() ||
         !std::isfinite(number))
-      return error(serialization_errc::invalid_number,
-                   "JSON number is out of range");
+      return error(serialization_errc::invalid_number, "JSON number is out of range");
     return serialization_value(number);
   }
 
@@ -374,27 +346,22 @@ private:
   std::size_t position_ = 0;
 };
 
-inline serialization_result<void> append_json_string(std::string &output,
-                                                     std::string_view string,
+inline serialization_result<void> append_json_string(std::string &output, std::string_view string,
                                                      std::size_t max_size) {
   if (!is_valid_utf8(string))
-    return make_serialization_error(serialization_errc::invalid_utf8,
-                                    "string is not valid UTF-8");
+    return make_serialization_error(serialization_errc::invalid_utf8, "string is not valid UTF-8");
   std::size_t encoded_size = 2;
   for (const unsigned char c : string) {
     const std::size_t width =
-        c == '"' || c == '\\' || c == '\b' || c == '\f' || c == '\n' ||
-                c == '\r' || c == '\t'
-            ? 2
-            : c < 0x20 ? 6 : 1;
+        c == '"' || c == '\\' || c == '\b' || c == '\f' || c == '\n' || c == '\r' || c == '\t' ? 2
+        : c < 0x20                                                                             ? 6
+                                                                                               : 1;
     if (encoded_size > max_size || width > max_size - encoded_size)
-      return make_serialization_error(
-          serialization_errc::size_limit_exceeded,
-          "JSON output exceeds configured limit");
+      return make_serialization_error(serialization_errc::size_limit_exceeded,
+                                      "JSON output exceeds configured limit");
     encoded_size += width;
   }
-  if (output.size() > max_size ||
-      encoded_size > max_size - output.size())
+  if (output.size() > max_size || encoded_size > max_size - output.size())
     return make_serialization_error(serialization_errc::size_limit_exceeded,
                                     "JSON output exceeds configured limit");
   output.reserve(output.size() + encoded_size);
@@ -435,22 +402,31 @@ inline serialization_result<void> append_json_string(std::string &output,
   output.push_back('"');
   return {};
 }
+
 class json_writer {
 public:
   explicit json_writer(json_write_options options = {}) : options_(options) {}
-  serialization_result<void> write_null() { return scalar("null"); }
+
+  serialization_result<void> write_null() {
+    return scalar("null");
+  }
+
   serialization_result<void> write_bool(bool v) {
     return scalar(v ? "true" : "false");
   }
-  serialization_result<void> write_signed(std::int64_t v) { return number(v); }
+
+  serialization_result<void> write_signed(std::int64_t v) {
+    return number(v);
+  }
+
   serialization_result<void> write_unsigned(std::uint64_t v) {
     return number(v);
   }
+
   serialization_result<void> write_floating(double v) {
     if (!std::isfinite(v))
-      return make_serialization_error(
-          serialization_errc::value_out_of_range,
-          "non-finite number cannot be represented");
+      return make_serialization_error(serialization_errc::value_out_of_range,
+                                      "non-finite number cannot be represented");
     char b[64];
     auto c = std::to_chars(b, b + sizeof(b), v, std::chars_format::general,
                            std::numeric_limits<double>::max_digits10);
@@ -462,18 +438,28 @@ public:
       return s;
     return append(std::string_view(b, static_cast<std::size_t>(c.ptr - b)));
   }
+
   serialization_result<void> write_string(std::string_view v) {
     auto s = before_value();
     if (!s)
       return s;
     return append_json_string(output_, v, options_.max_output_size);
   }
-  serialization_result<void> begin_array(std::size_t) { return begin(false); }
-  serialization_result<void> end_array() { return end(false); }
-  serialization_result<void> begin_object(std::size_t) { return begin(true); }
+
+  serialization_result<void> begin_array(std::size_t) {
+    return begin(false);
+  }
+
+  serialization_result<void> end_array() {
+    return end(false);
+  }
+
+  serialization_result<void> begin_object(std::size_t) {
+    return begin(true);
+  }
+
   serialization_result<void> write_key(std::string_view key) {
-    if (stack_.empty() || !stack_.back().object ||
-        stack_.back().expecting_value)
+    if (stack_.empty() || !stack_.back().object || stack_.back().expecting_value)
       return make_serialization_error(serialization_errc::custom_error,
                                       "object key in invalid archive state");
     auto &f = stack_.back();
@@ -492,14 +478,17 @@ public:
     f.expecting_value = true;
     return {};
   }
-  serialization_result<void> end_object() { return end(true); }
+
+  serialization_result<void> end_object() {
+    return end(true);
+  }
+
   serialization_result<std::string> finish() {
     if (finished_)
       return make_serialization_error(serialization_errc::custom_error,
                                       "JSON archive is already finished");
     if (!stack_.empty() || !has_root_)
-      return make_serialization_error(serialization_errc::custom_error,
-                                      "incomplete JSON archive");
+      return make_serialization_error(serialization_errc::custom_error, "incomplete JSON archive");
     finished_ = true;
     return std::move(output_);
   }
@@ -510,14 +499,14 @@ private:
     std::size_t count = 0;
     bool expecting_value = false;
   };
+
   serialization_result<void> before_value() {
     if (finished_)
       return make_serialization_error(serialization_errc::custom_error,
                                       "JSON archive is already finished");
     if (stack_.empty()) {
       if (has_root_)
-        return make_serialization_error(serialization_errc::custom_error,
-                                        "multiple root values");
+        return make_serialization_error(serialization_errc::custom_error, "multiple root values");
       has_root_ = true;
       return {};
     }
@@ -539,6 +528,7 @@ private:
     }
     return {};
   }
+
   serialization_result<void> begin(bool object) {
     if (stack_.size() >= options_.max_depth)
       return make_serialization_error(serialization_errc::depth_limit_exceeded,
@@ -551,9 +541,9 @@ private:
     stack_.push_back({object});
     return {};
   }
+
   serialization_result<void> end(bool object) {
-    if (stack_.empty() || stack_.back().object != object ||
-        stack_.back().expecting_value)
+    if (stack_.empty() || stack_.back().object != object || stack_.back().expecting_value)
       return make_serialization_error(serialization_errc::custom_error,
                                       "mismatched JSON archive end");
     auto f = stack_.back();
@@ -565,12 +555,14 @@ private:
     }
     return append_char(object ? '}' : ']');
   }
+
   serialization_result<void> scalar(std::string_view text) {
     auto s = before_value();
     if (!s)
       return s;
     return append(text);
   }
+
   template <typename I> serialization_result<void> number(I v) {
     char b[32];
     auto c = std::to_chars(b, b + sizeof(b), v);
@@ -582,6 +574,7 @@ private:
       return s;
     return append(std::string_view(b, static_cast<std::size_t>(c.ptr - b)));
   }
+
   serialization_result<void> append(std::string_view text) {
     if (output_.size() > options_.max_output_size ||
         text.size() > options_.max_output_size - output_.size())
@@ -590,46 +583,50 @@ private:
     output_.append(text);
     return {};
   }
+
   serialization_result<void> append_char(char value) {
     return append(std::string_view(&value, 1));
   }
+
   serialization_result<void> append_indent(std::size_t depth) {
     if (output_.size() > options_.max_output_size)
       return make_serialization_error(serialization_errc::size_limit_exceeded,
                                       "JSON output exceeds configured limit");
-    const auto remaining = options_.max_output_size >= output_.size()
-                               ? options_.max_output_size - output_.size()
-                               : 0;
+    const auto remaining =
+        options_.max_output_size >= output_.size() ? options_.max_output_size - output_.size() : 0;
     if (depth != 0 && options_.indent_width > remaining / depth)
       return make_serialization_error(serialization_errc::size_limit_exceeded,
                                       "JSON output exceeds configured limit");
     output_.append(depth * options_.indent_width, ' ');
     return {};
   }
+
   json_write_options options_;
   std::string output_;
   std::vector<frame> stack_;
   bool has_root_ = false;
   bool finished_ = false;
 };
+
 } // namespace detail
 
-inline serialization_result<serialization_value>
-parse_json(std::string_view input, json_read_options options = {}) {
+inline serialization_result<serialization_value> parse_json(std::string_view input,
+                                                            json_read_options options = {}) {
   return detail::json_parser(input, options).parse();
 }
-inline serialization_result<std::string>
-write_json(const serialization_value &value, json_write_options options = {}) {
+
+inline serialization_result<std::string> write_json(const serialization_value &value,
+                                                    json_write_options options = {}) {
   detail::json_writer writer(options);
   auto s = detail::write_serialization_value(writer, value);
   if (!s)
     return s.error();
   return writer.finish();
 }
+
 template <typename T>
-serialization_result<std::string>
-to_json(const T &value, serialization_options serialization = {},
-        json_write_options json = {}) {
+serialization_result<std::string> to_json(const T &value, serialization_options serialization = {},
+                                          json_write_options json = {}) {
   detail::json_writer writer(json);
   basic_serializer archive(writer, serialization);
   auto s = archive.encode(value);
@@ -637,6 +634,7 @@ to_json(const T &value, serialization_options serialization = {},
     return s.error();
   return writer.finish();
 }
+
 template <typename T>
 serialization_result<T> from_json(std::string_view input,
                                   deserialization_options deserialization = {},
@@ -646,23 +644,25 @@ serialization_result<T> from_json(std::string_view input,
     return value.error();
   return from_serialization_value<T>(*value, deserialization);
 }
+
 template <typename T>
-std::string to_json_or_throw(const T &value,
-                             serialization_options serialization = {},
+std::string to_json_or_throw(const T &value, serialization_options serialization = {},
                              json_write_options json = {}) {
   auto r = to_json(value, serialization, json);
   if (!r)
     throw serialization_exception(r.error());
   return std::move(*r);
 }
+
 template <typename T>
-T from_json_or_throw(std::string_view input,
-                     deserialization_options deserialization = {},
+T from_json_or_throw(std::string_view input, deserialization_options deserialization = {},
                      json_read_options json = {}) {
   auto r = from_json<T>(input, deserialization, json);
   if (!r)
     throw serialization_exception(r.error());
   return std::move(*r);
 }
+
 } // namespace gmp
-#endif
+
+#endif // GMP_SERIALIZATION_JSON_HPP_
