@@ -118,7 +118,38 @@ concept has_enum_values =
 template<typename E, fixed_string P, auto V>
 consteval bool is_valid_enum_value() {
     constexpr auto name = value_name_of<static_cast<E>(V)>();
-    return name.find(P.data()) != std::string_view::npos;
+    if (name.find(P.data()) != std::string_view::npos) {
+        return true;
+    }
+
+#if GMP_COMPILER_GCC
+    // GCC spells types declared in an anonymous namespace differently in
+    // `source_location::function_name()`: `type_name<E>()` contains
+    // `{anonymous}`, while the enumerator signature uses `<unnamed>`.
+    // Normalize only the default prefix; an explicitly supplied prefix must
+    // retain its documented filtering semantics.
+    constexpr auto default_prefix = type_name<E>() + fixed_string("::");
+    constexpr auto type = type_name_of<E>();
+    constexpr std::string_view anonymous_prefix = "{anonymous}::";
+    constexpr std::string_view gcc_anonymous_prefix = "<unnamed>::";
+    if constexpr (P.to_string_view() == default_prefix.to_string_view() &&
+                  type.starts_with(anonymous_prefix)) {
+        constexpr auto visible_type = type.substr(anonymous_prefix.size());
+        constexpr auto type_pos = name.find(visible_type);
+        if constexpr (type_pos >= gcc_anonymous_prefix.size() &&
+                      type_pos + visible_type.size() + 1 < name.size()) {
+            constexpr auto namespace_pos = type_pos - gcc_anonymous_prefix.size();
+            if (name.substr(namespace_pos, gcc_anonymous_prefix.size()) ==
+                    gcc_anonymous_prefix &&
+                name[type_pos + visible_type.size()] == ':' &&
+                name[type_pos + visible_type.size() + 1] == ':') {
+                return true;
+            }
+        }
+    }
+#endif
+
+    return false;
 }
 
 template<typename E, fixed_string P, int Min, std::size_t... I>
