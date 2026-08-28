@@ -5,7 +5,7 @@ Welcome to the generated API reference for **GMP**.
 ## Summary
 
 GMP is a header-only C++ metaprogramming library for compile-time programming
-and code generation. It provides four complementary layers:
+and code generation. It provides five complementary layers:
 
 - **Macro metaprogramming**: Preprocessor utilities for boolean logic,
   arithmetic, tuple manipulation, loops, overload selection, and code
@@ -19,12 +19,15 @@ and code generation. It provides four complementary layers:
 - **Generic design patterns**: Lightweight synchronization, singleton, and
   object-factory helpers for reusable generic infrastructure. This layer is
   available in **C++11**, with some conveniences improving under **C++20**.
+- **Serialization**: Reflection-driven JSON and XML serialization and deserialization
+  with structured errors and explicit customization escape hatches. This
+  layer requires **C++20**.
 
 ## Key Features
 
 - **Header-only design**: Zero compilation required, just include and use.
 - **Two-tier language support**: Macro metaprogramming and generic design
-  patterns support **C++11**; reflection and named operators require
+  patterns support **C++11**; reflection, serialization, and named operators require
   **C++20**.
 - **Cross-platform**: Compatible with GCC, Clang, and MSVC.
 - **Zero dependencies**: Pure standard C++ with no external runtime
@@ -38,7 +41,7 @@ GMP provides feature sets with different compiler requirements:
 
 - **Macro Metaprogramming and Generic Design Patterns**: Intended to work with
   **C++11** compilers and later.
-- **Reflection Metaprogramming and Named Operators**: Require **C++20** and
+- **Reflection Metaprogramming, Serialization, and Named Operators**: Require **C++20** and
   the following compiler versions or newer:
 
 | Compiler | Minimum Version |
