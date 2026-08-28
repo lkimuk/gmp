@@ -33,8 +33,9 @@ int main() {
           R"(<?xml version="1.0" encoding="utf-8" standalone="no"?>)") +
           null_document,
   };
-  for (const auto &document : declaration_cases)
+  for (const auto &document : declaration_cases) {
     assert(gmp::parse_xml(document));
+  }
 
   const auto malformed_declarations = {
       std::string(R"(<?xml encoding="UTF-8" version="1.0"?>)") +
@@ -48,8 +49,9 @@ int main() {
       std::string(R"(<?xml version="1.0" encoding="UTF-16"?>)") +
           null_document,
   };
-  for (const auto &document : malformed_declarations)
+  for (const auto &document : malformed_declarations) {
     assert(!gmp::parse_xml(document));
+  }
 
   assert(gmp::parse_xml(
       R"(<gmp version = '1'><value kind = 'null' /></gmp>)"));

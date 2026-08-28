@@ -188,7 +188,6 @@ private:
   serialization_error error_;
 };
 
-
 } // namespace gmp
 
 #endif // GMP_SERIALIZATION_ERROR_HPP_

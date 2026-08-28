@@ -29,8 +29,9 @@ to_serialization_value(const T &value, serialization_options options = {}) {
   value_writer writer;
   basic_serializer archive(writer, options);
   auto status = archive.encode(value);
-  if (!status)
+  if (!status) {
     return status.error();
+  }
   return writer.finish();
 }
 

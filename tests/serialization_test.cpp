@@ -117,9 +117,10 @@ template <> struct gmp::serialization_traits<opaque_id> {
   template <typename Archive>
   static gmp::serialization_result<opaque_id>
   deserialize(Archive &archive, gmp::type_tag<opaque_id>) {
-    if (archive.kind() != gmp::serialization_kind::unsigned_integer)
+    if (archive.kind() != gmp::serialization_kind::unsigned_integer) {
       return gmp::make_serialization_error(
           gmp::serialization_errc::type_mismatch, "expected opaque id integer");
+    }
     return opaque_id(archive.read_unsigned());
   }
 };
@@ -130,8 +131,9 @@ template <> struct gmp::serialization_traits<opaque_record> {
                                                    const opaque_record &value) {
     return archive.object(2, [&](auto &object) {
       auto status = object.field("code", value.code());
-      if (!status)
+      if (!status) {
         return status;
+      }
       return object.field("text", value.text());
     });
   }
@@ -140,8 +142,9 @@ template <> struct gmp::serialization_traits<opaque_record> {
   static gmp::serialization_result<opaque_record>
   deserialize(Archive &archive, gmp::type_tag<opaque_record>) {
     auto value = archive.template decode<wire_record>();
-    if (!value)
+    if (!value) {
       return value.error();
+    }
     return opaque_record(value->code, std::move(value->text));
   }
 };

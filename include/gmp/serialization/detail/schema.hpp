@@ -21,10 +21,11 @@
 namespace gmp::detail {
 
 template <typename T> consteval auto schema_fields() {
-  if constexpr (requires { serialization_schema<T>::fields; })
+  if constexpr (requires { serialization_schema<T>::fields; }) {
     return serialization_schema<T>::fields;
-  else
+  } else {
     return std::tuple{};
+  }
 }
 
 template <typename T, std::size_t I> struct automatic_field {
@@ -53,24 +54,26 @@ template <typename T, std::size_t I> struct automatic_field {
 template <typename T, std::size_t I, std::size_t J = 0> consteval auto field_descriptor() {
   constexpr auto fields = schema_fields<T>();
   using tuple_type = decltype(fields);
-  if constexpr (J == std::tuple_size_v<tuple_type>)
+  if constexpr (J == std::tuple_size_v<tuple_type>) {
     return automatic_field<T, I>{};
-  else {
+  } else {
     using D = std::tuple_element_t<J, tuple_type>;
-    if constexpr (D::member.to_string_view() == member_name<I, T>())
+    if constexpr (D::member.to_string_view() == member_name<I, T>()) {
       return D{};
-    else
+    } else {
       return field_descriptor<T, I, J + 1>();
+    }
   }
 }
 
 template <typename T, std::size_t I> using field_descriptor_t = decltype(field_descriptor<T, I>());
 
 template <typename D> constexpr std::string_view descriptor_wire() {
-  if constexpr (requires { D::wire_name; })
+  if constexpr (requires { D::wire_name; }) {
     return D::wire_name.to_string_view();
-  else
+  } else {
     return D::wire();
+  }
 }
 
 template <typename T> consteval bool schema_members_exist() {

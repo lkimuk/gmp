@@ -66,15 +66,18 @@ public:
   }
 
   serialization_result<void> write_key(std::string_view key) {
-    if (finished_)
+    if (finished_) {
       return make_serialization_error(serialization_errc::custom_error,
                                       "value archive is already finished");
-    if (stack_.empty() || stack_.back().kind != serialization_kind::object)
+    }
+    if (stack_.empty() || stack_.back().kind != serialization_kind::object) {
       return make_serialization_error(serialization_errc::custom_error,
                                       "object key outside object");
-    if (stack_.back().has_key)
+    }
+    if (stack_.back().has_key) {
       return make_serialization_error(serialization_errc::custom_error,
                                       "object key requires a value");
+    }
     stack_.back().key = std::string(key);
     stack_.back().has_key = true;
     return {};
@@ -85,11 +88,13 @@ public:
   }
 
   serialization_result<serialization_value> finish() {
-    if (finished_)
+    if (finished_) {
       return make_serialization_error(serialization_errc::custom_error,
                                       "value archive is already finished");
-    if (!stack_.empty() || !root_)
+    }
+    if (!stack_.empty() || !root_) {
       return make_serialization_error(serialization_errc::custom_error, "incomplete archive");
+    }
     auto result = std::move(*root_);
     root_.reset();
     finished_ = true;
@@ -105,12 +110,14 @@ private:
   };
 
   serialization_result<void> put(serialization_value v) {
-    if (finished_)
+    if (finished_) {
       return make_serialization_error(serialization_errc::custom_error,
                                       "value archive is already finished");
+    }
     auto status = validate_value_position();
-    if (!status)
+    if (!status) {
       return status;
+    }
     if (stack_.empty()) {
       root_ = std::move(v);
       return {};
@@ -127,39 +134,47 @@ private:
   }
 
   serialization_result<void> begin(serialization_kind kind, serialization_value v) {
-    if (finished_)
+    if (finished_) {
       return make_serialization_error(serialization_errc::custom_error,
                                       "value archive is already finished");
+    }
     auto status = validate_value_position();
-    if (!status)
+    if (!status) {
       return status;
+    }
     stack_.push_back({kind, std::move(v), {}});
     return {};
   }
 
   serialization_result<void> validate_value_position() const {
     if (stack_.empty()) {
-      if (root_)
+      if (root_) {
         return make_serialization_error(serialization_errc::custom_error, "multiple root values");
+      }
       return {};
     }
-    if (stack_.back().kind == serialization_kind::object && !stack_.back().has_key)
+    if (stack_.back().kind == serialization_kind::object && !stack_.back().has_key) {
       return make_serialization_error(serialization_errc::custom_error, "object value without key");
+    }
     return {};
   }
 
   serialization_result<void> end(serialization_kind expected) {
-    if (finished_)
+    if (finished_) {
       return make_serialization_error(serialization_errc::custom_error,
                                       "value archive is already finished");
-    if (stack_.empty())
+    }
+    if (stack_.empty()) {
       return make_serialization_error(serialization_errc::custom_error,
                                       "archive end without begin");
-    if (stack_.back().kind != expected)
+    }
+    if (stack_.back().kind != expected) {
       return make_serialization_error(serialization_errc::custom_error, "mismatched archive end");
-    if (stack_.back().kind == serialization_kind::object && stack_.back().has_key)
+    }
+    if (stack_.back().kind == serialization_kind::object && stack_.back().has_key) {
       return make_serialization_error(serialization_errc::custom_error,
                                       "object ended with missing value");
+    }
     auto v = std::move(stack_.back().value);
     stack_.pop_back();
     return put(std::move(v));
@@ -177,28 +192,37 @@ public:
   explicit value_reader(const serialization_value &value) : value_(&value) {}
 
   serialization_kind kind() const noexcept {
-    if (value_->is<serialization_value::null_t>())
+    if (value_->is<serialization_value::null_t>()) {
       return serialization_kind::null;
-    if (value_->is<bool>())
+    }
+    if (value_->is<bool>()) {
       return serialization_kind::boolean;
-    if (value_->is<std::int64_t>())
+    }
+    if (value_->is<std::int64_t>()) {
       return serialization_kind::signed_integer;
-    if (value_->is<std::uint64_t>())
+    }
+    if (value_->is<std::uint64_t>()) {
       return serialization_kind::unsigned_integer;
-    if (value_->is<double>())
+    }
+    if (value_->is<double>()) {
       return serialization_kind::floating;
-    if (value_->is<std::string>())
+    }
+    if (value_->is<std::string>()) {
       return serialization_kind::string;
-    if (value_->is<serialization_value::array>())
+    }
+    if (value_->is<serialization_value::array>()) {
       return serialization_kind::array;
+    }
     return serialization_kind::object;
   }
 
   std::size_t size() const noexcept {
-    if (value_->is<serialization_value::array>())
+    if (value_->is<serialization_value::array>()) {
       return value_->get<serialization_value::array>().size();
-    if (value_->is<serialization_value::object>())
+    }
+    if (value_->is<serialization_value::object>()) {
       return value_->get<serialization_value::object>().size();
+    }
     return 0;
   }
 

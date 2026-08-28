@@ -27,34 +27,39 @@ serialization_result<void> write_serialization_value(Writer &writer,
   return std::visit(
       [&](const auto &item) -> serialization_result<void> {
         using T = std::remove_cvref_t<decltype(item)>;
-        if constexpr (std::same_as<T, serialization_value::null_t>)
+        if constexpr (std::same_as<T, serialization_value::null_t>) {
           return writer.write_null();
-        else if constexpr (std::same_as<T, bool>)
+        } else if constexpr (std::same_as<T, bool>) {
           return writer.write_bool(item);
-        else if constexpr (std::same_as<T, std::int64_t>)
+        } else if constexpr (std::same_as<T, std::int64_t>) {
           return writer.write_signed(item);
-        else if constexpr (std::same_as<T, std::uint64_t>)
+        } else if constexpr (std::same_as<T, std::uint64_t>) {
           return writer.write_unsigned(item);
-        else if constexpr (std::same_as<T, double>)
+        } else if constexpr (std::same_as<T, double>) {
           return writer.write_floating(item);
-        else if constexpr (std::same_as<T, std::string>)
+        } else if constexpr (std::same_as<T, std::string>) {
           return writer.write_string(item);
-        else if constexpr (std::same_as<T, serialization_value::array>) {
+        } else if constexpr (std::same_as<T, serialization_value::array>) {
           auto status = writer.begin_array(item.size());
-          if (!status)
+          if (!status) {
             return status;
-          for (const auto &element : item)
-            if (!(status = write_serialization_value(writer, element)))
+          }
+          for (const auto &element : item) {
+            if (!(status = write_serialization_value(writer, element))) {
               return status;
+            }
+          }
           return writer.end_array();
         } else {
           auto status = writer.begin_object(item.size());
-          if (!status)
+          if (!status) {
             return status;
+          }
           for (const auto &[name, member] : item) {
             if (!(status = writer.write_key(name)) ||
-                !(status = write_serialization_value(writer, member)))
+                !(status = write_serialization_value(writer, member))) {
               return status;
+            }
           }
           return writer.end_object();
         }

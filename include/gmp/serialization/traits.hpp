@@ -84,19 +84,23 @@ struct serialization_field {
 
   [[nodiscard]] static consteval bool names_unique() {
     constexpr std::array names{Wire.to_string_view(), Aliases.to_string_view()...};
-    for (std::size_t i = 0; i < names.size(); ++i)
-      for (std::size_t j = i + 1; j < names.size(); ++j)
-        if (names[i] == names[j])
+    for (std::size_t i = 0; i < names.size(); ++i) {
+      for (std::size_t j = i + 1; j < names.size(); ++j) {
+        if (names[i] == names[j]) {
           return false;
+        }
+      }
+    }
     return true;
   }
 
   template <typename T> static constexpr T make_default() {
     static_assert(has_default);
-    if constexpr (std::is_invocable_v<decltype(Default)>)
+    if constexpr (std::is_invocable_v<decltype(Default)>) {
       return static_cast<T>(Default());
-    else
+    } else {
       return static_cast<T>(Default);
+    }
   }
 };
 

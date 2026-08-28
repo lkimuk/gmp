@@ -28,36 +28,43 @@ inline bool is_valid_utf8(std::string_view text) noexcept {
       continue;
     }
     if (first >= 0xc2 && first <= 0xdf) {
-      if (i + 1 >= text.size() || !continuation(static_cast<unsigned char>(text[i + 1])))
+      if (i + 1 >= text.size() || !continuation(static_cast<unsigned char>(text[i + 1]))) {
         return false;
+      }
       i += 2;
       continue;
     }
     if (first >= 0xe0 && first <= 0xef) {
-      if (i + 2 >= text.size())
+      if (i + 2 >= text.size()) {
         return false;
+      }
       const auto second = static_cast<unsigned char>(text[i + 1]);
       const auto third = static_cast<unsigned char>(text[i + 2]);
-      if (!continuation(third))
+      if (!continuation(third)) {
         return false;
+      }
       if (first == 0xe0   ? (second < 0xa0 || second > 0xbf)
           : first == 0xed ? (second < 0x80 || second > 0x9f)
-                          : !continuation(second))
+                          : !continuation(second)) {
         return false;
+      }
       i += 3;
       continue;
     }
     if (first >= 0xf0 && first <= 0xf4) {
-      if (i + 3 >= text.size())
+      if (i + 3 >= text.size()) {
         return false;
+      }
       const auto second = static_cast<unsigned char>(text[i + 1]);
       if (first == 0xf0   ? (second < 0x90 || second > 0xbf)
           : first == 0xf4 ? (second < 0x80 || second > 0x8f)
-                          : !continuation(second))
+                          : !continuation(second)) {
         return false;
+      }
       if (!continuation(static_cast<unsigned char>(text[i + 2])) ||
-          !continuation(static_cast<unsigned char>(text[i + 3])))
+          !continuation(static_cast<unsigned char>(text[i + 3]))) {
         return false;
+      }
       i += 4;
       continue;
     }
