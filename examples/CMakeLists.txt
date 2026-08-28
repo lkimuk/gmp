@@ -17,3 +17,8 @@ add_executable(gmp_example_type_name_and_size
     type_name_and_size.cpp
 )
 target_link_libraries(gmp_example_type_name_and_size PRIVATE gmp)
+
+add_executable(gmp_example_serialization
+    serialization.cpp
+)
+target_link_libraries(gmp_example_serialization PRIVATE gmp)
