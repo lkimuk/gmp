@@ -83,7 +83,7 @@ Compiler Explorer: [https://godbolt.org/z/W156818n5](https://godbolt.org/z/W1568
 
 **Header-only version**
 
-Copy the [include](https://github.com/lkimuk/gmp/releases/download/v0.5.0/include.zip) folder to your build tree and include `gmp/gmp.hpp`.
+Copy the [include](https://github.com/lkimuk/gmp/releases/download/v0.4.0/include.zip) folder to your build tree and include `gmp/gmp.hpp`.
 
 **CMake integration**
 
@@ -97,7 +97,7 @@ $ cmake --install ./build # sudo on Linux/macOS
 ```
 
 ```cpp
-find_package(gmp 0.5.0 REQUIRED)
+find_package(gmp 0.4.0 REQUIRED)
 target_link_libraries(your_target PRIVATE gmp::gmp)
 ```
 
