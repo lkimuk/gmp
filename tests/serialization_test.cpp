@@ -201,6 +201,8 @@ static_assert(!gmp::detail::valid_schema<unknown_schema_member>());
 static_assert(!gmp::detail::valid_schema<transient_schema_collision>());
 static_assert(!gmp::detail::valid_schema<alias_schema_collision>());
 static_assert(!gmp::detail::valid_schema<duplicate_schema_alias>());
+static_assert(gmp::enum_count<color>() == 3);
+static_assert(gmp::enum_count<color, "not-a-prefix">() == 0);
 
 int main() {
   const person source{
