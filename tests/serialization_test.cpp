@@ -36,6 +36,10 @@ struct immutable {
   const int value;
 };
 
+struct nested_immutable {
+  immutable child;
+};
+
 struct account {
   std::string display_name;
   int level;
@@ -271,9 +275,24 @@ int main() {
       R"({"city":"Shanghai","city":"Beijing","postcode":200000})", keep_last);
   assert(replaced && replaced->city == "Beijing");
 
+  auto replaced_after_invalid = gmp::from_json<address>(
+      R"({"city":42,"city":"Beijing","postcode":200000})", keep_last);
+  assert(replaced_after_invalid && replaced_after_invalid->city == "Beijing");
+
+  gmp::deserialization_options keep_first;
+  keep_first.duplicate_fields = gmp::duplicate_field_policy::keep_first;
+  auto retained_before_invalid = gmp::from_json<address>(
+      R"({"city":"Shanghai","city":42,"postcode":200000})", keep_first);
+  assert(retained_before_invalid && retained_before_invalid->city == "Shanghai");
+
   auto immutable_value = gmp::from_json<immutable>(R"({"value":42})");
   assert(immutable_value);
   assert(immutable_value->value == 42);
+
+  auto nested_immutable_value =
+      gmp::from_json<nested_immutable>(R"({"child":{"value":42}})");
+  assert(nested_immutable_value);
+  assert(nested_immutable_value->child.value == 42);
 
   auto custom = gmp::to_json(opaque_id(42));
   assert(custom && *custom == "42");
@@ -321,6 +340,16 @@ int main() {
   auto variant_value = gmp::from_json<variant_type>(*variant_json);
   assert(variant_value);
   assert(std::get<std::string>(*variant_value) == "text");
+
+  auto replaced_variant = gmp::from_json<variant_type>(
+      R"({"index":"invalid","index":1,"value":false,"value":"text"})", keep_last);
+  assert(replaced_variant);
+  assert(std::get<std::string>(*replaced_variant) == "text");
+
+  auto retained_variant = gmp::from_json<variant_type>(
+      R"({"index":1,"index":"invalid","value":"text","value":false})", keep_first);
+  assert(retained_variant);
+  assert(std::get<std::string>(*retained_variant) == "text");
   auto bad_variant_index = gmp::from_json<variant_type>(R"({"index":2,"value":0})");
   assert(!bad_variant_index);
   assert(bad_variant_index.error().code == gmp::serialization_errc::value_out_of_range);
@@ -331,6 +360,14 @@ int main() {
   assert(map_json);
   auto map_value = gmp::from_json<std::map<std::string, int>>(*map_json);
   assert(map_value && *map_value == map);
+
+  auto replaced_map = gmp::from_json<std::map<std::string, int>>(
+      R"({"answer":"invalid","answer":42})", keep_last);
+  assert(replaced_map && replaced_map->at("answer") == 42);
+
+  auto retained_map = gmp::from_json<std::map<std::string, int>>(
+      R"({"answer":42,"answer":"invalid"})", keep_first);
+  assert(retained_map && retained_map->at("answer") == 42);
 
   std::map<int, std::string> numeric_map{{1, "one"}, {2, "two"}};
   auto numeric_map_json = gmp::to_json(numeric_map);

@@ -12,8 +12,9 @@
 #ifndef GMP_SERIALIZATION_DESERIALIZER_HPP_
 #define GMP_SERIALIZATION_DESERIALIZER_HPP_
 
-#include <concepts>
+#include <array>
 #include <cmath>
+#include <concepts>
 #include <limits>
 #include <optional>
 #include <string>
@@ -340,26 +341,42 @@ private:
         if (r.kind() != serialization_kind::object) {
           return make_serialization_error(serialization_errc::type_mismatch, "expected object map");
         }
-        for (std::size_t i = 0; i < r.size(); ++i) {
-          auto m = r.member(i);
-          auto it = out.find(std::string(m.name));
-          if (it != out.end()) {
-            if (options_.duplicate_fields == duplicate_field_policy::reject) {
-              return make_serialization_error(serialization_errc::duplicate_field,
-                                              "duplicate map key", std::string(m.name));
-            }
-            if (options_.duplicate_fields == duplicate_field_policy::keep_first) {
-              continue;
-            }
-          }
+
+        auto decode_member = [&](const auto &m) -> serialization_result<void> {
           auto v = decode_value<V>(m.value);
           if (!v) {
             return prepend_serialization_path(v.error(), m.name);
           }
-          if (it != out.end()) {
-            out.erase(it);
-          }
           out.emplace(std::string(m.name), std::move(*v));
+          return {};
+        };
+
+        if (options_.duplicate_fields == duplicate_field_policy::keep_last) {
+          for (std::size_t i = r.size(); i != 0; --i) {
+            auto m = r.member(i - 1);
+            if (out.find(std::string(m.name)) != out.end()) {
+              continue;
+            }
+            auto status = decode_member(m);
+            if (!status) {
+              return status.error();
+            }
+          }
+        } else {
+          for (std::size_t i = 0; i < r.size(); ++i) {
+            auto m = r.member(i);
+            if (out.find(std::string(m.name)) != out.end()) {
+              if (options_.duplicate_fields == duplicate_field_policy::reject) {
+                return make_serialization_error(serialization_errc::duplicate_field,
+                                                "duplicate map key", std::string(m.name));
+              }
+              continue;
+            }
+            auto status = decode_member(m);
+            if (!status) {
+              return status.error();
+            }
+          }
         }
       } else {
         if (r.kind() != serialization_kind::array) {
@@ -409,39 +426,33 @@ private:
         return make_serialization_error(serialization_errc::depth_limit_exceeded,
                                         "maximum deserialization depth exceeded");
       }
-      std::optional<std::uint64_t> index;
+      std::optional<Reader> index;
       std::optional<Reader> payload;
       for (std::size_t i = 0; i < r.size(); ++i) {
         auto m = r.member(i);
-        auto should_replace = [&](bool present) -> serialization_result<bool> {
-          if (!present) {
-            return true;
+        auto select = [&](std::optional<Reader> &field) -> serialization_result<void> {
+          if (field) {
+            if (options_.duplicate_fields == duplicate_field_policy::reject) {
+              return make_serialization_error(serialization_errc::duplicate_field,
+                                              "duplicate variant field", std::string(m.name));
+            }
+            if (options_.duplicate_fields == duplicate_field_policy::keep_first) {
+              return {};
+            }
+            field.reset();
           }
-          if (options_.duplicate_fields == duplicate_field_policy::reject) {
-            return make_serialization_error(serialization_errc::duplicate_field,
-                                            "duplicate variant field", std::string(m.name));
-          }
-          return options_.duplicate_fields == duplicate_field_policy::keep_last;
+          field.emplace(std::move(m.value));
+          return {};
         };
         if (m.name == "index") {
-          auto replace = should_replace(index.has_value());
-          if (!replace) {
-            return replace.error();
-          }
-          if (*replace) {
-            if (m.value.kind() != serialization_kind::unsigned_integer) {
-              return make_serialization_error(serialization_errc::type_mismatch,
-                                              "variant index must be unsigned", "index");
-            }
-            index = m.value.read_unsigned();
+          auto status = select(index);
+          if (!status) {
+            return status.error();
           }
         } else if (m.name == "value") {
-          auto replace = should_replace(payload.has_value());
-          if (!replace) {
-            return replace.error();
-          }
-          if (*replace) {
-            payload.emplace(std::move(m.value));
+          auto status = select(payload);
+          if (!status) {
+            return status.error();
           }
         } else if (options_.unknown_fields == unknown_field_policy::reject) {
           return make_serialization_error(serialization_errc::unknown_field,
@@ -452,7 +463,11 @@ private:
         return make_serialization_error(serialization_errc::invalid_syntax,
                                         "variant requires index and value");
       }
-      const auto variant_index = *index;
+      if (index->kind() != serialization_kind::unsigned_integer) {
+        return make_serialization_error(serialization_errc::type_mismatch,
+                                        "variant index must be unsigned", "index");
+      }
+      const auto variant_index = index->read_unsigned();
       if (variant_index >= std::variant_size_v<U>) {
         return make_serialization_error(serialization_errc::value_out_of_range,
                                         "variant index is out of range", "index");
@@ -538,6 +553,12 @@ private:
 
   template <typename T, std::size_t... I>
   serialization_result<T> decode_aggregate_impl(const Reader &r, std::index_sequence<I...>) {
+    struct selected_input {
+      Reader reader;
+      std::string name;
+    };
+
+    std::array<std::optional<selected_input>, sizeof...(I)> selected;
     std::tuple<std::optional<member_type_t<I, T>>...> slots;
     bool ok = true;
     serialization_error error;
@@ -555,23 +576,18 @@ private:
           } else {
             matched = true;
             if constexpr (!D::is_transient) {
-              auto &slot = std::get<J>(slots);
-              if (slot && options_.duplicate_fields == duplicate_field_policy::reject) {
+              auto &input = selected[J];
+              if (input && options_.duplicate_fields == duplicate_field_policy::reject) {
                 ok = false;
                 error = make_serialization_error(serialization_errc::duplicate_field,
                                                  "duplicate object field", std::string(m.name));
                 return;
               }
-              if (slot && options_.duplicate_fields == duplicate_field_policy::keep_first) {
+              if (input && options_.duplicate_fields == duplicate_field_policy::keep_first) {
                 return;
               }
-              auto v = decode_value<member_type_t<J, T>>(m.value);
-              if (!v) {
-                ok = false;
-                error = prepend_serialization_path(v.error(), m.name);
-              } else {
-                slot = std::move(*v);
-              }
+              input.reset();
+              input.emplace(selected_input{std::move(m.value), std::string(m.name)});
             }
           }
         }
@@ -589,6 +605,23 @@ private:
     for (std::size_t p = 0; p < r.size() && ok; ++p) {
       field(p);
     }
+    if (!ok) {
+      return error;
+    }
+    auto decode_selected = [&]<std::size_t J>() {
+      if (!ok || !selected[J]) {
+        return;
+      }
+      using M = member_type_t<J, T>;
+      auto v = decode_value<M>(selected[J]->reader);
+      if (!v) {
+        ok = false;
+        error = prepend_serialization_path(v.error(), selected[J]->name);
+        return;
+      }
+      std::get<J>(slots).emplace(std::move(*v));
+    };
+    (decode_selected.template operator()<I>(), ...);
     auto missing = [&]<std::size_t J>() {
       auto &s = std::get<J>(slots);
       using M = member_type_t<J, T>;
