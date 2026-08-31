@@ -134,8 +134,9 @@ public:
    */
   AbstractProduct* create(const std::string& key, const ConstructorArgs&... args) const {
     auto product = try_create_unique(key, args...);
-    if (!product)
+    if (!product) {
       throw std::invalid_argument("Unknown object type passed to factory!");
+    }
     return product.release();
   }
 
