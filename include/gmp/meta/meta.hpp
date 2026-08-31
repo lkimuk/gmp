@@ -432,7 +432,7 @@ template<typename E, typename U>
 constexpr bool enum_contains(U value) {
     constexpr auto values = enum_values<E>();
     for (const auto enumerator : values) {
-        if (enum_underlying(enumerator) == value) {
+        if (std::cmp_equal(+enum_underlying(enumerator), +value)) {
             return true;
         }
     }
